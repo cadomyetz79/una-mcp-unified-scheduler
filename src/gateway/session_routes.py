@@ -8,11 +8,12 @@ Only isolated synthetic tests install these routes in this phase.
 """
 
 from collections.abc import Mapping
+from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 
 from src.gateway.app import ChatRequest, ChatResponse
 from src.gateway.web_sessions import (
@@ -236,5 +237,30 @@ def install_browser_session_routes(
         )
         response.headers["Cache-Control"] = "no-store"
         return response
+
+    @app.get("/leo/session", include_in_schema=False)
+    async def leo_session_interface():
+        # Static HTML only. Session bootstrap and chat
+        # still require verified credentials and CSRF.
+        return FileResponse(
+            Path(__file__).resolve().parent
+            / "leo_ui" / "session.html",
+            media_type="text/html",
+            headers={
+                "Cache-Control": "no-store",
+                "X-Content-Type-Options": "nosniff",
+                "Content-Security-Policy": (
+                    "default-src 'none'; "
+                    "script-src 'self'; "
+                    "style-src 'self'; "
+                    "img-src 'self'; "
+                    "connect-src 'self'; "
+                    "object-src 'none'; "
+                    "base-uri 'none'; "
+                    "form-action 'none'; "
+                    "frame-ancestors 'none'"
+                ),
+            },
+        )
 
     app.state.browser_session_routes_installed = True

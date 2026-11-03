@@ -253,3 +253,38 @@ Research:
 docs/research/2026-11-02-signed-jwt-browser-session-routes.md
 
 Master SOT v1.2 remains a consolidation draft.
+
+---
+
+## STEP-73-LEO-INTERACTIVE-UI-2026-11-02
+
+**CONFIRMED:** The original Leo interactive chat
+design was adapted to the unified gateway contract.
+
+**CONFIRMED:** The selected lion-only PNG and the
+original purple-and-gold styling were preserved.
+
+**CONFIRMED:** The adapted browser code uses
+session bootstrap, CSRF-protected chat requests,
+safe DOM rendering, and verified proposal cards.
+
+**CONFIRMED:** The interactive page is exposed only
+by explicit installation of browser session routes.
+
+**CONFIRMED:** The Step 72 interface and complete
+MCP regression suites passed.
+
+**WORKING ASSUMPTION:** Leo remains the canonical
+student-facing interface for the research project.
+
+**OPEN QUESTION:** Complete signed browser-session
+to protected MCP integration, approved OAuth login,
+and real-browser interaction validation.
+
+**RECOMMENDATION:** Complete signed end-to-end
+testing before enabling live browser academic chat.
+
+Research record:
+docs/research/2026-11-02-leo-unified-interactive-ui.md
+
+Master SOT v1.2 remains a consolidation draft.
