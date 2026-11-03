@@ -288,3 +288,46 @@ Research record:
 docs/research/2026-11-02-leo-unified-interactive-ui.md
 
 Master SOT v1.2 remains a consolidation draft.
+
+---
+
+## STEP-76-FULL-BROWSER-MCP-INTEGRATION-2026-11-02
+
+**CONFIRMED:** A locally signed synthetic JWT
+was verified before issuing a server-side browser
+session in the integration test.
+
+**CONFIRMED:** The test exercised browser-session
+authorization, CSRF protection, the authenticated
+gateway, protected MCP tools, and the real
+deterministic scheduling planner.
+
+**CONFIRMED:** Student S10001 received a verified
+2027SP proposal containing SEC1001 and SEC2002.
+
+**CONFIRMED:** Returned schedule cards remained
+proposed_only, and no enrollment was performed.
+
+**CONFIRMED:** Negative tests rejected unauthorized
+browser requests before entering the AI runner.
+
+**CONFIRMED:** Step 75 complete MCP regression
+reported 175 passing tests.
+
+**WORKING ASSUMPTION:** The unified backend can
+support the original Leo interface after approved
+browser authentication is implemented.
+
+**OPEN QUESTION:** University-approved Entra login,
+real-browser execution, live model integration,
+and deployment security remain unverified.
+
+**RECOMMENDATION:** Preserve the identity and
+deterministic-planning security boundaries.
+Complete real-browser testing before describing
+the UI as operational.
+
+Research:
+docs/research/2026-11-02-full-browser-session-mcp-integration.md
+
+Master SOT v1.2 remains a consolidation draft.
