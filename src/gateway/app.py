@@ -22,6 +22,28 @@ from src.mcp_server.student_access import resolve_authenticated_student_id
 _STATIC_DIR = Path(__file__).resolve().parent / "static"
 _LEO_DIR = Path(__file__).resolve().parent / "leo_ui"
 
+
+# Only the files required by the approved Leo views
+# are published. Original source/research assets remain
+# preserved in Git, not accessible through static URLs.
+_LEO_PUBLIC_ASSETS = frozenset({
+    "styles.css",
+    "interactive.css",
+    "leo-theme.css",
+    "unified.js",
+    "una-lion-mark.png",
+})
+
+
+class LeoPublicAssets(StaticFiles):
+    async def get_response(self, path, scope):
+        if path not in _LEO_PUBLIC_ASSETS:
+            raise HTTPException(
+                status_code=404,
+                detail="Asset not found.",
+            )
+        return await super().get_response(path, scope)
+
 class ChatRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     question: str = Field(min_length=1, max_length=4000)
@@ -57,7 +79,7 @@ def create_app(
 
     api.mount(
         "/leo-assets",
-        StaticFiles(directory=_LEO_DIR),
+        LeoPublicAssets(directory=_LEO_DIR),
         name="leo-assets",
     )
 

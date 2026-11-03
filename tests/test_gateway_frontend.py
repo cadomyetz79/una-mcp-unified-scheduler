@@ -40,7 +40,7 @@ def test_frontend_and_same_origin_assets():
             assert 'id="message"' in page.text
             assert 'id="send" type="submit" disabled' in page.text
 
-            script = await client.get("/leo-assets/interactive.js")
+            script = await client.get("/leo-assets/unified.js")
             stylesheet = await client.get("/leo-assets/leo-theme.css")
             lion = await client.get("/leo-assets/una-lion-mark.png")
             assert lion.status_code == 200

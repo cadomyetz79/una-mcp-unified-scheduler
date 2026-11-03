@@ -331,3 +331,35 @@ Research:
 docs/research/2026-11-02-full-browser-session-mcp-integration.md
 
 Master SOT v1.2 remains a consolidation draft.
+
+---
+
+## STEP-78-LEO-STATIC-ASSET-POLICY-2026-11-02
+
+**CONFIRMED:** The unified gateway previously
+mounted the entire restored Leo asset directory.
+
+**CONFIRMED:** Static access was restricted to
+explicitly approved public assets.
+
+**CONFIRMED:** Original HTML documents remain
+preserved in Git but are no longer served through
+the public static asset endpoint.
+
+**CONFIRMED:** The approved Leo interface and
+selected lion-only logo remain unchanged.
+
+**WORKING ASSUMPTION:** An allowlisted public asset
+surface is preferable to publishing the entire
+restored source directory.
+
+**OPEN QUESTION:** Complete graphical browser
+validation and approved OAuth deployment remain.
+
+**RECOMMENDATION:** Complete CI review and
+browser interaction testing before merge.
+
+Research:
+docs/research/2026-11-02-leo-static-asset-security-review.md
+
+Master SOT v1.2 remains a consolidation draft.
