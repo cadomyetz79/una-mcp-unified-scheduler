@@ -107,3 +107,47 @@ Research:
 docs/research/2026-11-02-plan-card-refusal-regression-closeout.md
 
 Master SOT v1.2 remains a consolidation draft.
+
+---
+
+## STEP-63-AUTHENTICATED-GATEWAY-2026-11-02
+
+Date: 2026-11-02
+Phase: Authenticated browser gateway integration
+
+**CONFIRMED:** Prior integration PR #2 was merged
+into unified main at 77c21cc after all 10 GitHub
+checks passed.
+
+**CONFIRMED:** A separate FastAPI gateway foundation
+and authenticated MCP/AI-agent runner have been
+implemented and locally tested.
+
+**CONFIRMED:** The signed synthetic integration test
+exercises gateway authentication, student mapping,
+protected MCP, deterministic scheduling, and
+verified proposed-only plan cards.
+
+**CONFIRMED:** Step 62 results: 137 MCP tests passed;
+1044 AI-agent tests passed, 1 skipped.
+
+**CONFIRMED:** Unauthorized synthetic requests were
+rejected in the tested scenarios.
+
+**CONFIRMED:** No enrollment capability was added.
+
+**WORKING ASSUMPTION:** The future browser application
+will use approved sign-in and server-bound identity.
+
+**OPEN QUESTION:** Real Entra, live browser/LLM,
+frontend, RAG/OCR orchestration, Banner replacement
+and production deployment remain unverified.
+
+**RECOMMENDATION:** Commit this verified gateway phase,
+then implement and test the frontend on the same
+feature branch before requesting a merge.
+
+Evidence and implementation details:
+docs/research/2026-11-02-authenticated-browser-gateway-integration.md
+
+The master SOT v1.2 remains a consolidation draft.
