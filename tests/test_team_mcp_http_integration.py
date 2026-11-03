@@ -12,6 +12,7 @@ from types import SimpleNamespace
 
 import httpx2
 import jwt
+import pytest
 
 from cryptography.hazmat.primitives.asymmetric import rsa
 from mcp import Client
@@ -32,6 +33,7 @@ from agent.llm import ScriptedLLM, call
 from src.mcp_server import team_security as security
 from src.mcp_server import team_backend_client as backend
 from src.mcp_server import team_protected_server as server
+from src.unified.plan_cards import project_verified_plan_cards
 
 
 
@@ -283,6 +285,61 @@ def test_signed_identity_over_actual_mcp_http(monkeypatch):
                                 for option in plan.options
                             ] == [["SEC1001", "SEC2002"]]
 
+                            # Authenticated MCP -> deterministic WS3 plan
+                            # -> Leo's non-transactional display contract.
+                            cards = project_verified_plan_cards(
+                                plan.to_dict(),
+                                expected_student_id=own_id,
+                                expected_term_id="2027SP",
+                            )
+
+                            assert cards["schema_version"] == "leo-team-plan-v1"
+                            assert cards["status"] == "proposed_only"
+                            assert cards["student_id"] == own_id
+                            assert cards["term_id"] == "2027SP"
+                            assert cards["current_registrations_checked"] is True
+                            assert len(cards["options"]) == 1
+
+                            option = cards["options"][0]
+                            assert option["rank"] == 1
+                            assert option["total_credit_hours"] == 6
+                            assert option["registration_fit"] == "fits_current_registration"
+
+                            assert [
+                                section["section_id"]
+                                for section in option["sections"]
+                            ] == ["SEC1001", "SEC2002"]
+
+                            assert (
+                                option["sections"][0]["registration_snapshot_status"]
+                                == "already_registered_in_snapshot"
+                            )
+                            assert (
+                                option["sections"][1]["registration_snapshot_status"]
+                                == "proposed_not_registered_in_snapshot"
+                            )
+
+                            # Reject another student's identity.
+                            with pytest.raises(PermissionError):
+                                project_verified_plan_cards(
+                                    plan.to_dict(),
+                                    expected_student_id="S10002",
+                                    expected_term_id="2027SP",
+                                )
+
+                            # Reject another academic term.
+                            with pytest.raises(ValueError):
+                                project_verified_plan_cards(
+                                    plan.to_dict(),
+                                    expected_student_id=own_id,
+                                    expected_term_id="2027FA",
+                                )
+
+                            # No fabricated enrollment or course details.
+                            assert "title" not in option["sections"][0]
+                            assert "credit_hours" not in option["sections"][0]
+                            assert "enrolled" not in cards["status"]
+
                             # Full TEAM conversational agent through
                             # authenticated MCP and team Mock Banner.
                             llm = ScriptedLLM([
@@ -307,6 +364,11 @@ def test_signed_identity_over_actual_mcp_http(monkeypatch):
                                 llm,
                                 own_id,
                                 "2027SP",
+                                plan_card_projector=lambda verified: project_verified_plan_cards(
+                                    verified,
+                                    expected_student_id=own_id,
+                                    expected_term_id="2027SP",
+                                ),
                             )
                             chat_result = await assistant.run(
                                 "Plan CIS376 and CIS410"
@@ -314,6 +376,13 @@ def test_signed_identity_over_actual_mcp_http(monkeypatch):
 
                             assert chat_result.stopped_reason == "answered"
                             assert chat_result.grounded
+                            assert chat_result.plan_cards == cards
+                            assert "student_id" not in chat_result.trace[0].result
+                            assert all(
+                                "section_id" not in row
+                                for row in chat_result.trace[0].result["current_registrations"]
+                            )
+                            assert "leo-team-plan-v1" not in json.dumps(llm.received)
                             assert "SEC1001" in chat_result.answer
                             assert "SEC2002" in chat_result.answer
                             assert any(

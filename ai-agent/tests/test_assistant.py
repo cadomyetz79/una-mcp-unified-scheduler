@@ -254,3 +254,193 @@ async def test_identity_arguments_still_get_the_privacy_message():
     ], evidence=False)
     assert "signed-in student" in tool_results(llm, 1)[0]["error"]
     assert result.mcp_calls == []
+
+
+# ---------------------------------------------------------------- trusted UI handoff
+
+async def test_trusted_cards_suppressed_after_fallback():
+    llm = ScriptedLLM(HALLUCINATION)
+
+    def projector(plan):
+        return {
+            "schema_version": "leo-team-plan-v1",
+            "status": "proposed_only",
+            "student_id": plan["student_id"],
+            "term_id": plan["term_id"],
+            "options": plan["options"],
+        }
+
+    async with Client(server) as client:
+        assistant = SchedulingAssistant(
+            BannerTools(client), llm, "S10001", TERM,
+            plan_card_projector=projector,
+        )
+        result = await assistant.run("Plan CIS376 and CIS410")
+
+    assert result.answer_source == "system_fallback"
+    assert result.plan_cards is None
+
+
+async def test_trusted_cards_fail_closed_on_projection_error():
+    llm = ScriptedLLM([
+        {"tool_calls": [call("plan_schedule", course_ids=["CIS376", "CIS410"])]},
+        {"content": "Option 1: SEC1001 and SEC2002, 6 credit hours."},
+    ])
+
+    def reject_projection(plan):
+        raise ValueError("Untrusted projection data")
+
+    async with Client(server) as client:
+        assistant = SchedulingAssistant(
+            BannerTools(client), llm, "S10001", TERM,
+            plan_card_projector=reject_projection,
+        )
+        result = await assistant.run("Plan CIS376 and CIS410")
+
+    assert result.stopped_reason == "answered"
+    assert result.grounded
+    assert result.plan_cards is None
+    assert result.security["plan_card_projection"] == "rejected"
+
+
+async def test_trusted_cards_suppressed_after_multiple_plan_attempts():
+    llm = ScriptedLLM([
+        {"tool_calls": [
+            call("plan_schedule", course_ids=["CIS376", "CIS410"]),
+            call("plan_schedule", course_ids=["CIS376", "CIS410"]),
+        ]},
+        {"content": "Option 1: SEC1001 and SEC2002, 6 credit hours."},
+    ])
+
+    def projector(plan):
+        return {
+            "schema_version": "leo-team-plan-v1",
+            "status": "proposed_only",
+            "student_id": plan["student_id"],
+            "term_id": plan["term_id"],
+            "options": plan["options"],
+        }
+
+    async with Client(server) as client:
+        assistant = SchedulingAssistant(
+            BannerTools(client), llm, "S10001", TERM,
+            plan_card_projector=projector,
+        )
+        result = await assistant.run("Plan CIS376 and CIS410")
+
+    assert result.stopped_reason == "answered"
+    assert result.grounded
+    assert result.plan_cards is None
+
+
+async def test_unexpected_projector_failure_preserves_answer():
+    llm = ScriptedLLM([
+        {"tool_calls": [
+            call("plan_schedule", course_ids=["CIS376", "CIS410"])
+        ]},
+        {"content": "Option 1: SEC1001 and SEC2002, 6 credit hours."},
+    ])
+
+    def failing_projector(plan):
+        raise RuntimeError("Synthetic private projector error")
+
+    async with Client(server) as client:
+        assistant = SchedulingAssistant(
+            BannerTools(client),
+            llm,
+            "S10001",
+            TERM,
+            plan_card_projector=failing_projector,
+        )
+        result = await assistant.run("Plan CIS376 and CIS410")
+
+    assert result.stopped_reason == "answered"
+    assert result.grounded
+    assert result.plan_cards is None
+    assert result.security["plan_card_projection"] == "rejected"
+    assert "Synthetic private projector error" not in result.answer
+
+
+async def test_trusted_cards_suppressed_on_model_refusal():
+    llm = ScriptedLLM([
+        {"tool_calls": [
+            call("plan_schedule", course_ids=["CIS376", "CIS410"])
+        ]},
+        {"content": "I cannot provide a schedule."},
+    ])
+
+    def projector(plan):
+        return {
+            "schema_version": "leo-team-plan-v1",
+            "status": "proposed_only",
+            "student_id": plan["student_id"],
+            "term_id": plan["term_id"],
+            "options": plan["options"],
+        }
+
+    async with Client(server) as client:
+        assistant = SchedulingAssistant(
+            BannerTools(client),
+            llm,
+            "S10001",
+            TERM,
+            plan_card_projector=projector,
+        )
+        result = await assistant.run("Plan CIS376 and CIS410")
+
+    assert result.plan_cards is None, (
+        "A model refusal must not display schedule cards."
+    )
+
+
+# Additional answer-to-card consistency regression coverage.
+
+def _consistency_test_projector(plan):
+    return {
+        "schema_version": "leo-team-plan-v1",
+        "status": "proposed_only",
+        "student_id": plan["student_id"],
+        "term_id": plan["term_id"],
+        "options": plan["options"],
+    }
+
+
+async def _consistency_test_run(answer):
+    llm = ScriptedLLM([
+        {"tool_calls": [
+            call("plan_schedule", course_ids=["CIS376", "CIS410"])
+        ]},
+        {"content": answer},
+    ])
+
+    async with Client(server) as client:
+        assistant = SchedulingAssistant(
+            BannerTools(client), llm, "S10001", TERM,
+            plan_card_projector=_consistency_test_projector,
+        )
+        return await assistant.run("Plan CIS376 and CIS410")
+
+
+async def test_trusted_cards_suppressed_on_refusal_with_section_ids():
+    result = await _consistency_test_run(
+        "I cannot provide a schedule. SEC1001 and SEC2002 "
+        "are the section IDs I checked."
+    )
+    assert result.plan_cards is None
+
+
+async def test_trusted_cards_suppressed_when_no_option_is_presented():
+    result = await _consistency_test_run(
+        "I checked the academic information."
+    )
+    assert result.plan_cards is None
+
+
+async def test_trusted_cards_present_when_valid_option_is_presented():
+    result = await _consistency_test_run(
+        "Option 1: SEC1001 and SEC2002, 6 credit hours."
+    )
+    assert result.stopped_reason == "answered"
+    assert result.grounded
+    assert result.plan_cards is not None
+    assert result.plan_cards["status"] == "proposed_only"

@@ -40,3 +40,70 @@
 - Exact retained historical source hashes; the manifest is the authoritative *integrity inventory* for its archived source files.
 
 **No enrollment transaction is authorized or implemented by the confirmed integration. No claims of official UNA deployment or live student records.**
+
+---
+
+## STEP-49-TRUSTED-HANDOFF-2026-11-02
+
+Date: 2026-11-02
+Phase: Trusted AI assistant / plan-card integration
+
+**CONFIRMED:** The unified scheduling assistant now
+supports a request-scoped, optional trusted plan-card
+projection separate from redacted model-facing data.
+
+**CONFIRMED:** Projection failure is handled without
+exposing exception details or interrupting a valid
+scheduling answer.
+
+**CONFIRMED:** Complete regression results:
+128 MCP tests passed; 1040 AI-agent tests passed,
+1 skipped.
+
+**CONFIRMED:** No enrollment operations were added.
+
+**WORKING ASSUMPTION:** A future gateway will provide
+server-verified identity and term context.
+
+**OPEN QUESTION:** Browser gateway, actual Leo UI
+integration, approved production identity mapping,
+and final master SOT reconciliation.
+
+**RECOMMENDATION:** Review and merge the guarded
+handoff through a pull request before building
+the browser-facing integration.
+
+Evidence and detailed decisions:
+docs/research/2026-11-02-trusted-assistant-plan-card-handoff.md
+
+The consolidated master SOT v1.2 remains a draft.
+
+---
+
+## STEP-56-UI-REFUSAL-CONSISTENCY-2026-11-02
+
+**CONFIRMED:** Step 53 identified a mismatch between
+a model refusal and displayed verified plan cards.
+
+**CONFIRMED:** Step 54 added consistency checks but
+revealed an incorrectly escaped refusal expression.
+
+**CONFIRMED:** Step 55 corrected the expression and
+passed 128 MCP tests plus 1044 AI-agent tests,
+with one AI-agent test skipped.
+
+**CONFIRMED:** No registration capability was added.
+
+**WORKING ASSUMPTION:** Conservative answer matching
+is suitable for the current synthetic prototype.
+
+**OPEN QUESTION:** Comprehensive semantic consistency
+and browser end-to-end behavior remain unverified.
+
+**RECOMMENDATION:** Merge only after updated PR CI
+and code review. Preserve all regression evidence.
+
+Research:
+docs/research/2026-11-02-plan-card-refusal-regression-closeout.md
+
+Master SOT v1.2 remains a consolidation draft.

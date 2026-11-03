@@ -94,7 +94,7 @@ import json
 import re
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from scheduling.models import VALID_DAYS, parse_time
 
@@ -288,6 +288,7 @@ class AssistantResult:
     error: dict | None = None
     # Timing/token records of this request's model calls only (OllamaLLM; empty for scripted models).
     llm_calls: list[dict] = field(default_factory=list)
+    plan_cards: dict | None = None  # Trusted UI projection, never sent to the LLM.
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -306,6 +307,8 @@ class _Run:
     recoveries: list[dict] = field(default_factory=list)
     step: int = 0
     phase: str = "start"  # "model" while waiting for the LLM, "tools" while running tools
+    plan_attempts: int = 0
+    verified_plan_cards: dict | None = None
 
 
 FAILURE_ANSWER = ("Sorry, something went wrong on our side while checking your schedule, so I can't give you an "
@@ -354,6 +357,7 @@ class SchedulingAssistant:
         check_evidence: bool = True,
         check_security: bool = True,
         check_constraints: bool = True,
+        plan_card_projector: Callable[[dict], dict] | None = None,
     ):
         self.tools = tools
         self.llm = llm
@@ -364,6 +368,9 @@ class SchedulingAssistant:
         self.check_evidence = check_evidence
         self.check_security = check_security
         self.check_constraints = check_constraints
+        # Must be supplied by a trusted, authenticated application component.
+        # Never construct this callback from browser-provided identity fields.
+        self.plan_card_projector = plan_card_projector
         self.system_prompt = PROMPT_PATH.read_text(encoding="utf-8").replace("{term_id}", term_id)
         self.leak_guard = LeakGuard(protected_texts(self.system_prompt, TOOL_SPECS, INTERNAL_MESSAGES))
 
@@ -512,6 +519,33 @@ class SchedulingAssistant:
             Preferences(earliest_start or None, latest_end or None, tuple(days), tuple(required)),
             requested_sections=(named or None) if self.check_evidence else None,
         )
+        # Separate trusted UI projection from the redacted model-facing result.
+        # Store only the bounded display contract, not the original academic plan.
+        if (
+            plan.options
+            and self.plan_card_projector is not None
+            and self.check_security
+            and self.check_evidence
+        ):
+            try:
+                cards = self.plan_card_projector(plan.to_dict())
+                if (
+                    type(cards) is not dict
+                    or cards.get("schema_version") != "leo-team-plan-v1"
+                    or cards.get("status") != "proposed_only"
+                    or cards.get("student_id") != self.student_id
+                    or cards.get("term_id") != self.term_id
+                    or type(cards.get("options")) is not list
+                    or len(cards["options"]) != len(plan.options)
+                ):
+                    raise ValueError("Invalid verified plan-card contract.")
+                run.verified_plan_cards = cards
+            except Exception:
+                # Optional display projection must not break scheduling.
+                # Never expose projector exception details to the student.
+                run.verified_plan_cards = None
+                run.security["plan_card_projection"] = "rejected"
+
         result = _hide_current_section_ids(plan.to_dict())
         result.pop("student_id", None)
         if plan.current_registrations_checked is not None:
@@ -542,6 +576,9 @@ class SchedulingAssistant:
                 return True, await self._get_my_record()
             if name == "search_courses":
                 return True, await self._search_courses(**args)
+            # Do not retain cards from an earlier plan when planning is retried.
+            run.plan_attempts += 1
+            run.verified_plan_cards = None
             return True, await self._plan_schedule(run, **args)
         except ToolArgumentError as e:
             return False, {"error": str(e)}
@@ -626,9 +663,23 @@ class SchedulingAssistant:
         recoveries = run.recoveries
 
         def finish(answer: str, step: int, **kw: Any) -> AssistantResult:
+            display_cards = (
+                self.check_security
+                and self.check_evidence
+                and run.plan_attempts == 1
+                and kw.get("grounded") is True
+                and kw.get("answer_source", "model") in ("model", "model+system_note")
+                and not kw.get("blocked")
+                and not kw.get("evidence_missing")
+                and _answer_presents_verified_option(
+                    answer, run.verified_plan_cards
+                )
+            )
             return AssistantResult(answer=answer, stopped_reason="answered", model_calls=step, trace=trace,
                                    mcp_calls=self._mcp_calls(run), recoveries=recoveries, security=security,
-                                   llm_calls=list(run.llm_calls), **kw)
+                                   llm_calls=list(run.llm_calls),
+                                   plan_cards=run.verified_plan_cards if display_cards else None,
+                                   **kw)
 
         def ask(question: constraints.ClarificationNeeded, step: int) -> AssistantResult:
             return finish(question.question(), step, grounded=True, ungrounded_section_ids=[],
@@ -804,6 +855,64 @@ class SchedulingAssistant:
             security=security,
             llm_calls=list(run.llm_calls),
         )
+
+
+
+# Conservative UI consistency check. Grounding alone does not mean the
+# language model actually presented a schedule to the student.
+_SCHEDULE_REFUSAL = re.compile(
+    r"\b(?:cannot|can\s+not|can't|unable(?:\s+to)?|"
+    r"not\s+able(?:\s+to)?|won't|will\s+not|refuse(?:\s+to)?)\b"
+    r"[^.!?\n]{0,100}\b(?:schedule|plan|option|recommendation)s?\b",
+    re.IGNORECASE,
+)
+
+def _answer_presents_verified_option(
+    answer: str,
+    cards: dict | None,
+) -> bool:
+    """Require a complete verified option in a non-refusal answer.
+
+    This is a conservative display gate, not a semantic proof that every
+    statement in a natural-language answer is correct.
+    """
+    if type(answer) is not str or type(cards) is not dict:
+        return False
+
+    if _SCHEDULE_REFUSAL.search(answer):
+        return False
+
+    for option in cards.get("options", []):
+        if type(option) is not dict:
+            continue
+
+        sections = option.get("sections")
+        if type(sections) is not list or not sections:
+            continue
+
+        section_ids = []
+        for section in sections:
+            if type(section) is not dict:
+                break
+            sid = section.get("section_id")
+            if type(sid) is not str or not sid:
+                break
+            section_ids.append(sid)
+
+        if len(section_ids) != len(sections):
+            continue
+
+        if all(
+            re.search(
+                r"(?<![A-Z0-9_])" + re.escape(sid) + r"(?![A-Z0-9_])",
+                answer,
+                re.IGNORECASE,
+            )
+            for sid in section_ids
+        ):
+            return True
+
+    return False
 
 
 def _is_time(value: str) -> bool:
