@@ -219,3 +219,37 @@ Research:
 docs/research/2026-11-02-browser-session-foundation.md
 
 Master SOT v1.2 remains a reconciliation draft.
+
+---
+
+## STEP-71-SIGNED-SESSION-ROUTES-2026-11-02
+
+**CONFIRMED:** Opt-in browser-session routes added
+to the unified gateway.
+
+**CONFIRMED:** Exact-origin HTTPS, CSRF, student
+identity binding, delegated-token revalidation,
+and session revocation are implemented and tested.
+
+**CONFIRMED:** Locally signed synthetic JWTs are
+used in additional browser-session security tests.
+
+**CONFIRMED:** The default gateway continues
+without session routes or a login issuer.
+
+**WORKING ASSUMPTION:** A secure same-origin
+browser session is the appropriate research UI
+authentication architecture.
+
+**OPEN QUESTION:** Approved Entra login flow,
+signed session-to-protected-MCP integration,
+and functional interactive Leo UI validation.
+
+**RECOMMENDATION:** Keep the original Leo design
+and adapt its client contract to verified unified
+MCP schedule cards.
+
+Research:
+docs/research/2026-11-02-signed-jwt-browser-session-routes.md
+
+Master SOT v1.2 remains a consolidation draft.
