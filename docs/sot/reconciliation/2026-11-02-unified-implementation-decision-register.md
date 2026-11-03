@@ -151,3 +151,37 @@ Evidence and implementation details:
 docs/research/2026-11-02-authenticated-browser-gateway-integration.md
 
 The master SOT v1.2 remains a consolidation draft.
+
+---
+
+## STEP-68-ORIGINAL-LEO-RESTORATION-2026-11-02
+
+**CONFIRMED:** The original Leo design from the
+personal MCP repository was recovered into the
+unified browser-gateway feature branch.
+
+**CONFIRMED:** The developer-selected lion-only
+mark replaced the default preview logo and favicon.
+
+**CONFIRMED:** Original source assets remain
+preserved. The derived preview remains noninteractive
+until authenticated session support is integrated.
+
+**CONFIRMED:** No academic access or registration
+bypass was introduced.
+
+**WORKING ASSUMPTION:** The original purple-and-gold
+Leo design is the canonical student-facing UI.
+
+**OPEN QUESTION:** Secure browser sessions, CSRF,
+approved sign-in, verified plan-card rendering,
+and live browser/model behavior.
+
+**RECOMMENDATION:** Reuse the private project's
+session-security components with updated unified
+MCP and agent response contracts.
+
+Research:
+docs/research/2026-11-02-original-leo-ui-restoration.md
+
+Master SOT v1.2 remains a reconciliation draft.

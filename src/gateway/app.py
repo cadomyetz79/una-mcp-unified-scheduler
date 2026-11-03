@@ -7,14 +7,20 @@ The real assistant runner is deliberately not configured in this phase.
 """
 
 from collections.abc import Mapping
+from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, Header, HTTPException, Request
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field
 
 from src.mcp_server import team_security
 from src.mcp_server.student_access import resolve_authenticated_student_id
 
+
+_STATIC_DIR = Path(__file__).resolve().parent / "static"
+_LEO_DIR = Path(__file__).resolve().parent / "leo_ui"
 
 class ChatRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -40,6 +46,43 @@ def create_app(
         title="UNA Synthetic Scheduling Gateway",
         version="0.1.0",
     )
+
+    # Static UI contains no academic records or sign-in credentials.
+    # The browser authentication flow remains unconfigured.
+    api.mount(
+        "/assets",
+        StaticFiles(directory=_STATIC_DIR),
+        name="assets",
+    )
+
+    api.mount(
+        "/leo-assets",
+        StaticFiles(directory=_LEO_DIR),
+        name="leo-assets",
+    )
+
+    @api.get("/", include_in_schema=False)
+    async def frontend():
+        return FileResponse(
+            _LEO_DIR / "preview.html",
+            media_type="text/html",
+            headers={
+                "Cache-Control": "no-store",
+                "X-Content-Type-Options": "nosniff",
+                "Referrer-Policy": "no-referrer",
+                "Content-Security-Policy": (
+                    "default-src 'none'; "
+                    "script-src 'self'; "
+                    "style-src 'self'; "
+                    "connect-src 'self'; "
+                    "img-src 'self'; "
+                    "object-src 'none'; "
+                    "base-uri 'none'; "
+                    "form-action 'none'; "
+                    "frame-ancestors 'none'"
+                ),
+            },
+        )
 
     @api.middleware("http")
     async def prevent_academic_response_caching(request: Request, call_next):

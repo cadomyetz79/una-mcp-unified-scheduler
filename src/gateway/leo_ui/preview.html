@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" type="image/png" href="/leo-assets/una-lion-mark.png">
+  <meta name="description" content="Authenticated student scheduling research interface; synthetic records only.">
+  <title>Leo, your UNA planning assistant • Research Chat</title>
+  <link rel="stylesheet" href="/leo-assets/styles.css">
+  <link rel="stylesheet" href="/leo-assets/interactive.css">
+  <link rel="stylesheet" href="/leo-assets/leo-theme.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar" aria-label="Research navigation">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"><img data-brand-lion src="/leo-assets/una-lion-mark.png" alt=""></span>
+        <div><strong>Leo</strong><span>Your UNA planning assistant</span></div>
+      </div>
+      <div class="sidebar-section-title">WORKSPACE</div>
+      <a class="nav active" href="#assistant" aria-current="page"><span aria-hidden="true">◈</span> Chat with Leo</a>
+      <div class="sidebar-section-title second">SECURITY</div>
+      <div class="nav muted"><span class="status-point" aria-hidden="true"></span> Session-protected chat</div>
+      <div class="nav muted"><span aria-hidden="true">◈</span> Student-specific MCP permissions</div>
+      <div class="nav muted"><span aria-hidden="true">◌</span> Synthetic academic records</div>
+      <div class="sidebar-bottom">
+        <div class="mini-status"><span class="mini-dot" aria-hidden="true"></span> Research integration</div>
+        <small>Not an official UNA service. Plans are proposals only, not enrollment confirmations.</small>
+      </div>
+    </aside>
+    <main id="assistant" class="main">
+      <header class="topbar">
+        <div class="top-left"><span class="small-mobile-brand">Leo</span><span class="crumb">Leo / Authenticated research chat</span></div>
+        <span class="top-pill">Research · Synthetic only</span>
+      </header>
+      <div class="page interactive-page">
+        <div class="alert" role="note">
+          <span class="alert-icon" aria-hidden="true">●</span>
+          <div><strong>Original Leo interface — visual preview only.</strong><p>Authentication is not connected. No messages are submitted or enrollment actions performed.</p></div>
+        </div>
+        <div class="identity-bar">
+          <div>
+            <span class="eyebrow">STUDENT SESSION</span>
+            <div id="session-status" role="status" aria-live="polite">Preview only — sign-in not configured</div>
+          </div>
+          <div class="identity-actions">
+            <a id="sign-in" class="login-link" href="#" hidden disabled>Sign in securely</a>
+            <button id="sign-out" type="button" class="text-button" hidden>Sign out</button>
+          </div>
+        </div>
+        <section class="chat-area" aria-labelledby="chat-heading">
+          <div class="chat-heading">
+            <div><span class="eyebrow">UNA AI SYSTEMS LAB · RESEARCH PROTOTYPE</span><h1 id="chat-heading">Leo, your UNA planning assistant</h1></div>
+            <span class="research-tag">Verified proposals only</span>
+          </div>
+          <div id="transcript" class="transcript" role="log" aria-label="Conversation" aria-live="polite" aria-relevant="additions">
+            <p class="empty-message">Welcome to Leo. Sign in to request a synthetic semester plan or read registration-policy evidence.</p>
+          </div>
+        </section>
+        <section class="suggestions compact-suggestions" aria-label="Example questions">
+          <button type="button" class="suggestion" data-prompt="Build my Spring 2027 schedule for 12 credits." disabled>
+            <span class="suggestion-icon" aria-hidden="true">▦</span><strong>Semester plan</strong><span>Spring 2027</span>
+          </button>
+          <button type="button" class="suggestion" data-prompt="Explain the registration policy." disabled>
+            <span class="suggestion-icon" aria-hidden="true">⌕</span><strong>Registration policy</strong><span>Source evidence</span>
+          </button>
+          <button type="button" class="suggestion" data-prompt="Build my Spring 2027 schedule for 12 credits and explain the registration policy." disabled>
+            <span class="suggestion-icon" aria-hidden="true">◇</span><strong>Plan + policy</strong><span>Combined request</span>
+          </button>
+        </section>
+        <div class="composer-wrapper">
+          <label for="message">Your message</label>
+          <form id="chat-form" autocomplete="off">
+            <textarea id="message" name="message" maxlength="500" rows="2" placeholder="Ask about scheduling or registration policy…" disabled></textarea>
+            <div class="composer-footer">
+              <span id="char-count">0 / 500</span>
+              <button id="send" type="submit" disabled>Sign-in required <span aria-hidden="true">➤</span></button>
+            </div>
+          </form>
+          <p id="feedback" class="disclaimer" role="status" aria-live="polite">Only the server handles delegated access tokens; they are never included in the chat message.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
