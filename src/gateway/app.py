@@ -19,7 +19,6 @@ from src.mcp_server import team_security
 from src.mcp_server.student_access import resolve_authenticated_student_id
 
 
-_STATIC_DIR = Path(__file__).resolve().parent / "static"
 _LEO_DIR = Path(__file__).resolve().parent / "leo_ui"
 
 
@@ -71,12 +70,6 @@ def create_app(
 
     # Static UI contains no academic records or sign-in credentials.
     # The browser authentication flow remains unconfigured.
-    api.mount(
-        "/assets",
-        StaticFiles(directory=_STATIC_DIR),
-        name="assets",
-    )
-
     api.mount(
         "/leo-assets",
         LeoPublicAssets(directory=_LEO_DIR),

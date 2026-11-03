@@ -363,3 +363,40 @@ Research:
 docs/research/2026-11-02-leo-static-asset-security-review.md
 
 Master SOT v1.2 remains a consolidation draft.
+
+---
+
+## STEP-81-LEO-BROWSER-VALIDATION-2026-11-02
+
+**CONFIRMED:** Leo was visually inspected in
+Microsoft Edge by the developer.
+
+**CONFIRMED:** Headless Chromium executed the
+interactive Leo JavaScript and rendered synthetic
+schedule cards.
+
+**CONFIRMED:** Browser tests covered simulated
+session bootstrap, chat, logout, wrong-student
+responses, and mobile layout.
+
+**CONFIRMED:** The unused generic frontend and
+its /assets route were retired.
+
+**CONFIRMED:** The original Leo design and lion
+branding remain the canonical UI.
+
+**WORKING ASSUMPTION:** The restored interface
+can support a future approved authenticated
+research demonstration.
+
+**OPEN QUESTION:** Real Entra sign-in, full
+browser-to-MCP deployment, live LLM behavior,
+and final institutional approvals.
+
+**RECOMMENDATION:** Complete CI/security review
+on this commit before merging.
+
+Research:
+docs/research/2026-11-02-leo-browser-validation.md
+
+Master SOT v1.2 remains a consolidation draft.
