@@ -452,3 +452,47 @@ authenticated browser sign-in is developed.
 
 Research:
 docs/research/2026-11-02-oauth-pkce-foundation.md
+
+---
+
+## STEP-85-OAUTH-CALLBACK-INTEGRATION-2026-11-02
+
+**CONFIRMED:** Opt-in OAuth login and callback
+routes were implemented using the existing
+state/PKCE and browser-session components.
+
+**CONFIRMED:** The callback requires an approved
+configuration contract, valid state correlation,
+trusted code-exchange result, verified JWT and
+authorized student identity before issuing an
+opaque browser session.
+
+**CONFIRMED:** The Step 84 initial test suite
+reported 9 passed and 1 failed due to an incorrect
+expectation about missing-cookie state consumption.
+
+**CONFIRMED:** Step 84A corrected the expectation
+and added a separate wrong-cookie replay test.
+
+**CONFIRMED:** Step 84A results were:
+11 OAuth tests passed; 62 combined authentication
+tests passed; 205 MCP tests passed; 1044 agent tests
+passed and 1 skipped.
+
+**CONFIRMED:** The default gateway still has no
+active OAuth login or callback endpoints.
+
+**WORKING ASSUMPTION:** This synthetic OAuth
+contract can be adapted for approved Entra sign-in.
+
+**OPEN QUESTION:** Actual Microsoft token exchange,
+production session deployment, and complete
+login-to-MCP validation remain unverified.
+
+**RECOMMENDATION:** Perform a synthetic full
+OAuth-login-to-protected-MCP test next.
+
+Research:
+docs/research/2026-11-02-oauth-callback-integration.md
+
+Master SOT v1.2 remains a consolidation draft.

@@ -263,4 +263,14 @@ def install_browser_session_routes(
             },
         )
 
+    # Internal-only dependencies for an explicitly installed
+    # OAuth callback. Both route sets must use the SAME store,
+    # verifier, identity mapping and HTTPS origin.
+    app.state.browser_oauth_context = (
+        session_origin,
+        session_store,
+        token_verifier,
+        student_lookup,
+        allowed_issuer,
+    )
     app.state.browser_session_routes_installed = True
