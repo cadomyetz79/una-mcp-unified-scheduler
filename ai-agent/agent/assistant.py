@@ -671,6 +671,9 @@ class SchedulingAssistant:
                 and kw.get("answer_source", "model") in ("model", "model+system_note")
                 and not kw.get("blocked")
                 and not kw.get("evidence_missing")
+                and _answer_presents_verified_option(
+                    answer, run.verified_plan_cards
+                )
             )
             return AssistantResult(answer=answer, stopped_reason="answered", model_calls=step, trace=trace,
                                    mcp_calls=self._mcp_calls(run), recoveries=recoveries, security=security,
@@ -852,6 +855,64 @@ class SchedulingAssistant:
             security=security,
             llm_calls=list(run.llm_calls),
         )
+
+
+
+# Conservative UI consistency check. Grounding alone does not mean the
+# language model actually presented a schedule to the student.
+_SCHEDULE_REFUSAL = re.compile(
+    r"\b(?:cannot|can\s+not|can't|unable(?:\s+to)?|"
+    r"not\s+able(?:\s+to)?|won't|will\s+not|refuse(?:\s+to)?)\b"
+    r"[^.!?\n]{0,100}\b(?:schedule|plan|option|recommendation)s?\b",
+    re.IGNORECASE,
+)
+
+def _answer_presents_verified_option(
+    answer: str,
+    cards: dict | None,
+) -> bool:
+    """Require a complete verified option in a non-refusal answer.
+
+    This is a conservative display gate, not a semantic proof that every
+    statement in a natural-language answer is correct.
+    """
+    if type(answer) is not str or type(cards) is not dict:
+        return False
+
+    if _SCHEDULE_REFUSAL.search(answer):
+        return False
+
+    for option in cards.get("options", []):
+        if type(option) is not dict:
+            continue
+
+        sections = option.get("sections")
+        if type(sections) is not list or not sections:
+            continue
+
+        section_ids = []
+        for section in sections:
+            if type(section) is not dict:
+                break
+            sid = section.get("section_id")
+            if type(sid) is not str or not sid:
+                break
+            section_ids.append(sid)
+
+        if len(section_ids) != len(sections):
+            continue
+
+        if all(
+            re.search(
+                r"(?<![A-Z0-9_])" + re.escape(sid) + r"(?![A-Z0-9_])",
+                answer,
+                re.IGNORECASE,
+            )
+            for sid in section_ids
+        ):
+            return True
+
+    return False
 
 
 def _is_time(value: str) -> bool:
