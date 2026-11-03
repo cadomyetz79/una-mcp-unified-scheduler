@@ -423,3 +423,32 @@ browser CI and security review are complete.
 
 Research:
 docs/research/2026-11-02-leo-browser-ci-automation.md
+
+---
+
+## STEP-83-OAUTH-PKCE-FOUNDATION-2026-11-02
+
+**CONFIRMED:** The original OAuth state/PKCE
+foundation was imported into the unified gateway.
+
+**CONFIRMED:** Its source content was preserved.
+
+**CONFIRMED:** New synthetic tests cover state
+correlation, PKCE, expiration, replay prevention,
+redirect validation, and bounded capacity.
+
+**CONFIRMED:** No OAuth login, callback, or token
+issuance endpoint was installed.
+
+**WORKING ASSUMPTION:** The original component
+can be reused for the approved browser auth flow.
+
+**OPEN QUESTION:** Actual code exchange, approved
+identity provider configuration, and production
+HTTPS deployment remain outstanding.
+
+**RECOMMENDATION:** Keep PR #3 in draft while
+authenticated browser sign-in is developed.
+
+Research:
+docs/research/2026-11-02-oauth-pkce-foundation.md
