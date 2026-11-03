@@ -185,3 +185,37 @@ Research:
 docs/research/2026-11-02-original-leo-ui-restoration.md
 
 Master SOT v1.2 remains a reconciliation draft.
+
+---
+
+## STEP-69-BROWSER-SESSION-FOUNDATION-2026-11-02
+
+**CONFIRMED:** The original private MCP session
+management components were adapted into the
+unified gateway package.
+
+**CONFIRMED:** Opaque session credentials, bounded
+expiration, CSRF verification and rotation, and
+revocation are implemented.
+
+**CONFIRMED:** Session tests include two-student
+isolation and denial of invalid credentials.
+
+**CONFIRMED:** No browser login or session issuance
+endpoint was activated.
+
+**WORKING ASSUMPTION:** An in-process session store
+is suitable for isolated synthetic research tests.
+
+**OPEN QUESTION:** Approved OAuth callback, HTTPS
+session endpoints, browser response integration,
+and production session management.
+
+**RECOMMENDATION:** Test exact-origin HTTPS requests,
+CSRF enforcement, and delegated token revalidation
+before enabling interactive Leo chat.
+
+Research:
+docs/research/2026-11-02-browser-session-foundation.md
+
+Master SOT v1.2 remains a reconciliation draft.
