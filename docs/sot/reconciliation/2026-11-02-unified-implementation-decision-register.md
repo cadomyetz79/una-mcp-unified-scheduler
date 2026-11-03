@@ -496,3 +496,42 @@ Research:
 docs/research/2026-11-02-oauth-callback-integration.md
 
 Master SOT v1.2 remains a consolidation draft.
+
+---
+
+## STEP-87-FULL-OAUTH-MCP-INTEGRATION-2026-11-02
+
+**CONFIRMED:** A single synthetic integration
+test now exercises OAuth state/PKCE, fake code
+exchange, signed JWT verification, browser session,
+CSRF, authenticated AI gateway, protected MCP,
+deterministic scheduling, and verified Leo cards.
+
+**CONFIRMED:** Student S10001 received a 2027SP
+proposal containing SEC1001 and SEC2002.
+
+**CONFIRMED:** No enrollment was performed.
+
+**CONFIRMED:** Missing CSRF, foreign origin,
+browser-supplied identity, session reuse after
+logout, and OAuth callback replay were rejected.
+
+**CONFIRMED:** Local Step 86 results:
+206 MCP tests passed; 1044 agent tests passed,
+1 skipped; full OAuth-to-MCP test passed.
+
+**WORKING ASSUMPTION:** The unified architecture
+can support a future approved live Leo deployment.
+
+**OPEN QUESTION:** Real Entra integration,
+HTTPS deployment, persistent sessions, live-model
+validation, and graphical browser-to-MCP operation.
+
+**RECOMMENDATION:** Retain this integration test
+and the associated evidence as a regression
+baseline for the research paper.
+
+Research:
+docs/research/2026-11-02-full-oauth-to-protected-mcp.md
+
+Master SOT v1.2 remains a consolidation draft.
