@@ -400,3 +400,26 @@ Research:
 docs/research/2026-11-02-leo-browser-validation.md
 
 Master SOT v1.2 remains a consolidation draft.
+
+---
+
+## STEP-82-LEO-BROWSER-CI-2026-11-02
+
+**CONFIRMED:** A dedicated automated Chromium
+browser smoke workflow was added to GitHub Actions.
+
+**CONFIRMED:** The test uses intercepted synthetic
+HTTP responses, with no actual browser login.
+
+**CONFIRMED:** Existing MCP and agent CI passed
+for commit ace36b3.
+
+**OPEN QUESTION:** The new browser workflow must
+complete successfully on GitHub before its CI
+status can be classified as passing.
+
+**RECOMMENDATION:** Retain the draft PR until
+browser CI and security review are complete.
+
+Research:
+docs/research/2026-11-02-leo-browser-ci-automation.md
