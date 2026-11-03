@@ -364,6 +364,11 @@ def test_signed_identity_over_actual_mcp_http(monkeypatch):
                                 llm,
                                 own_id,
                                 "2027SP",
+                                plan_card_projector=lambda verified: project_verified_plan_cards(
+                                    verified,
+                                    expected_student_id=own_id,
+                                    expected_term_id="2027SP",
+                                ),
                             )
                             chat_result = await assistant.run(
                                 "Plan CIS376 and CIS410"
@@ -371,6 +376,13 @@ def test_signed_identity_over_actual_mcp_http(monkeypatch):
 
                             assert chat_result.stopped_reason == "answered"
                             assert chat_result.grounded
+                            assert chat_result.plan_cards == cards
+                            assert "student_id" not in chat_result.trace[0].result
+                            assert all(
+                                "section_id" not in row
+                                for row in chat_result.trace[0].result["current_registrations"]
+                            )
+                            assert "leo-team-plan-v1" not in json.dumps(llm.received)
                             assert "SEC1001" in chat_result.answer
                             assert "SEC2002" in chat_result.answer
                             assert any(

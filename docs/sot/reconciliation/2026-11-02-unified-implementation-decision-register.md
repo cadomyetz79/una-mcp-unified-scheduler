@@ -40,3 +40,40 @@
 - Exact retained historical source hashes; the manifest is the authoritative *integrity inventory* for its archived source files.
 
 **No enrollment transaction is authorized or implemented by the confirmed integration. No claims of official UNA deployment or live student records.**
+
+---
+
+## STEP-49-TRUSTED-HANDOFF-2026-11-02
+
+Date: 2026-11-02
+Phase: Trusted AI assistant / plan-card integration
+
+**CONFIRMED:** The unified scheduling assistant now
+supports a request-scoped, optional trusted plan-card
+projection separate from redacted model-facing data.
+
+**CONFIRMED:** Projection failure is handled without
+exposing exception details or interrupting a valid
+scheduling answer.
+
+**CONFIRMED:** Complete regression results:
+128 MCP tests passed; 1040 AI-agent tests passed,
+1 skipped.
+
+**CONFIRMED:** No enrollment operations were added.
+
+**WORKING ASSUMPTION:** A future gateway will provide
+server-verified identity and term context.
+
+**OPEN QUESTION:** Browser gateway, actual Leo UI
+integration, approved production identity mapping,
+and final master SOT reconciliation.
+
+**RECOMMENDATION:** Review and merge the guarded
+handoff through a pull request before building
+the browser-facing integration.
+
+Evidence and detailed decisions:
+docs/research/2026-11-02-trusted-assistant-plan-card-handoff.md
+
+The consolidated master SOT v1.2 remains a draft.
