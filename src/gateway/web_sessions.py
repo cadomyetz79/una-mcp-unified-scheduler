@@ -10,7 +10,7 @@ This module does NOT perform OAuth, verify JWT signatures, issue a login
 endpoint, persist sessions, or make the browser interface interactive.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 import hashlib
 import hmac
 import math
@@ -19,6 +19,8 @@ import threading
 import time
 
 from mcp.server.auth.provider import AccessToken
+
+from src.gateway.plan_context import PlanContext
 
 from src.gateway.authenticated_session import (
     AuthenticatedStudentSession,
@@ -50,6 +52,9 @@ class _StoredSession:
     authenticated_session: AuthenticatedStudentSession = field(repr=False)
     csrf_digest: bytes = field(repr=False)
     expires_at: float
+    plan_context: PlanContext | None = field(
+        default=None, repr=False
+    )
 
 
 class StudentWebSessionStore:
@@ -202,8 +207,94 @@ class StudentWebSessionStore:
                 authenticated_session=current.authenticated_session,
                 csrf_digest=hashlib.sha256(csrf.encode("utf-8")).digest(),
                 expires_at=current.expires_at,
+                plan_context=current.plan_context,
             )
             return csrf
+
+    def read_plan_context(
+        self,
+        *,
+        cookie_value: str | None,
+        term_id: str,
+    ) -> PlanContext | None:
+        """Read only this active browser session's context."""
+        self.resolve(cookie_value=cookie_value)
+
+        with self._lock:
+            current = self._sessions.get(
+                self._digest(cookie_value)
+            )
+
+            if (
+                current is None
+                or current.expires_at <= time.time()
+            ):
+                raise PermissionError(
+                    "Session authentication required."
+                )
+
+            context = current.plan_context
+            if context is None or context.term_id != term_id:
+                return None
+
+            return context
+
+    def write_plan_context(
+        self,
+        *,
+        cookie_value: str | None,
+        context: PlanContext,
+    ) -> None:
+        """Store trusted, structured plan data.
+
+        The caller must already have authenticated
+        the request and checked CSRF. This method
+        is not exposed as an HTTP endpoint.
+        """
+        if type(context) is not PlanContext:
+            raise TypeError("Validated PlanContext required.")
+
+        self.resolve(cookie_value=cookie_value)
+
+        with self._lock:
+            key = self._digest(cookie_value)
+            current = self._sessions.get(key)
+
+            if (
+                current is None
+                or current.expires_at <= time.time()
+            ):
+                raise PermissionError(
+                    "Session authentication required."
+                )
+
+            self._sessions[key] = replace(
+                current, plan_context=context
+            )
+
+    def clear_plan_context(
+        self,
+        *,
+        cookie_value: str | None,
+    ) -> None:
+        """Clear only this active session's plan context."""
+        self.resolve(cookie_value=cookie_value)
+
+        with self._lock:
+            key = self._digest(cookie_value)
+            current = self._sessions.get(key)
+
+            if (
+                current is None
+                or current.expires_at <= time.time()
+            ):
+                raise PermissionError(
+                    "Session authentication required."
+                )
+
+            self._sessions[key] = replace(
+                current, plan_context=None
+            )
 
     def revoke(self, *, cookie_value: str | None) -> None:
         """Invalidate an opaque browser session without exposing its token."""

@@ -861,3 +861,43 @@ docs/research/2026-11-03-leo-foreign-record-privacy-guard.md
 
 Comparison:
 docs/evidence/2026-11-03-step112-e15-comparison.json
+
+
+---
+
+## STEP-115-SESSION-PLAN-CONTEXT-2026-11-03
+
+**CONFIRMED:** The Step 113 audit established
+that the gateway and assistant did not preserve
+multi-turn conversation context.
+
+**CONFIRMED:** The Step 114 implementation added
+a bounded immutable PlanContext data structure
+and internal session-bound storage operations.
+
+**CONFIRMED:** Context survives CSRF rotation
+and becomes unavailable after session revocation
+or expiration.
+
+**CONFIRMED:** Targeted tests and complete
+MCP/gateway and AI-agent regression suites passed.
+
+**WORKING ASSUMPTION:** In-memory context storage
+is appropriate for isolated synthetic testing,
+not production multi-worker deployment.
+
+**OPEN QUESTION:** How should verified planner
+results be converted into session context and
+applied to subsequent student messages?
+
+**RECOMMENDATION:** Never trust browser-controlled
+academic context or previous LLM prose as
+authoritative scheduling evidence. Keep identity
+and authorization enforced independently by MCP.
+
+**NOT YET IMPLEMENTED:** Context population from
+verified planner results, follow-up resolution,
+and full multi-turn browser behavior.
+
+Research:
+docs/research/2026-11-03-leo-session-plan-context.md
