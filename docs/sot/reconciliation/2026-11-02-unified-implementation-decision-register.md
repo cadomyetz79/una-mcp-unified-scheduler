@@ -618,3 +618,36 @@ successful browser CI.
 
 Research:
 docs/research/2026-11-03-leo-browser-ci-runner-fix.md
+
+
+---
+
+## STEP-92-MANUAL-LEO-DEMO-2026-11-03
+
+**CONFIRMED:** The operator successfully used Leo
+in Microsoft Edge with the local synthetic demo.
+
+**CONFIRMED:** The displayed response contained
+SEC1001 (already registered) and SEC2002 (proposed)
+in 2027SP, totaling six schedule credits.
+
+**CONFIRMED:** The UI reported no enrollment.
+
+**CONFIRMED:** The separate manual demo launcher
+was made self-contained for Python imports.
+
+**WORKING ASSUMPTION:** This demonstration is
+suitable for local research presentation when
+identified as synthetic and scripted.
+
+**OPEN QUESTION:** Live model, RAG/OCR, approved
+Entra, separately deployed MCP, and SOT consolidation.
+
+**RECOMMENDATION:** Preserve the manual test and
+never expose the demo login as production auth.
+
+Research:
+docs/research/2026-11-03-manual-leo-demonstration.md
+
+Evidence:
+docs/evidence/2026-11-03-step92-manual-demo-observation.md
