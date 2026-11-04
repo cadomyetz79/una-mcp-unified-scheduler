@@ -593,3 +593,28 @@ trailing whitespace in the captured evidence.
 **CORRECTION:** Removed trailing whitespace only.
 The successful test markers and results were preserved.
 No application implementation changes were required.
+
+
+---
+
+## STEP-90-CHROMIUM-CI-RUNNER-2026-11-03
+
+**CONFIRMED:** Commit 3fb58bf passed both
+GitHub MCP integration checks.
+
+**CONFIRMED:** The Chromium CI job failed during
+dependency installation on Ubuntu 26.04 before
+its browser tests executed.
+
+**CONFIRMED:** The browser workflow was changed
+from ubuntu-latest to ubuntu-24.04 for compatibility
+with pinned Playwright 1.58.0.
+
+**OPEN QUESTION:** The new GitHub workflow result
+must be verified before it is considered passing.
+
+**RECOMMENDATION:** Keep PR #3 in draft pending
+successful browser CI.
+
+Research:
+docs/research/2026-11-03-leo-browser-ci-runner-fix.md
