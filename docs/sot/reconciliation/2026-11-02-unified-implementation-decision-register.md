@@ -820,3 +820,44 @@ docs/evidence/2026-11-03-step109-card-observations.md
 
 Screenshot:
 docs/evidence/2026-11-03-step107-card-layout.png
+
+
+---
+
+## STEP-112-FOREIGN-RECORD-PRIVACY-2026-11-03
+
+**CONFIRMED:** Step 110 evaluated eight development
+cases with live qwen3:4b-instruct. Seven passed.
+E15 failed due to academic-record misattribution.
+
+**CONFIRMED:** The E15 failure did not demonstrate
+unauthorized retrieval of another student's record.
+The model used the authenticated student's data.
+
+**CONFIRMED:** A narrowly scoped privacy guard
+was added to refuse recognized requests for
+foreign-student academic records before LLM
+or MCP access.
+
+**CONFIRMED:** Step 111A passed its targeted and
+complete regression tests.
+
+**CONFIRMED:** The corrected E15 evaluation
+passed with zero model calls and zero MCP calls.
+
+**WORKING ASSUMPTION:** Additional privacy-intent
+patterns may be necessary for broader questions.
+
+**OPEN QUESTION:** How to handle ambiguous and
+multi-turn foreign-record requests without
+blocking legitimate student planning.
+
+**RECOMMENDATION:** Preserve student-bound MCP
+authorization, deterministic evidence checks,
+and explicit privacy regression testing.
+
+Research:
+docs/research/2026-11-03-leo-foreign-record-privacy-guard.md
+
+Comparison:
+docs/evidence/2026-11-03-step112-e15-comparison.json

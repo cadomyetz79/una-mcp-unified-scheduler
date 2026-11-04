@@ -110,8 +110,9 @@ async def test_unrecognized_requests_do_not_bypass_agent():
 
     result, model = await run_case(question)
 
-    assert model.received
-    assert result.answer_source != "system_evidence"
+    assert model.received == []
+    assert result.answer_source == "system_privacy"
+    assert result.mcp_calls == []
 
     # No direct academic-evidence shortcut may
     # fetch another student's record.

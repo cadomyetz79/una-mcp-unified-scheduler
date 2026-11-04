@@ -98,7 +98,7 @@ from typing import Any, Callable
 
 from scheduling.models import VALID_DAYS, parse_time
 
-from . import academic_evidence, constraints, safe_answer
+from . import academic_evidence, constraints, privacy_scope, safe_answer
 from .banner_tools import BackendDataError, BackendError, BackendUnavailable, BannerTools
 from .evidence import (
     affirmed_request_claims,
@@ -614,6 +614,24 @@ class SchedulingAssistant:
                 answer=TOO_LONG_ANSWER, grounded=True, ungrounded_section_ids=[], stopped_reason="input_too_long",
                 model_calls=0, answer_source="system_input_limit",
                 security={"input_limit": {"chars": len(request), "max_chars": MAX_REQUEST_CHARS}})
+        # Block explicit foreign-record requests before
+        # invoking the LLM or contacting protected MCP.
+        # Incidental mentions of classmates do not match.
+        if privacy_scope.other_student_record_request(
+            request, self.student_id
+        ):
+            return AssistantResult(
+                answer=safe_answer.OTHER_STUDENT,
+                grounded=True,
+                ungrounded_section_ids=[],
+                stopped_reason="answered",
+                model_calls=0,
+                answer_source="system_privacy",
+                security={
+                    "privacy": "foreign_academic_record_refused"
+                },
+            )
+
         with BannerTools.run_log() as calls, call_log() as model_calls:
             run = _Run(request=request, mcp_calls=calls, llm_calls=model_calls)
             try:
