@@ -651,3 +651,40 @@ docs/research/2026-11-03-manual-leo-demonstration.md
 
 Evidence:
 docs/evidence/2026-11-03-step92-manual-demo-observation.md
+
+
+---
+
+## STEP-96-LIVE-OLLAMA-MCP-2026-11-03
+
+**CONFIRMED:** Step 95 demonstrated a real local
+qwen3:4b-instruct model selecting and successfully
+executing plan_schedule through protected MCP.
+
+**CONFIRMED:** Two live-model calls occurred, one
+model-selected planning operation succeeded, and
+the agent returned a grounded answer.
+
+**CONFIRMED:** The Chromium browser displayed
+verified schedule cards through the HTTPS gateway.
+
+**CONFIRMED:** Logout revoked the session.
+
+**CONFIRMED:** Only synthetic authentication and
+Mock Banner academic records were used.
+
+**WORKING ASSUMPTION:** The existing Ollama
+adapter can support a local live-model Leo demo.
+
+**OPEN QUESTION:** Reliability across different
+requests, model failures, multi-turn interactions,
+real Entra authentication, and production deployment.
+
+**RECOMMENDATION:** Retain the isolated live probe,
+then validate a separate interactive Ollama mode.
+
+Research:
+docs/research/2026-11-03-live-ollama-browser-mcp-integration.md
+
+Evidence:
+docs/evidence/2026-11-03-step96-live-ollama-observation.md
