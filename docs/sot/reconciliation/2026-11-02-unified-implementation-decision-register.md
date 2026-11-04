@@ -992,3 +992,60 @@ docs/research/2026-11-03-leo-two-turn-scheduling.md
 
 Evidence:
 docs/evidence/2026-11-03-step120-two-turn-validation.md
+
+
+---
+
+## STEP-126-LIVE-PREFERENCE-CORRECTION-2026-11-03
+
+**CONFIRMED:** A live qwen3:4b-instruct two-turn
+evaluation succeeded on its first turn but withheld
+verified cards on the second turn after the model
+executed two non-equivalent planning calls.
+
+**CONFIRMED:** The live model omitted an
+earliest_start value while marking earliest_start
+mandatory. The deterministic parser correctly
+read the student's wording as soft.
+
+**CONFIRMED:** The missing-value case allowed an
+incorrect mandatory flag to survive reconciliation.
+
+**CONFIRMED:** A narrowly scoped final resolver
+correction now removes a model's mandatory flag
+when the student's relevant wording is reliably
+and explicitly soft.
+
+**CONFIRMED:** The existing preference-language
+ablation still disables the new correction,
+preserving historical evaluation comparisons.
+
+**CONFIRMED:** All Step 126 local regression,
+AI-agent, MCP/gateway and scripted Chromium
+two-turn tests passed.
+
+**OPEN QUESTION:** The live model's second
+planning call dropped CIS410. This independent
+course-selection problem remains unresolved.
+
+**OPEN QUESTION:** The corrected code has not
+yet passed a new live Ollama two-turn trial.
+
+**RECOMMENDATION:** Preserve the fail-closed
+multiple-plan card/context restrictions until
+a separately tested consistency policy exists.
+
+**WORKING ASSUMPTION:** Supported English
+soft-preference syntax is sufficiently reliable
+for this narrow synthetic research scenario.
+
+**LIMITATION:** No real Banner or Entra integration
+and no enrollment functionality were tested.
+
+Research:
+docs/research/2026-11-03-leo-live-preference-strength-correction.md
+
+Evidence:
+docs/evidence/2026-11-03-step126-preference-regression.md
+
+Master SOT v1.2 remains a consolidation draft.

@@ -503,7 +503,16 @@ class SchedulingAssistant:
         if self.check_constraints:
             # the student's own clear limits win over the model's arguments; an unclear
             # mandatory limit stops planning and becomes a question (constraints.py)
-            res = constraints.resolve(request, earliest_start, latest_end, days, list(required))
+            res = constraints.resolve(
+                request,
+                earliest_start,
+                latest_end,
+                days,
+                list(required),
+                correct_model_soft_flags=(
+                    self.check_preference_language
+                ),
+            )
             if res.clarify:
                 raise constraints.ClarificationNeeded(res.clarify)
             earliest_start, latest_end, days, required = res.earliest_start, res.latest_end, res.avoid_days, \
