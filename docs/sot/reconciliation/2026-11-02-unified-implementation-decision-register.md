@@ -535,3 +535,61 @@ Research:
 docs/research/2026-11-02-full-oauth-to-protected-mcp.md
 
 Master SOT v1.2 remains a consolidation draft.
+
+---
+
+## STEP-89-LOCAL-HTTPS-BROWSER-MCP-2026-11-03
+
+**CONFIRMED:** A real Chromium browser successfully
+connected to a running loopback HTTPS FastAPI gateway.
+
+**CONFIRMED:** The synthetic OAuth callback issued
+an authenticated student session, which was used for
+a real HTTPS browser chat request.
+
+**CONFIRMED:** Protected MCP academic handlers and
+the deterministic scheduling planner executed.
+
+**CONFIRMED:** Leo displayed a proposed schedule
+containing SEC1001 and SEC2002 for synthetic
+student S10001 in 2027SP.
+
+**CONFIRMED:** Logout revoked the browser session.
+
+**CONFIRMED:** Step 88 initially encountered import,
+navigation and simulated-identity-provider issues;
+the final corrected test passed.
+
+**CONFIRMED:** The complete local MCP regression
+reported 206 passing tests, and the AI-agent suite
+reported 1044 passed with 1 skipped.
+
+**WORKING ASSUMPTION:** The integrated research
+architecture can support a controlled interactive
+demonstration.
+
+**OPEN QUESTION:** Approved Entra login, production
+TLS, persistent sessions, independently deployed
+MCP networking, live LLM, and final SOT consolidation.
+
+**RECOMMENDATION:** Preserve browser evidence,
+keep the PR in draft, and develop a controlled
+manual synthetic demonstration environment.
+
+Research:
+docs/research/2026-11-03-local-https-browser-mcp-validation.md
+
+
+### STEP-89A-EVIDENCE-WHITESPACE-CORRECTION
+
+**CONFIRMED:** The browser demonstration and
+regression suites passed before the initial
+Step 89 commit attempt.
+
+The commit stopped at `git diff --cached --check`
+because Rich-formatted HTTP logging introduced
+trailing whitespace in the captured evidence.
+
+**CORRECTION:** Removed trailing whitespace only.
+The successful test markers and results were preserved.
+No application implementation changes were required.

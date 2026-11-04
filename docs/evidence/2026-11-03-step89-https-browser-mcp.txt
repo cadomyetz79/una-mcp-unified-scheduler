@@ -1,0 +1,84 @@
+[11/03/26 17:01:43] INFO     StreamableHTTP session manager started     streamable_http_manager.py:162
+                    INFO     HTTP Request: GET https://127.0.0.1:38873/leo/session     _client.py:1740
+                             "HTTP/1.1 200 OK"
+[11/03/26 17:01:45] INFO     HTTP Request: POST http://127.0.0.1:8002/mcp "HTTP/1.1    _client.py:1923
+                             200 OK"
+                    INFO     HTTP Request: GET                                         _client.py:1740
+                             http://mock-banner.invalid/students/S10001 "HTTP/1.1 200
+                             OK"
+                    INFO     HTTP Request: POST http://127.0.0.1:8002/mcp "HTTP/1.1    _client.py:1923
+                             200 OK"
+                    INFO     HTTP Request: POST http://127.0.0.1:8002/mcp "HTTP/1.1    _client.py:1923
+                             200 OK"
+                    INFO     HTTP Request: GET                                         _client.py:1740
+                             http://mock-banner.invalid/students/S10001/course-history
+                             "HTTP/1.1 200 OK"
+                    INFO     HTTP Request: POST http://127.0.0.1:8002/mcp "HTTP/1.1    _client.py:1923
+                             200 OK"
+                    INFO     HTTP Request: GET                                         _client.py:1740
+                             http://mock-banner.invalid/students/S10001/enrollments
+                             "HTTP/1.1 200 OK"
+                    INFO     HTTP Request: GET                                         _client.py:1740
+                             http://mock-banner.invalid/sections/SEC1001 "HTTP/1.1 200
+                             OK"
+                    INFO     HTTP Request: POST http://127.0.0.1:8002/mcp "HTTP/1.1    _client.py:1923
+                             200 OK"
+                    INFO     HTTP Request: GET                                         _client.py:1740
+                             http://mock-banner.invalid/courses/CIS376 "HTTP/1.1 200
+                             OK"
+                    INFO     HTTP Request: POST http://127.0.0.1:8002/mcp "HTTP/1.1    _client.py:1923
+                             200 OK"
+                    INFO     HTTP Request: GET                                         _client.py:1740
+                             http://mock-banner.invalid/courses/CIS410 "HTTP/1.1 200
+                             OK"
+                    INFO     HTTP Request: POST http://127.0.0.1:8002/mcp "HTTP/1.1    _client.py:1923
+                             200 OK"
+                    INFO     HTTP Request: GET                                         _client.py:1740
+                             http://mock-banner.invalid/sections?course_id=CIS376&term
+                             _id=2027SP "HTTP/1.1 200 OK"
+                    INFO     HTTP Request: POST http://127.0.0.1:8002/mcp "HTTP/1.1    _client.py:1923
+                             200 OK"
+                    INFO     HTTP Request: GET                                         _client.py:1740
+                             http://mock-banner.invalid/sections?course_id=CIS410&term
+                             _id=2027SP "HTTP/1.1 200 OK"
+                    INFO     HTTP Request: POST http://127.0.0.1:8002/mcp "HTTP/1.1    _client.py:1923
+                             200 OK"
+                    INFO     StreamableHTTP session manager shutting    streamable_http_manager.py:166
+                             down
+=== START LOOPBACK HTTPS GATEWAY ===
+=== LOCAL HTTPS CONNECTIVITY CHECK ===
+LOOPBACK_HTTPS_STATUS 200
+LOOPBACK_HTTPS_GATEWAY_REACHABLE
+=== VERIFY SIGN-IN REQUIRED ===
+BROWSER_HTTP_RESPONSE 200 /leo/session
+BROWSER_HTTP_RESPONSE 200 /leo-assets/styles.css
+BROWSER_HTTP_RESPONSE 200 /leo-assets/interactive.css
+BROWSER_HTTP_RESPONSE 200 /leo-assets/una-lion-mark.png
+BROWSER_HTTP_RESPONSE 200 /leo-assets/leo-theme.css
+BROWSER_HTTP_RESPONSE 200 /leo-assets/unified.js
+BROWSER_HTTP_RESPONSE 401 /api/student/session
+=== SIMULATE OFFLINE IDP APPROVAL ===
+BROWSER_HTTP_RESPONSE 303 /auth/callback
+BROWSER_HTTP_RESPONSE 200 /leo/session
+BROWSER_REQUEST_FAILED /api/student/session net::ERR_ABORTED
+BROWSER_HTTP_RESPONSE 200 /leo-assets/styles.css
+BROWSER_HTTP_RESPONSE 200 /leo-assets/leo-theme.css
+BROWSER_HTTP_RESPONSE 200 /leo-assets/interactive.css
+BROWSER_HTTP_RESPONSE 200 /leo-assets/una-lion-mark.png
+BROWSER_HTTP_RESPONSE 200 /leo-assets/unified.js
+BROWSER_HTTP_RESPONSE 200 /api/student/session
+=== REAL HTTPS CHAT TO MCP ===
+BROWSER_HTTP_RESPONSE 200 /api/student/session/chat
+LEO_BROWSER_HTTPS_MCP_CARDS_VERIFIED
+=== VERIFY REAL SESSION LOGOUT ===
+BROWSER_HTTP_RESPONSE 200 /auth/logout
+BROWSER_HTTP_RESPONSE 200 /leo/session
+BROWSER_REQUEST_FAILED /auth/logout net::ERR_ABORTED
+BROWSER_HTTP_RESPONSE 200 /leo-assets/styles.css
+BROWSER_HTTP_RESPONSE 200 /leo-assets/interactive.css
+BROWSER_HTTP_RESPONSE 200 /leo-assets/leo-theme.css
+BROWSER_HTTP_RESPONSE 200 /leo-assets/una-lion-mark.png
+BROWSER_HTTP_RESPONSE 200 /leo-assets/unified.js
+BROWSER_HTTP_RESPONSE 401 /api/student/session
+LEO_BROWSER_SESSION_REVOCATION_VERIFIED
+STEP_88_REAL_HTTPS_BROWSER_MCP_PASSED
