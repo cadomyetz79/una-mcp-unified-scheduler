@@ -51,16 +51,94 @@
     setControls();
   }
 
+  // Limited display formatting. Never interpret model HTML.
+  // Only DOM text nodes and fixed elements are created.
+  function appendSafeInline(parent, value) {
+    const pattern = /\*\*([^*\n]{1,200})\*\*/g;
+    let offset = 0;
+    let match;
+
+    while ((match = pattern.exec(value)) !== null) {
+      parent.append(
+        document.createTextNode(
+          value.slice(offset, match.index)
+        )
+      );
+
+      const strong = document.createElement("strong");
+      strong.textContent = match[1];
+      parent.append(strong);
+      offset = pattern.lastIndex;
+    }
+
+    parent.append(
+      document.createTextNode(value.slice(offset))
+    );
+  }
+
+  function renderSafeReply(parent, raw) {
+    const original = String(raw ?? "");
+
+    // Bound the amount of DOM generated per response.
+    const lines = original.split(/\r?\n/);
+    if (original.length > 20000 || lines.length > 250) {
+      parent.textContent = original;
+      return;
+    }
+
+    // Normalize only the escapes observed in
+    // local Ollama output; do not decode HTML tags.
+    const normalized = original
+      .replace(/(?:&#x20;|&#32;|&nbsp;)/gi, " ")
+      .replace(/\\([*-])/g, "$1");
+
+    let list = null;
+
+    for (const rawLine of normalized.split(/\r?\n/)) {
+      const line = rawLine.trim();
+
+      if (!line) {
+        list = null;
+        continue;
+      }
+
+      const bullet = /^[-*]\s+(.+)$/.exec(line);
+
+      if (bullet) {
+        if (!list) {
+          list = document.createElement("ul");
+          parent.append(list);
+        }
+
+        const item = document.createElement("li");
+        appendSafeInline(item, bullet[1]);
+        list.append(item);
+        continue;
+      }
+
+      list = null;
+      const paragraph = document.createElement("p");
+      appendSafeInline(paragraph, line);
+      parent.append(paragraph);
+    }
+  }
+
   function appendMessage(who, body) {
     const entry = document.createElement("div");
     entry.className = who === "you" ? "chat-entry mine" : "chat-entry assistant-entry";
     const label = document.createElement("span");
     label.className = "message-label";
     label.textContent = who === "you" ? "You" : "Leo";
-    const text = document.createElement("p");
+    const text = document.createElement(
+      who === "you" ? "p" : "div"
+    );
     text.className = "message-body";
-    // Never render remote JSON as HTML: all content is textContent only.
-    text.textContent = body;
+
+    if (who === "you") {
+      text.textContent = body;
+    } else {
+      renderSafeReply(text, body);
+    }
     entry.append(label, text);
     transcript.append(entry);
     entry.scrollIntoView({ block: "nearest", behavior: "auto" });

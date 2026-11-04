@@ -732,3 +732,48 @@ docs/research/2026-11-03-leo-evidence-and-keyboard-validation.md
 
 Evidence:
 docs/evidence/2026-11-03-step103-observations.md
+
+
+---
+
+## STEP-106-LEO-SAFE-FORMATTING-2026-11-03
+
+**CONFIRMED:** Leo's previous text renderer
+displayed escaped Markdown characters.
+
+**CONFIRMED:** A limited formatter was added
+using fixed DOM elements and text nodes rather
+than interpreting model-generated HTML.
+
+**CONFIRMED:** Chromium tested basic bold
+formatting, bullet lists, and inert HTML
+injection content.
+
+**CONFIRMED:** The authenticated MCP scheduling
+and session-revocation checks continued to pass.
+
+**CONFIRMED:** The operator provided live Ollama
+output showing improved course-list formatting
+and verified synthetic proposal cards.
+
+**CONFIRMED:** No enrollment was performed.
+
+**WORKING ASSUMPTION:** Restricted Markdown
+support is sufficient for the current prototype.
+
+**OPEN QUESTION:** Further card-layout polish,
+nested lists, rich-text needs and more consistent
+model-generated scheduling language.
+
+**RECOMMENDATION:** Continue using safe
+DOM-based rendering and keep untrusted model
+text separate from verified planner cards.
+
+Research:
+docs/research/2026-11-03-leo-safe-response-formatting.md
+
+Observation:
+docs/evidence/2026-11-03-step106-formatting-observation.md
+
+Browser screenshot:
+docs/evidence/2026-11-03-step104-safe-format-browser.png

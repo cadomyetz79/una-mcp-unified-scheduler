@@ -199,10 +199,7 @@ async def run():
                     ]
                 },
                 {
-                    "content": (
-                        "Option 1: SEC1001 and SEC2002, "
-                        "6 credit hours."
-                    )
+                    "content": '**Option 1:** SEC1001 and SEC2002, 6 credit hours.\n\\- \\*\\*CIS376:\\*\\* SEC1001\n&#x20; \\- \\*\\*CIS410:\\*\\* SEC2002\n<img src=x onerror="window.__leo_unsafe=true">'
                 },
             ])
 
@@ -623,10 +620,46 @@ async def run():
                                 "CIS410 · SEC2002"
                             ).is_visible()
 
+                            # Basic Markdown formatting must render
+                            # as fixed DOM elements, not raw HTML.
+                            await expect(
+                                page.locator(
+                                    ".assistant-entry .message-body strong"
+                                )
+                            ).to_have_count(3)
+
+                            await expect(
+                                page.locator(
+                                    ".assistant-entry .message-body li"
+                                )
+                            ).to_have_count(2)
+
+                            body = await page.locator(
+                                ".assistant-entry .message-body"
+                            ).inner_text()
+
+                            assert "**" not in body
+                            assert "&#x20;" not in body
+                            assert "<img src=x onerror=" in body
+
+                            # A model-supplied HTML tag must remain
+                            # literal text, never an actual element.
+                            assert await page.locator(
+                                ".assistant-entry img"
+                            ).count() == 0
+
+                            assert await page.evaluate(
+                                "window.__leo_unsafe === undefined"
+                            )
+
+                            print(
+                                "LEO_SAFE_FORMATTING_AND_HTML_INERT_VERIFIED"
+                            )
+
                             screenshot = (
                                 ROOT / "docs/evidence/"
-                                "2026-11-02-step88-"
-                                "live-browser-mcp.png"
+                                "2026-11-03-step104-"
+                                "safe-format-browser.png"
                             )
 
                             screenshot.parent.mkdir(
