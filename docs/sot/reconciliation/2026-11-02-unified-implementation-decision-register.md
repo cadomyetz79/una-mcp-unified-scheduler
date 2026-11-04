@@ -777,3 +777,46 @@ docs/evidence/2026-11-03-step106-formatting-observation.md
 
 Browser screenshot:
 docs/evidence/2026-11-03-step104-safe-format-browser.png
+
+
+---
+
+## STEP-109-LEO-VERIFIED-CARD-READABILITY-2026-11-03
+
+**CONFIRMED:** Leo's verified schedule-card
+presentation was improved to separate labels,
+values and registration statuses.
+
+**CONFIRMED:** A proposed-only notice was added
+to the validated schedule-card interface.
+
+**CONFIRMED:** Chromium verified card readability,
+safe formatting, authenticated MCP access,
+and session revocation.
+
+**CONFIRMED:** The operator supplied a live Leo
+response showing readable card details and
+the proposed-only notice.
+
+**CONFIRMED:** The system did not enroll the
+synthetic student.
+
+**WORKING ASSUMPTION:** The current layout is
+adequate for the next research demonstration.
+
+**OPEN QUESTION:** How to make all model-generated
+schedule wording consistently reflect verified
+planning evidence rather than imply registration.
+
+**RECOMMENDATION:** Keep planner-derived data
+authoritative and continue improving the agent's
+evidence-backed language.
+
+Research:
+docs/research/2026-11-03-leo-verified-card-readability.md
+
+Observation:
+docs/evidence/2026-11-03-step109-card-observations.md
+
+Screenshot:
+docs/evidence/2026-11-03-step107-card-layout.png

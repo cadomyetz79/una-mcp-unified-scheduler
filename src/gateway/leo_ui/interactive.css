@@ -52,3 +52,64 @@
 .message-body strong {
   font-weight: 750;
 }
+
+/* Step 107: readable verified schedule cards. */
+.proposal-notice {
+  margin: 0;
+  padding: 11px 14px;
+  border: 1px solid #dfd3ef;
+  border-left: 4px solid #72549a;
+  border-radius: 9px;
+  background: #f8f5fc;
+  color: #493661;
+  font-size: 13px;
+  line-height: 1.5;
+  font-weight: 750;
+}
+
+.assistant-entry .result-details {
+  padding: 13px 15px;
+  margin-top: 5px;
+}
+
+.assistant-entry .result-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  align-items: start;
+  gap: 8px 16px;
+}
+
+.assistant-entry .result-row strong {
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.assistant-entry .verified-section {
+  margin-top: 10px;
+  padding: 14px 15px;
+}
+
+.assistant-entry .verified-section-heading {
+  gap: 8px 14px;
+}
+
+.assistant-entry .section-status {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 560px) {
+  .assistant-entry .result-row {
+    grid-template-columns: 1fr;
+    gap: 3px;
+  }
+
+  .assistant-entry .result-row strong {
+    text-align: left;
+  }
+
+  .assistant-entry .verified-section-heading {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

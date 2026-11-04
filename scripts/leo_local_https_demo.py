@@ -656,10 +656,55 @@ async def run():
                                 "LEO_SAFE_FORMATTING_AND_HTML_INERT_VERIFIED"
                             )
 
+                            # The proposal disclaimer must
+                            # appear before the model's reply.
+                            notice = page.locator(
+                                ".proposal-notice"
+                            )
+
+                            await expect(notice).to_have_text(
+                                "Proposed schedule — "
+                                "no enrollment performed."
+                            )
+
+                            assert await notice.evaluate(
+                                "(el) => el.compareDocumentPosition("
+                                "el.parentElement.querySelector("
+                                "'.message-body')) & 4"
+                            )
+
+                            # Labels must remain separated
+                            # in copied plain text.
+                            first_row = page.locator(
+                                ".assistant-entry "
+                                ".result-details "
+                                ".result-row"
+                            ).first
+
+                            row_text = await first_row.text_content()
+                            assert "Term: 2027SP" in row_text
+
+                            first_section = page.locator(
+                                ".verified-section-heading"
+                            ).first
+
+                            section_text = (
+                                await first_section.text_content()
+                            )
+
+                            assert (
+                                "SEC1001 — Registered "
+                                "in synthetic snapshot"
+                            ) in section_text
+
+                            print(
+                                "LEO_VERIFIED_CARD_READABILITY_VERIFIED"
+                            )
+
                             screenshot = (
                                 ROOT / "docs/evidence/"
-                                "2026-11-03-step104-"
-                                "safe-format-browser.png"
+                                "2026-11-03-step107-"
+                                "card-layout.png"
                             )
 
                             screenshot.parent.mkdir(

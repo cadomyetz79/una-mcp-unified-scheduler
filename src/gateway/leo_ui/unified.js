@@ -174,7 +174,7 @@
     const row = document.createElement("div");
     row.className = "result-row";
     const name = document.createElement("span");
-    name.textContent = label;
+    name.textContent = label + ": ";
     const detail = document.createElement("strong");
     detail.textContent = String(value ?? "Not available");
     row.append(name, detail);
@@ -213,9 +213,10 @@
         "Registration status not checked"
     };
 
-    badge.textContent =
+    badge.textContent = " — " + (
       states[section.registration_snapshot_status] ||
-      "Registration status not verified";
+      "Registration status not verified"
+    );
 
     heading.append(name, badge);
 
@@ -312,6 +313,18 @@
       !/^20[0-9]{2}(SP|SU|FA)$/.test(cards.term_id) ||
       !Array.isArray(cards.options)
     ) return;
+
+    // Static statement based on the validated
+    // proposed-only card contract, not LLM prose.
+    const notice = document.createElement("p");
+    notice.className = "proposal-notice";
+    notice.textContent =
+      "Proposed schedule — no enrollment performed.";
+
+    wrapper.insertBefore(
+      notice,
+      wrapper.querySelector(".message-body")
+    );
 
     const heading = document.createElement("p");
     heading.className = "sources-heading";
