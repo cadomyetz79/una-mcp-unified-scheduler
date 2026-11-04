@@ -717,6 +717,25 @@ async def run():
                                 full_page=True,
                             )
 
+                            # Confirm the REAL authenticated
+                            # browser request populated only
+                            # this server-side session.
+                            saved_plan = sessions.read_plan_context(
+                                cookie_value=session_cookie["value"],
+                                term_id=TERM,
+                            )
+
+                            assert saved_plan is not None
+                            assert saved_plan.course_ids == (
+                                "CIS376", "CIS410"
+                            )
+                            assert saved_plan.avoid_days == ()
+                            assert saved_plan.required_preferences == ()
+
+                            print(
+                                "LEO_VERIFIED_PLAN_CONTEXT_SAVED"
+                            )
+
                             print(
                                 "LEO_BROWSER_HTTPS_MCP_CARDS_VERIFIED"
                             )
@@ -738,6 +757,18 @@ async def run():
                             )
 
                             assert sessions.count() == 0
+
+                            # Logout invalidates the stored
+                            # planning context as well.
+                            with pytest.raises(PermissionError):
+                                sessions.read_plan_context(
+                                    cookie_value=session_cookie["value"],
+                                    term_id=TERM,
+                                )
+
+                            print(
+                                "LEO_LOGOUT_CLEARS_PLAN_CONTEXT"
+                            )
 
                             await page.reload(
                                 wait_until="domcontentloaded"

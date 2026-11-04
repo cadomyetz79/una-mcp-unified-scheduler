@@ -901,3 +901,47 @@ and full multi-turn browser behavior.
 
 Research:
 docs/research/2026-11-03-leo-session-plan-context.md
+
+
+---
+
+## STEP-117-VERIFIED-SESSION-CONTEXT-2026-11-03
+
+**CONFIRMED:** The gateway can now populate
+bounded session-specific scheduling context
+from successful, validated planner evidence.
+
+**CONFIRMED:** Context projection requires
+a grounded completed response, a single
+successful plan and matching verified
+schedule-card identity, term and sections.
+
+**CONFIRMED:** The browser does not supply
+the authoritative planning context.
+
+**CONFIRMED:** Real HTTPS Chromium integration
+verified context storage and logout revocation.
+
+**CONFIRMED:** The targeted, complete MCP/gateway
+and AI-agent regression suites passed.
+
+**WORKING ASSUMPTION:** In-memory session context
+is suitable for synthetic local demonstrations.
+
+**OPEN QUESTION:** How to merge follow-up
+preferences safely, preserve the original
+student intent and handle concurrent requests.
+
+**RECOMMENDATION:** Implement deterministic
+follow-up interpretation with renewed planner
+validation. Retain student-scoped MCP
+authorization and privacy checks.
+
+**NOT YET IMPLEMENTED:** Automatic reuse of
+session context by the conversational agent.
+
+Research:
+docs/research/2026-11-03-leo-verified-session-context.md
+
+Evidence:
+docs/evidence/2026-11-03-step117-context-verification.md

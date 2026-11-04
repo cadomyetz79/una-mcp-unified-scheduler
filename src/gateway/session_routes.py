@@ -16,6 +16,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse
 
 from src.gateway.app import ChatRequest, ChatResponse
+from src.gateway.plan_context import from_verified_planner_result
 from src.gateway.web_sessions import (
     SESSION_COOKIE_NAME,
     StudentWebSessionStore,
@@ -210,6 +211,30 @@ def install_browser_session_routes(
             and type(cards.get("options")) is list
         ):
             cards = None
+
+        # Save only a successfully displayed, grounded
+        # planner-backed proposal. Never store model prose.
+        if cards is not None:
+            context = from_verified_planner_result(
+                result,
+                expected_student_id=session.student_id,
+                expected_term_id=term_id,
+            )
+
+            if context is not None:
+                try:
+                    session_store.write_plan_context(
+                        cookie_value=request.cookies.get(
+                            SESSION_COOKIE_NAME
+                        ),
+                        context=context,
+                    )
+                except PermissionError:
+                    # Session may have expired or been
+                    # revoked while the planner was running.
+                    raise HTTPException(
+                        401, "Session authentication required."
+                    ) from None
 
         return ChatResponse(
             answer=result.answer,
