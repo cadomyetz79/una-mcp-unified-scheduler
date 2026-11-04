@@ -211,13 +211,17 @@ async def run():
         )
 
         calls = []
+        results = []
 
         async def observed_runner(**kwargs):
             calls.append({
                 "student_id": kwargs["student_id"],
                 "term_id": kwargs["term_id"],
+                "question": kwargs["question"],
             })
-            return await runner(**kwargs)
+            result = await runner(**kwargs)
+            results.append(result)
+            return result
 
         sessions = StudentWebSessionStore(
             student_lookup=student_lookup,
@@ -560,7 +564,8 @@ async def run():
                             await page.locator(
                                 "#message"
                             ).fill(
-                                "Plan CIS376 and CIS410"
+                                "Plan CIS376 and CIS410, "
+                                "but I can't have classes on Fridays."
                             )
 
                             # Shift+Enter must insert a
@@ -573,7 +578,10 @@ async def run():
                                 await page.locator(
                                     "#message"
                                 ).input_value()
-                            ) == "Plan CIS376 and CIS410\n"
+                            ) == (
+                                "Plan CIS376 and CIS410, "
+                                "but I can't have classes on Fridays.\n"
+                            )
 
                             assert calls == [], (
                                 "Shift+Enter submitted unexpectedly."
@@ -610,6 +618,10 @@ async def run():
                             assert calls == [{
                                 "student_id": "S10001",
                                 "term_id": TERM,
+                                "question": (
+                                    "Plan CIS376 and CIS410, "
+                                    "but I can't have classes on Fridays."
+                                ),
                             }]
 
                             assert await page.get_by_text(
@@ -729,11 +741,87 @@ async def run():
                             assert saved_plan.course_ids == (
                                 "CIS376", "CIS410"
                             )
-                            assert saved_plan.avoid_days == ()
-                            assert saved_plan.required_preferences == ()
+                            assert saved_plan.avoid_days == ("FRI",)
+                            assert saved_plan.required_preferences == (
+                                "avoid_days",
+                            )
 
                             print(
                                 "LEO_VERIFIED_PLAN_CONTEXT_SAVED"
+                            )
+
+                            print(
+                                "=== VERIFY TWO-TURN PLANNING ==="
+                            )
+
+                            followup = (
+                                "Actually, I'd prefer classes that "
+                                "start after 10 AM. Keep everything "
+                                "else the same."
+                            )
+
+                            await page.locator(
+                                "#message"
+                            ).fill(followup)
+
+                            await page.locator(
+                                "#message"
+                            ).press("Enter")
+
+                            await expect(
+                                page.locator(".verified-section")
+                            ).to_have_count(4)
+
+                            await expect(
+                                page.locator(".proposal-notice")
+                            ).to_have_count(2)
+
+                            assert len(calls) == 2
+                            assert len(results) == 2
+
+                            second_question = calls[1]["question"]
+
+                            assert second_question != followup
+                            assert "CIS376 and CIS410" in second_question
+                            assert "Fridays" in second_question
+                            assert "10:01 AM" in second_question
+
+                            planner_traces = [
+                                t for t in results[1].trace
+                                if t.tool == "plan_schedule"
+                                and t.ok
+                            ]
+
+                            assert len(planner_traces) == 1
+
+                            applied = planner_traces[0].result[
+                                "preferences_applied"
+                            ]
+
+                            assert applied["avoid_days"] == ["FRI"]
+                            assert applied["earliest_start"] == "10:01"
+                            assert applied["required"] == [
+                                "avoid_days"
+                            ]
+
+                            assert results[1].plan_cards is not None
+
+                            updated = sessions.read_plan_context(
+                                cookie_value=session_cookie["value"],
+                                term_id=TERM,
+                            )
+
+                            assert updated.course_ids == (
+                                "CIS376", "CIS410"
+                            )
+                            assert updated.avoid_days == ("FRI",)
+                            assert updated.earliest_start == "10:01"
+                            assert updated.required_preferences == (
+                                "avoid_days",
+                            )
+
+                            print(
+                                "LEO_TWO_TURN_CONTEXT_AND_PLANNER_VERIFIED"
                             )
 
                             print(
@@ -782,7 +870,12 @@ async def run():
                                 "Not signed in"
                             )
 
-                            assert len(calls) == 1
+                            # Two authenticated chat
+                            # requests occurred before logout.
+                            # Reloading after revocation must
+                            # not start another model request.
+                            assert len(calls) == 2
+                            assert len(results) == 2
                             assert not errors, errors
 
                             print(

@@ -16,7 +16,10 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse
 
 from src.gateway.app import ChatRequest, ChatResponse
-from src.gateway.plan_context import from_verified_planner_result
+from src.gateway.plan_context import (
+    from_verified_planner_result,
+    resolve_start_time_followup,
+)
 from src.gateway.web_sessions import (
     SESSION_COOKIE_NAME,
     StudentWebSessionStore,
@@ -185,9 +188,40 @@ def install_browser_session_routes(
             request, csrf=True
         )
 
+        # Authentication, origin, and CSRF have
+        # already been verified above. Context is
+        # selected only by the server-side cookie.
+        cookie = request.cookies.get(
+            SESSION_COOKIE_NAME
+        )
+
+        try:
+            prior_context = session_store.read_plan_context(
+                cookie_value=cookie,
+                term_id=term_id,
+            )
+        except PermissionError:
+            raise HTTPException(
+                401, "Session authentication required."
+            ) from None
+
+        # Only a recognized follow-up is reconstructed.
+        # All other requests retain their original wording.
+        # This does not bypass the agent's privacy checks.
+        resolved = resolve_start_time_followup(
+            payload.question,
+            prior_context,
+            expected_term_id=term_id,
+        )
+
+        effective_question = (
+            resolved if resolved is not None
+            else payload.question
+        )
+
         try:
             result = await assistant_runner(
-                question=payload.question,
+                question=effective_question,
                 student_id=session.student_id,
                 term_id=term_id,
                 bearer_token=session.bearer_token,

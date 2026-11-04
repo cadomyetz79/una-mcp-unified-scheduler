@@ -945,3 +945,50 @@ docs/research/2026-11-03-leo-verified-session-context.md
 
 Evidence:
 docs/evidence/2026-11-03-step117-context-verification.md
+
+
+---
+
+## STEP-120-TWO-TURN-SCHEDULING-2026-11-03
+
+**CONFIRMED:** The authenticated Leo gateway now
+supports a narrowly recognized follow-up that
+reuses verified session-bound scheduling context.
+
+**CONFIRMED:** The first two-turn browser/MCP test
+passed using synthetic student data and a scripted
+language model.
+
+**CONFIRMED:** The second turn preserved CIS376,
+CIS410 and the mandatory no-Friday preference,
+applied a new soft start-time preference, and
+executed fresh deterministic schedule validation.
+
+**CONFIRMED:** The test exercised HTTPS, authenticated
+MCP access, verified schedule cards, context update
+and logout revocation.
+
+**CONFIRMED:** Targeted, complete MCP/gateway and
+AI-agent automated test suites passed.
+
+**WORKING ASSUMPTION:** Narrow deterministic follow-up
+resolution is appropriate for this research phase.
+
+**OPEN QUESTION:** Whether the same behavior works
+reliably with live Ollama across varied wording.
+
+**OPEN QUESTION:** How concurrent requests should
+be serialized or rejected to avoid stale updates.
+
+**RECOMMENDATION:** Evaluate live-model two-turn
+performance and strengthen multi-turn security
+before expanding follow-up functionality.
+
+**LIMITATION:** This is not general conversation
+memory, real Entra deployment or live Banner use.
+
+Research:
+docs/research/2026-11-03-leo-two-turn-scheduling.md
+
+Evidence:
+docs/evidence/2026-11-03-step120-two-turn-validation.md

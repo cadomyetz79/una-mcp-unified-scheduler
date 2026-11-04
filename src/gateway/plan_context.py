@@ -255,3 +255,155 @@ def from_verified_planner_result(
         )
     except (TypeError, ValueError):
         return None
+
+
+# This is intentionally narrow. A full-string match
+# prevents unrelated instructions from being silently
+# combined with prior academic context.
+_START_FOLLOWUP = re.compile(
+    r"^\s*(?:actually[,\s]+)?"
+    r"(?:i(?:'d| would)?\s+prefer)\s+"
+    r"(?:classes|a\s+schedule)(?:\s+that)?\s+"
+    r"(?:start|starts|starting)\s+"
+    r"(?P<mode>after|at)\s+"
+    r"(?P<hour>0?[1-9]|1[0-2])"
+    r"(?::(?P<minute>[0-5]\d))?\s*"
+    r"(?P<ampm>a\.?m\.?|p\.?m\.?)"
+    r"(?:[,.]?\s*keep\s+everything\s+else\s+"
+    r"the\s+same)?[.!?]?\s*$",
+    re.IGNORECASE,
+)
+
+_WEEKDAY_NAMES = {
+    "MON": "Mondays",
+    "TUE": "Tuesdays",
+    "WED": "Wednesdays",
+    "THU": "Thursdays",
+    "FRI": "Fridays",
+    "SAT": "Saturdays",
+    "SUN": "Sundays",
+}
+
+
+def _display_time(value: str) -> str:
+    hour, minute = map(int, value.split(":"))
+    suffix = "AM" if hour < 12 else "PM"
+    display_hour = hour % 12 or 12
+    return f"{display_hour}:{minute:02d} {suffix}"
+
+
+def resolve_start_time_followup(
+    question: str,
+    context: PlanContext | None,
+    *,
+    expected_term_id: str,
+) -> str | None:
+    """Construct a new request from a narrow follow-up.
+
+    Returns None if the wording or context cannot
+    be interpreted reliably.
+
+    The returned request still needs all normal
+    authenticated MCP and planner checks.
+
+    This helper does not access academic records.
+    """
+    if (
+        type(context) is not PlanContext
+        or type(question) is not str
+        or len(question) > 500
+        or context.term_id != expected_term_id
+    ):
+        return None
+
+    normalized_question = question.replace("’", "'")
+    match = _START_FOLLOWUP.fullmatch(
+        normalized_question
+    )
+
+    if match is None:
+        return None
+
+    # The planner represents only one earliest-start
+    # preference. Do not replace an earlier hard
+    # constraint with a new soft preference.
+    if "earliest_start" in context.required_preferences:
+        return None
+
+    hour = int(match.group("hour"))
+    minute = int(match.group("minute") or "0")
+
+    if match.group("ampm").lower().startswith("p"):
+        if hour != 12:
+            hour += 12
+    elif hour == 12:
+        hour = 0
+
+    new_minutes = hour * 60 + minute
+
+    # "After 10" excludes exactly 10:00.
+    # "At 10" permits 10:00.
+    if match.group("mode").lower() == "after":
+        new_minutes += 1
+
+    if not 7 * 60 <= new_minutes <= 18 * 60:
+        return None
+
+    start = (
+        f"{new_minutes // 60:02d}:"
+        f"{new_minutes % 60:02d}"
+    )
+
+    # Build a normalized scheduling request using
+    # only fields from trusted PlanContext and the
+    # explicitly recognized follow-up time.
+    parts = [
+        "Plan " + " and ".join(context.course_ids)
+        + f" for {context.term_id}."
+    ]
+
+    if context.avoid_days:
+        mandatory = (
+            "avoid_days" in context.required_preferences
+        )
+
+        for day in context.avoid_days:
+            name = _WEEKDAY_NAMES[day]
+
+            if mandatory:
+                parts.append(
+                    f"I can't have classes on {name}."
+                )
+            else:
+                parts.append(
+                    "If possible, I'd prefer no classes "
+                    f"on {name}."
+                )
+
+    if context.latest_end is not None:
+        end = _display_time(context.latest_end)
+
+        if (
+            "latest_end"
+            in context.required_preferences
+        ):
+            parts.append(
+                f"I must be done with classes by {end}."
+            )
+        else:
+            parts.append(
+                "If possible, I'd prefer to finish "
+                f"classes by {end}."
+            )
+
+    parts.append(
+        "If possible, I'd prefer no classes "
+        f"before {_display_time(start)}."
+    )
+
+    rewritten = " ".join(parts)
+
+    if len(rewritten) > 4000:
+        return None
+
+    return rewritten
