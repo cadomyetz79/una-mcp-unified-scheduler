@@ -438,6 +438,35 @@
     });
   }
   message.addEventListener("input", setControls);
+
+  // Enter sends; Shift+Enter inserts a newline.
+  // Respect IME composition and modifier keys.
+  message.addEventListener("keydown", (event) => {
+    if (
+      event.key !== "Enter" ||
+      event.shiftKey ||
+      event.ctrlKey ||
+      event.altKey ||
+      event.metaKey ||
+      event.isComposing ||
+      event.keyCode === 229
+    ) return;
+
+    event.preventDefault();
+
+    // Do not submit an empty message, repeat a
+    // held key, or send while a request is active.
+    if (
+      event.repeat ||
+      message.disabled ||
+      send.disabled ||
+      working
+    ) return;
+
+    // Reuse the existing authenticated form handler.
+    form.requestSubmit(send);
+  });
+
   form.addEventListener("submit", submitMessage);
   signOut.addEventListener("click", logout);
   bootstrap();

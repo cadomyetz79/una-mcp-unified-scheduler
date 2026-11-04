@@ -688,3 +688,47 @@ docs/research/2026-11-03-live-ollama-browser-mcp-integration.md
 
 Evidence:
 docs/evidence/2026-11-03-step96-live-ollama-observation.md
+
+
+---
+
+## STEP-103-LEO-EVIDENCE-KEYBOARD-2026-11-03
+
+**CONFIRMED:** Live-model tests demonstrated missing
+tool calls for academic history and prerequisites.
+
+**CONFIRMED:** Stronger prompts improved tool
+selection but did not guarantee suitable evidence.
+
+**CONFIRMED:** The first deterministic evidence
+router caused an existing E17 regression.
+The revised implementation restored the
+model-first workflow and passed local tests.
+
+**CONFIRMED:** The operator verified corrected
+history and prerequisite answers in Microsoft Edge.
+
+**CONFIRMED:** The Friday-restricted scheduling
+proposal continued to work.
+
+**CONFIRMED:** The operator verified Enter-to-send.
+Shift+Enter newline behavior was added and tested
+in the Chromium keyboard regression.
+
+**WORKING ASSUMPTION:** Broader academic requests
+can be supported by expanding deterministic
+evidence requirements.
+
+**OPEN QUESTION:** Safe rich-text display,
+generalized evidence handling, multi-turn context,
+and institution-approved integrations.
+
+**RECOMMENDATION:** Preserve existing authentication,
+MCP authorization and deterministic validation.
+Keep synthetic demo-only login isolated.
+
+Research:
+docs/research/2026-11-03-leo-evidence-and-keyboard-validation.md
+
+Evidence:
+docs/evidence/2026-11-03-step103-observations.md

@@ -566,9 +566,35 @@ async def run():
                                 "Plan CIS376 and CIS410"
                             )
 
+                            # Shift+Enter must insert a
+                            # newline without submitting.
                             await page.locator(
-                                "#send"
-                            ).click()
+                                "#message"
+                            ).press("Shift+Enter")
+
+                            assert (
+                                await page.locator(
+                                    "#message"
+                                ).input_value()
+                            ) == "Plan CIS376 and CIS410\n"
+
+                            assert calls == [], (
+                                "Shift+Enter submitted unexpectedly."
+                            )
+
+                            print(
+                                "LEO_SHIFT_ENTER_NEWLINE_VERIFIED"
+                            )
+
+                            # Enter must submit through
+                            # the existing secured form.
+                            await page.locator(
+                                "#message"
+                            ).press("Enter")
+
+                            print(
+                                "LEO_ENTER_KEY_SUBMISSION_TRIGGERED"
+                            )
 
                             await expect(
                                 page.locator(
