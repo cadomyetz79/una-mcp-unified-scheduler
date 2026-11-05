@@ -1103,3 +1103,51 @@ Evidence:
 docs/evidence/2026-11-04-step127-live-comparison.json
 
 Master SOT v1.2 remains a consolidation draft.
+
+
+---
+
+## STEP-130-LIVE-REPEATABILITY-2026-11-04
+
+**CONFIRMED:** Three separate live Ollama
+two-turn synthetic scheduling trials passed.
+
+**CONFIRMED:** The model was qwen3:4b-instruct
+with temperature set to zero.
+
+**CONFIRMED:** All three second turns preserved
+CIS376 and CIS410, mandatory Friday avoidance,
+and the soft earliest-start preference of 10:01.
+
+**CONFIRMED:** Each second turn executed one
+successful planning operation and returned
+grounded verified schedule cards.
+
+**CONFIRMED:** Session context updates and
+session revocation succeeded in all three trials.
+
+**CONFIRMED:** Observed success was 3/3 (100%)
+for the specified repeated synthetic scenario.
+
+**WORKING ASSUMPTION:** Narrow conversational
+follow-up support is repeatable for the tested
+synthetic request pattern.
+
+**OPEN QUESTION:** Performance across other
+requests, larger evaluation sets, concurrency,
+and production infrastructure remains unknown.
+
+**RECOMMENDATION:** Expand scenario coverage
+before calculating broader reliability estimates.
+
+**LIMITATION:** The result is three executions
+of one synthetic scenario, not a production
+success-rate or readiness claim.
+
+Research:
+docs/research/2026-11-04-leo-live-repeatability.md
+
+Evidence:
+docs/evidence/2026-11-04-step129-three-trial-repeatability.json
+
+Master SOT v1.2 remains a consolidation draft.
