@@ -1049,3 +1049,57 @@ Evidence:
 docs/evidence/2026-11-03-step126-preference-regression.md
 
 Master SOT v1.2 remains a consolidation draft.
+
+
+---
+
+## STEP-128-LIVE-TWO-TURN-VALIDATION-2026-11-04
+
+**CONFIRMED:** Live qwen3:4b-instruct completed
+a two-turn synthetic course-scheduling conversation
+through Chromium HTTPS, the authenticated gateway,
+protected MCP tools and the deterministic planner.
+
+**CONFIRMED:** Both CIS376 and CIS410 were preserved
+in the second planning operation.
+
+**CONFIRMED:** Friday avoidance remained mandatory.
+
+**CONFIRMED:** The earliest-start preference of
+10:01 remained soft despite the model again
+supplying an unsupported mandatory flag.
+
+**CONFIRMED:** The second turn had two model calls,
+one successful planning operation, and returned
+grounded verified schedule cards.
+
+**CONFIRMED:** Verified session context was updated.
+The second browser chat returned HTTP 200.
+
+**CONFIRMED:** The existing fail-closed multiple-plan
+and context-verification safeguards remain unchanged.
+
+**WORKING ASSUMPTION:** The prototype's narrowly
+supported follow-up language provides a useful
+starting point for conversational scheduling.
+
+**OPEN QUESTION:** Reliability across repeated
+live-model trials and safe treatment of conflicting
+or partial planning operations remain unmeasured.
+
+**RECOMMENDATION:** Expand versioned live
+evaluation scenarios while preserving all
+deterministic eligibility, identity, security
+and no-enrollment boundaries.
+
+**LIMITATION:** This was one live-model trial
+with synthetic Banner and simulated sign-in,
+not a production deployment or success-rate study.
+
+Research:
+docs/research/2026-11-04-leo-live-two-turn-success.md
+
+Evidence:
+docs/evidence/2026-11-04-step127-live-comparison.json
+
+Master SOT v1.2 remains a consolidation draft.
