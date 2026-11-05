@@ -25,6 +25,7 @@ from src.gateway.plan_context import (
 from src.gateway.web_sessions import (
     SESSION_COOKIE_NAME,
     StudentWebSessionStore,
+    StalePlanContextError,
 )
 from src.mcp_server.student_access import (
     resolve_authenticated_student_id,
@@ -198,7 +199,7 @@ def install_browser_session_routes(
         )
 
         try:
-            prior_context = session_store.read_plan_context(
+            revision, prior_context = session_store.read_plan_snapshot(
                 cookie_value=cookie,
                 term_id=term_id,
             )
@@ -258,6 +259,7 @@ def install_browser_session_routes(
         # A valid isolated model plan is not necessarily
         # a valid continuation of earlier requirements.
         continuity_notice = None
+        context_to_save = None
 
         if cards is not None:
             context = from_verified_planner_result(
@@ -284,17 +286,27 @@ def install_browser_session_routes(
                 )
 
             elif context is not None:
-                try:
-                    session_store.write_plan_context(
-                        cookie_value=request.cookies.get(
-                            SESSION_COOKIE_NAME
-                        ),
-                        context=context,
-                    )
-                except PermissionError:
-                    raise HTTPException(
-                        401, "Session authentication required."
-                    ) from None
+                context_to_save = context
+
+        # Recheck even cardless replies: revoked sessions and stale model
+        # prose must not escape merely because no proposal can be saved.
+        try:
+            session_store.commit_plan_context(
+                cookie_value=cookie,
+                expected_revision=revision,
+                context=context_to_save,
+            )
+        except PermissionError:
+            raise HTTPException(
+                401, "Session authentication required."
+            ) from None
+        except StalePlanContextError:
+            raise HTTPException(
+                409,
+                "Your schedule changed while this request was running. "
+                "Please send your request again using the latest plan. "
+                "This result was not saved; no enrollment was performed.",
+            ) from None
 
         return ChatResponse(
             answer=(

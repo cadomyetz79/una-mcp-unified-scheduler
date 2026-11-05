@@ -474,6 +474,11 @@
         appendMessage("assistant", "I couldn't authorize that request.");
         return;
       }
+      if (response.status === 409) {
+        appendMessage("assistant", "Your schedule changed while this request was running. Please review the latest plan and send your request again. This result was not saved; no enrollment was performed.");
+        setFeedback("Schedule changed. Your message is ready to review and resend.");
+        return;
+      }
       if (response.status === 400 || response.status === 422) {
         appendMessage("assistant", "This research prototype couldn't interpret that request. Try a suggested question.");
         return;

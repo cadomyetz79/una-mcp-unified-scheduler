@@ -115,7 +115,7 @@ def temporary_certificate(folder):
     return str(certfile), str(keyfile)
 
 
-async def run(*, continuity=False, evidence=None):
+async def run(*, continuity=False, evidence=None, screenshot_path=None):
     records = []
     results = []
     with pytest.MonkeyPatch.context() as mp:
@@ -764,7 +764,7 @@ async def run(*, continuity=False, evidence=None):
                                         evidence["partial_proposal_verified"] = True
                                     print("CONTINUITY_TURN", json.dumps(record), flush=True)
 
-                            screenshot = (
+                            screenshot = screenshot_path or (
                                 ROOT / "docs/evidence/" / (
                                     "2026-11-04-step133-continuity.png" if continuity else
                                     "2026-11-03-step95-live-ollama-browser-mcp.png"
@@ -852,6 +852,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--continuity-evidence", type=Path)
     args = parser.parse_args()
+    if args.continuity_evidence is not None and (
+        args.continuity_evidence.exists()
+        or args.continuity_evidence.with_suffix(".png").exists()
+    ):
+        parser.error("Use a new evidence filename; existing research evidence is preserved.")
     evidence = {
         "schema_version": "leo-live-continuity-v1",
         "model": "qwen3:4b-instruct",
@@ -863,6 +868,10 @@ if __name__ == "__main__":
         asyncio.run(run(
             continuity=args.continuity_evidence is not None,
             evidence=evidence,
+            screenshot_path=(
+                args.continuity_evidence.with_suffix(".png")
+                if args.continuity_evidence is not None else None
+            ),
         ))
         evidence["passed"] = True
     finally:

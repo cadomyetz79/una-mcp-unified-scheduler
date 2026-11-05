@@ -47,11 +47,16 @@ class IssuedStudentWebSession:
     expires_at: float
 
 
+class StalePlanContextError(RuntimeError):
+    """A planning result was based on superseded session context."""
+
+
 @dataclass(frozen=True)
 class _StoredSession:
     authenticated_session: AuthenticatedStudentSession = field(repr=False)
     csrf_digest: bytes = field(repr=False)
     expires_at: float
+    plan_revision: int = 0
     plan_context: PlanContext | None = field(
         default=None, repr=False
     )
@@ -203,11 +208,9 @@ class StudentWebSessionStore:
                 raise PermissionError("Session authentication required.")
 
             csrf = secrets.token_urlsafe(32)
-            self._sessions[key] = _StoredSession(
-                authenticated_session=current.authenticated_session,
+            self._sessions[key] = replace(
+                current,
                 csrf_digest=hashlib.sha256(csrf.encode("utf-8")).digest(),
-                expires_at=current.expires_at,
-                plan_context=current.plan_context,
             )
             return csrf
 
@@ -218,6 +221,17 @@ class StudentWebSessionStore:
         term_id: str,
     ) -> PlanContext | None:
         """Read only this active browser session's context."""
+        return self.read_plan_snapshot(
+            cookie_value=cookie_value, term_id=term_id,
+        )[1]
+
+    def read_plan_snapshot(
+        self,
+        *,
+        cookie_value: str | None,
+        term_id: str,
+    ) -> tuple[int, PlanContext | None]:
+        """Atomically read context and its server-only revision."""
         self.resolve(cookie_value=cookie_value)
 
         with self._lock:
@@ -234,10 +248,10 @@ class StudentWebSessionStore:
                 )
 
             context = current.plan_context
-            if context is None or context.term_id != term_id:
-                return None
+            if context is not None and context.term_id != term_id:
+                context = None
 
-            return context
+            return current.plan_revision, context
 
     def write_plan_context(
         self,
@@ -269,8 +283,40 @@ class StudentWebSessionStore:
                 )
 
             self._sessions[key] = replace(
-                current, plan_context=context
+                current, plan_context=context,
+                plan_revision=current.plan_revision + 1,
             )
+
+    def commit_plan_context(
+        self,
+        *,
+        cookie_value: str | None,
+        expected_revision: int,
+        context: PlanContext | None = None,
+    ) -> None:
+        """Validate a completed request and atomically save verified context.
+
+        None validates the revision/lifetime without changing context.
+        Revisions come from read_plan_snapshot, never browser or model input.
+        No lock is held while calling the model or MCP.
+        """
+        if type(expected_revision) is not int or expected_revision < 0:
+            raise ValueError("Valid context revision required.")
+        if context is not None and type(context) is not PlanContext:
+            raise TypeError("Validated PlanContext required.")
+        self.resolve(cookie_value=cookie_value)
+        with self._lock:
+            key = self._digest(cookie_value)
+            current = self._sessions.get(key)
+            if current is None or current.expires_at <= time.time():
+                raise PermissionError("Session authentication required.")
+            if current.plan_revision != expected_revision:
+                raise StalePlanContextError("Scheduling context changed.")
+            if context is not None:
+                self._sessions[key] = replace(
+                    current, plan_context=context,
+                    plan_revision=current.plan_revision + 1,
+                )
 
     def clear_plan_context(
         self,
@@ -293,7 +339,8 @@ class StudentWebSessionStore:
                 )
 
             self._sessions[key] = replace(
-                current, plan_context=None
+                current, plan_context=None,
+                plan_revision=current.plan_revision + 1,
             )
 
     def revoke(self, *, cookie_value: str | None) -> None:

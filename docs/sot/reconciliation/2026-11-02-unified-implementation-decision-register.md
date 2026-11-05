@@ -1203,3 +1203,54 @@ docs/evidence/2026-11-04-step133-live-continuity-trial2.json
 docs/evidence/2026-11-04-step133-validation-metadata.json
 
 Master SOT v1.2 remains a consolidation draft. PR #3 remains draft.
+
+
+---
+
+## STEP-134-CONTEXT-CONCURRENCY-2026-11-04
+
+**CONFIRMED:** Server-side context revisions now prevent stale in-flight results
+from overwriting a newer verified plan or returning stale model prose. Snapshot
+read and conditional commit are atomic within the single-process store. Clear
+operations advance revisions, CSRF rotation preserves them, and revisions are
+not accepted from browser/model input.
+
+**CONFIRMED:** Stale finalization returns HTTP 409; logout/expiry returns HTTP 401,
+including cardless replies. The browser preserves the user's message for review
+and manual retry. A two-thread regression confirms exactly one commit succeeds
+from a shared revision.
+
+**CONFIRMED:** Initial regressions: 8 failed, 2 passed. Final results: 18 focused
+concurrency cases; 299 MCP/gateway passed; 1,073 AI-agent passed, 1 skipped.
+Focused cases are included in 299. Chromium conflict/retry, logout, wrong-student,
+and mobile checks passed.
+
+**CONFIRMED:** One sequential live Chromium/Ollama qwen3:4b-instruct trial passed
+all three turns and logout after the revision guard. Wednesday and Friday remained
+mandatory, 10:01 remained soft, and both requested courses remained in context.
+The partial proposal remained CIS410 only, with CIS376 explicitly excluded.
+This is not a live concurrent-model benchmark.
+
+**CONFIRMED:** Evidence output now uses a unique matching JSON/PNG basename and
+rejects existing artifacts; the overwrite guard was tested and Step 133 evidence
+preserved. Security guards and the no-enrollment boundary remain unchanged.
+
+**WORKING ASSUMPTIONS:** First verified completion wins, with review/retry for
+stale results, is an appropriate local prototype policy; usability is unmeasured.
+
+**OPEN QUESTIONS:** Multi-worker atomic storage/revocation; cross-tab display
+synchronization; durable unsatisfied intent; cancelling unnecessary model work;
+partial-plan labels; broader wording; production identity/data integration.
+
+**RECOMMENDATIONS:** Carry revision checks into any future durable intent model.
+Use shared transactional storage before multi-worker deployment. Implement
+deterministic partial-plan exclusion labels as the next bounded phase.
+
+Research:
+docs/research/2026-11-04-leo-context-concurrency.md
+
+Evidence:
+docs/evidence/2026-11-04-step134-validation-metadata.json
+docs/evidence/2026-11-04-step134-live-continuity-trial1.json
+
+Master SOT v1.2 remains a consolidation draft. PR #3 remains draft.

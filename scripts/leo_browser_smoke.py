@@ -75,6 +75,7 @@ async def run():
 
     state = {
         "wrong_student": False,
+        "conflict": False,
         "chat_calls": [],
         "logout_calls": 0,
         "signed_in": True,
@@ -151,6 +152,12 @@ async def run():
 
             assert set(body) == {"question"}
             state["chat_calls"].append(body["question"])
+
+            if state["conflict"]:
+                return await route.fulfill(
+                    status=409,
+                    json={"detail": "UNTRUSTED_CONFLICT_BODY"},
+                )
 
             student = (
                 "S10002"
@@ -264,6 +271,27 @@ async def run():
         )
 
         print("LEO_CHAT_AND_CARDS_RENDERED")
+
+        print("=== VERIFY STALE SCHEDULE CONFLICT ===")
+        state["conflict"] = True
+        retry_question = "I can't have classes on Wednesdays either."
+        await page.locator("#message").fill(retry_question)
+        await page.locator("#send").click()
+        await expect(page.locator("#feedback")).to_contain_text("Schedule changed.")
+        await expect(page.locator(".thinking-entry")).to_have_count(0)
+        await expect(page.locator("#message")).to_have_value(retry_question)
+        await expect(page.locator("#send")).to_be_enabled()
+        await expect(page.locator(".verified-section")).to_have_count(2)
+        assert await page.get_by_text("UNTRUSTED_CONFLICT_BODY").count() == 0
+        await page.screenshot(
+            path=str(EVIDENCE / "2026-11-04-step134-conflict.png"),
+            full_page=True,
+        )
+        state["conflict"] = False
+        await page.locator("#send").click()
+        await expect(page.locator(".verified-section")).to_have_count(4)
+        await expect(page.locator("#message")).to_have_value("")
+        print("LEO_CONFLICT_PRESERVES_MESSAGE_AND_RETRY_VERIFIED")
 
         print("=== VERIFY LOGOUT ===")
 

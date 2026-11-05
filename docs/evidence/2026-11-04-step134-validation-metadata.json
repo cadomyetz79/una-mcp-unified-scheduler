@@ -1,0 +1,42 @@
+{
+  "evaluation_date_local": "2026-11-04",
+  "timezone": "America/Los_Angeles",
+  "starting_commit": "61822957142927f6e4117bb362b32c0804a8aa4b",
+  "python": "3.12.3",
+  "baseline_concurrency": {
+    "passed": 2,
+    "failed": 8
+  },
+  "final_concurrency": {
+    "passed": 18,
+    "failed": 0
+  },
+  "mcp_gateway": {
+    "passed": 299,
+    "failed": 0
+  },
+  "ai_agent": {
+    "passed": 1073,
+    "skipped": 1,
+    "failed": 0
+  },
+  "chromium_mocked_http_ui_smoke_exit_code": 0,
+  "live_sequential_continuity_exit_code": 0,
+  "evidence_overwrite_rejection_exit_code": 2,
+  "previous_evidence_hash_unchanged": true,
+  "node_standalone_syntax_check": "Unavailable: node not on WSL command path; actual JS executed in Chromium",
+  "validated_source_sha256": {
+    "src/gateway/web_sessions.py": "4fced4c3283c1b7a086d15b9f0ec3a57a388c92e264bb55f8bb27389c7a7eecb",
+    "src/gateway/session_routes.py": "502856f88e8f3afab2b45afea136ed6db2a64813e2d9074e3b8f664a1a183820",
+    "src/gateway/leo_ui/unified.js": "66d9e1b2e55a882f141cfdf16cdc121256699b69717c31ed2cf277ff882a31ae",
+    "scripts/leo_browser_smoke.py": "16d08358c2e68960e193b53695ebbf69e74b1383f58b9acf75d34b940e9a9e67",
+    "scripts/leo_live_ollama_browser_probe.py": "c0a65d5b91a0093e5e72436d25fcedb3df91b7000ee87e4d55bb781187eedde0",
+    "tests/test_gateway_context_concurrency.py": "94aad90ba3fe40035c60802e909b49139e6fdc6c1b0d81c16291b7d8b53c3f35"
+  },
+  "limitations": [
+    "Single-process store only",
+    "Synthetic identity and academic records",
+    "Live trial was sequential; deterministic route and thread tests exercised races",
+    "No enrollment operations"
+  ]
+}
