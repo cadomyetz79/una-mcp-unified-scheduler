@@ -12,6 +12,9 @@ No real Entra authentication, Banner records, or enrollment.
 """
 
 import asyncio
+import argparse
+import json
+from dataclasses import asdict
 import ipaddress
 import socket
 import sys
@@ -112,7 +115,9 @@ def temporary_certificate(folder):
     return str(certfile), str(keyfile)
 
 
-async def run():
+async def run(*, continuity=False, evidence=None):
+    records = []
+    results = []
     with pytest.MonkeyPatch.context() as mp:
         signing_key = rsa.generate_private_key(
             public_exponent=65537, key_size=2048,
@@ -218,6 +223,42 @@ async def run():
                 "term_id": kwargs["term_id"],
             })
             result = await runner(**kwargs)
+            results.append(result)
+            records.append({
+                "turn": len(results),
+                "model_calls": len(live_models[-1].stats),
+                "stopped_reason": result.stopped_reason,
+                "grounded": result.grounded,
+                "runner_cards": result.plan_cards is not None,
+                "plans": [
+                    {
+                        "ok": entry.ok,
+                        "requested": entry.result.get("requested"),
+                        "preferences_applied": entry.result.get("preferences_applied"),
+                        "option_count": len(entry.result.get("options", [])),
+                        "options": [
+                            [{"course_id": section["course_id"],
+                              "section_id": section["section_id"],
+                              "meeting_days": [
+                                  day for meeting in section["meetings"]
+                                  for day in meeting["days"]
+                              ]}
+                             for section in option["sections"]]
+                            for option in entry.result.get("options", [])
+                        ],
+                        "exclusions": [
+                            {"course_id": item["course_id"], "code": item["code"]}
+                            for item in entry.result.get("excluded", [])
+                        ],
+                    }
+                    for entry in result.trace
+                    if entry.tool == "plan_schedule" and isinstance(entry.result, dict)
+                ],
+            })
+            if evidence is not None:
+                evidence["turns"] = records
+            if continuity and len(results) > 1:
+                return result
 
             model_plans = [
                 entry
@@ -606,7 +647,8 @@ async def run():
                             await page.locator(
                                 "#message"
                             ).fill(
-                                "Plan CIS376 and CIS410"
+                                "Plan CIS376 and CIS410. I can't have classes on Fridays."
+                                if continuity else "Plan CIS376 and CIS410"
                             )
 
                             await page.locator(
@@ -642,10 +684,91 @@ async def run():
                                 "CIS410 · SEC2002"
                             ).is_visible()
 
+                            if continuity:
+                                saved = sessions.read_plan_context(
+                                    cookie_value=session_cookie["value"], term_id=TERM,
+                                )
+                                assert saved is not None
+                                assert set(saved.avoid_days) == {"FRI"}
+                                assert saved.required_preferences == ("avoid_days",)
+                                evidence["initial_context"] = asdict(saved)
+                                followups = [
+                                    "Actually, I'd prefer classes that start after 10 AM. "
+                                    "Keep everything else the same.",
+                                    "Actually, I can't have classes on Wednesdays either. "
+                                    "Keep everything else the same.",
+                                ]
+                                for index, question in enumerate(followups, start=2):
+                                    async with page.expect_response(
+                                        lambda response: urlsplit(response.url).path
+                                        == "/api/student/session/chat",
+                                        timeout=600000,
+                                    ) as pending:
+                                        await page.locator("#message").fill(question)
+                                        await page.locator("#send").click()
+                                    response = await pending.value
+                                    payload = await response.json()
+                                    record = records[-1]
+                                    record["http_status"] = response.status
+                                    record["browser_cards"] = payload.get("plan_cards") is not None
+                                    updated = sessions.read_plan_context(
+                                        cookie_value=session_cookie["value"], term_id=TERM,
+                                    )
+                                    record["saved_context"] = asdict(updated) if updated else None
+                                    assert response.status == 200
+                                    assert record["plans"]
+                                    expected_days = {"FRI"} if index == 2 else {"FRI", "WED"}
+                                    for plan in record["plans"]:
+                                        assert plan["ok"]
+                                        assert plan["requested"] == ["CIS376", "CIS410"]
+                                        prefs = plan["preferences_applied"]
+                                        assert set(prefs["avoid_days"]) == expected_days
+                                        assert prefs["required"] == ["avoid_days"]
+                                        assert prefs["earliest_start"] == "10:01"
+                                    if index == 2:
+                                        assert record["browser_cards"]
+                                        assert updated.earliest_start == "10:01"
+                                        saved = updated
+                                    else:
+                                        # Partial plans are supported: CIS376 is
+                                        # excluded because its alternative is full.
+                                        assert record["browser_cards"]
+                                        assert record["grounded"]
+                                        assert len(record["plans"]) == 1
+                                        for plan in record["plans"]:
+                                            assert plan["exclusions"] == [{
+                                                "course_id": "CIS376",
+                                                "code": "NO_SECTION_MATCHES_PREFERENCES",
+                                            }]
+                                            assert plan["options"]
+                                            for option in plan["options"]:
+                                                assert [s["course_id"] for s in option] == ["CIS410"]
+                                                for section in option:
+                                                    assert not expected_days.intersection(
+                                                        section["meeting_days"]
+                                                    )
+                                        assert "CIS376" in payload["answer"]
+                                        assert updated.course_ids == ("CIS376", "CIS410")
+                                        assert set(updated.avoid_days) == expected_days
+                                        assert updated.earliest_start == "10:01"
+                                        assert updated.required_preferences == ("avoid_days",)
+                                        await expect(page.locator(".assistant-entry")).to_have_count(3)
+                                        await expect(
+                                            page.locator(".assistant-entry").last
+                                        ).to_contain_text("CIS376")
+                                        await expect(
+                                            page.locator(".assistant-entry").last.locator(
+                                                ".verified-section"
+                                            )
+                                        ).to_have_count(1)
+                                        evidence["partial_proposal_verified"] = True
+                                    print("CONTINUITY_TURN", json.dumps(record), flush=True)
+
                             screenshot = (
-                                ROOT / "docs/evidence/"
-                                "2026-11-03-step95-"
-                                "live-ollama-browser-mcp.png"
+                                ROOT / "docs/evidence/" / (
+                                    "2026-11-04-step133-continuity.png" if continuity else
+                                    "2026-11-03-step95-live-ollama-browser-mcp.png"
+                                )
                             )
 
                             screenshot.parent.mkdir(
@@ -692,7 +815,9 @@ async def run():
                                 "Not signed in"
                             )
 
-                            assert len(calls) == 1
+                            assert len(calls) == (3 if continuity else 1)
+                            if evidence is not None:
+                                evidence["session_revoked"] = sessions.count() == 0
                             assert not errors, errors
 
                             print(
@@ -724,4 +849,25 @@ async def run():
 
 
 if __name__ == "__main__":
-    asyncio.run(run())
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--continuity-evidence", type=Path)
+    args = parser.parse_args()
+    evidence = {
+        "schema_version": "leo-live-continuity-v1",
+        "model": "qwen3:4b-instruct",
+        "temperature": 0.0,
+        "synthetic_identity_and_banner": True,
+        "passed": False,
+    }
+    try:
+        asyncio.run(run(
+            continuity=args.continuity_evidence is not None,
+            evidence=evidence,
+        ))
+        evidence["passed"] = True
+    finally:
+        if args.continuity_evidence is not None:
+            args.continuity_evidence.parent.mkdir(parents=True, exist_ok=True)
+            args.continuity_evidence.write_text(
+                json.dumps(evidence, indent=2) + "\n", encoding="utf-8",
+            )

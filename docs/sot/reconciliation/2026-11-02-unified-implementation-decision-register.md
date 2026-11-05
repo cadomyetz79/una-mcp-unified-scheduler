@@ -1151,3 +1151,55 @@ Evidence:
 docs/evidence/2026-11-04-step129-three-trial-repeatability.json
 
 Master SOT v1.2 remains a consolidation draft.
+
+
+---
+
+## STEP-133B-WEEKDAY-CONTINUITY-2026-11-04
+
+**CONFIRMED:** The supported Wednesday follow-up reconstructs both requested
+courses and preserves mandatory Friday and Wednesday avoidance, plus unchanged
+time values and strengths. Continuation cards and context replacement are rejected
+when verified planner inputs fail the continuity comparison.
+
+**CONFIRMED:** Explicit reset candidates must match the new courses and term.
+Unsupported edits and mixed soft/mandatory day avoidance fail closed; equivalent
+day ordering is accepted. Authorization, privacy, multiple-plan verification,
+and no-enrollment safeguards are retained.
+
+**CONFIRMED:** Corrected live Chromium/Ollama qwen3:4b-instruct trial passed all
+three turns and logout. The Wednesday turn used two model calls and one successful
+planner call, returned HTTP 200, and saved WED/FRI as mandatory with 10:01 soft.
+Both CIS376 and CIS410 remained in requested context. The proposal was partial:
+CIS410/SEC2002 only; CIS376 was explicitly excluded because no open section met
+the mandatory days. Existing registrations were not changed.
+
+**CONFIRMED:** Final tests: 26 focused continuity cases; 281 MCP/gateway tests;
+1,073 AI-agent tests passed and 1 skipped. Focused cases are included in 281.
+
+**CONFIRMED:** Live trial 1 is retained as failed: its probe incorrectly expected
+zero options instead of the supported partial proposal. Trial 2 corrected that
+expectation and verified section days, exclusion, browser explanation, context,
+and revocation. Do not characterize these as two passing trials.
+
+**WORKING ASSUMPTIONS:** Narrow verified reconstruction supports the tested
+synthetic grammar; retaining all requested courses across partial proposals is
+the intended continuity contract. Larger-scale reliability is unmeasured.
+
+**OPEN QUESTIONS:** Broader wording and course edits; mixed day strengths;
+concurrent updates; intent persistence after no verified proposal; deterministic
+partial-plan exclusion labels; production identity/data integration.
+
+**RECOMMENDATIONS:** Keep existing safeguards. Design versioned intent updates
+and explicit partial-plan exclusions before expanding scope. Run larger independent
+evaluations before reliability or production-readiness claims.
+
+Research:
+docs/research/2026-11-04-leo-weekday-continuity.md
+
+Evidence:
+docs/evidence/2026-11-04-step133-live-continuity-trial1.json
+docs/evidence/2026-11-04-step133-live-continuity-trial2.json
+docs/evidence/2026-11-04-step133-validation-metadata.json
+
+Master SOT v1.2 remains a consolidation draft. PR #3 remains draft.

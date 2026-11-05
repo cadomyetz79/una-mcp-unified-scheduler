@@ -17,7 +17,9 @@ from fastapi.responses import FileResponse, JSONResponse
 
 from src.gateway.app import ChatRequest, ChatResponse
 from src.gateway.plan_context import (
+    continuation_cards_safe,
     from_verified_planner_result,
+    resolve_add_day_followup,
     resolve_start_time_followup,
 )
 from src.gateway.web_sessions import (
@@ -214,6 +216,13 @@ def install_browser_session_routes(
             expected_term_id=term_id,
         )
 
+        if resolved is None:
+            resolved = resolve_add_day_followup(
+                payload.question,
+                prior_context,
+                expected_term_id=term_id,
+            )
+
         effective_question = (
             resolved if resolved is not None
             else payload.question
@@ -246,8 +255,10 @@ def install_browser_session_routes(
         ):
             cards = None
 
-        # Save only a successfully displayed, grounded
-        # planner-backed proposal. Never store model prose.
+        # A valid isolated model plan is not necessarily
+        # a valid continuation of earlier requirements.
+        continuity_notice = None
+
         if cards is not None:
             context = from_verified_planner_result(
                 result,
@@ -255,7 +266,24 @@ def install_browser_session_routes(
                 expected_term_id=term_id,
             )
 
-            if context is not None:
+            if not continuation_cards_safe(
+                original_question=payload.question,
+                prior_context=prior_context,
+                resolved_question=resolved,
+                candidate_context=context,
+            ):
+                cards = None
+                continuity_notice = (
+                    "I couldn't verify a revised schedule "
+                    "that safely preserves your previous "
+                    "requirements. To replace the previous plan, "
+                    "say, for example: Start a new schedule: "
+                    "Plan CIS376 and CIS410. Then add supported "
+                    "restrictions in follow-up messages. "
+                    "No schedule was saved or enrollment performed."
+                )
+
+            elif context is not None:
                 try:
                     session_store.write_plan_context(
                         cookie_value=request.cookies.get(
@@ -264,14 +292,16 @@ def install_browser_session_routes(
                         context=context,
                     )
                 except PermissionError:
-                    # Session may have expired or been
-                    # revoked while the planner was running.
                     raise HTTPException(
                         401, "Session authentication required."
                     ) from None
 
         return ChatResponse(
-            answer=result.answer,
+            answer=(
+                continuity_notice
+                if continuity_notice is not None
+                else result.answer
+            ),
             plan_cards=cards,
         )
 

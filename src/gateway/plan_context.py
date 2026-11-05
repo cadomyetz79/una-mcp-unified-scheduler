@@ -407,3 +407,237 @@ def resolve_start_time_followup(
         return None
 
     return rewritten
+
+
+# Narrow continuation: add one mandatory weekday.
+# This does not interpret unrestricted conversation.
+_ADD_DAY_FOLLOWUP = re.compile(
+    r"^\s*(?:actually[,\s]+)?"
+    r"i\s+(?:can't|cannot|can\s+not)\s+"
+    r"have\s+classes\s+on\s+"
+    r"(?P<day>mondays?|tuesdays?|wednesdays?|"
+    r"thursdays?|fridays?|saturdays?|sundays?)"
+    r"(?:\s+either)?"
+    r"(?:[,.]?\s*keep\s+everything\s+else\s+the\s+same)?"
+    r"[.!?]?\s*$",
+    re.IGNORECASE,
+)
+
+_DAY_CODES = {
+    "monday": "MON",
+    "tuesday": "TUE",
+    "wednesday": "WED",
+    "thursday": "THU",
+    "friday": "FRI",
+    "saturday": "SAT",
+    "sunday": "SUN",
+}
+
+_NEW_SCHEDULE = re.compile(
+    r"^\s*start\s+a\s+new\s+schedule\s*:\s*"
+    r"plan\s+(?P<courses>[A-Z]{2,4}\d{3}"
+    r"(?:\s+and\s+[A-Z]{2,4}\d{3}){0,7})"
+    r"(?:\s+for\s+(?P<term>20\d{2}(?:SP|SU|FA)))?"
+    r"[.!]?\s*$",
+    re.IGNORECASE,
+)
+
+
+def _added_day_code(question: str) -> str | None:
+    if type(question) is not str or len(question) > 500:
+        return None
+
+    match = _ADD_DAY_FOLLOWUP.fullmatch(
+        question.replace("’", "'")
+    )
+    if match is None:
+        return None
+
+    return _DAY_CODES.get(
+        match.group("day").lower().removesuffix("s")
+    )
+
+
+def resolve_add_day_followup(
+    question: str,
+    context: PlanContext | None,
+    *,
+    expected_term_id: str,
+) -> str | None:
+    """Reconstruct a day addition from trusted context.
+
+    A previous soft day preference cannot be merged
+    with a mandatory day using the present schema.
+    That unsupported case is rejected.
+    """
+    if (
+        type(context) is not PlanContext
+        or context.term_id != expected_term_id
+    ):
+        return None
+
+    added = _added_day_code(question)
+    if added is None or added in context.avoid_days:
+        return None
+
+    if (
+        context.avoid_days
+        and "avoid_days" not in context.required_preferences
+    ):
+        return None
+
+    days = set(context.avoid_days) | {added}
+
+    parts = [
+        "Plan " + " and ".join(context.course_ids)
+        + f" for {context.term_id}."
+    ]
+
+    for code, name in _WEEKDAY_NAMES.items():
+        if code in days:
+            parts.append(
+                f"I can't have classes on {name}."
+            )
+
+    if context.earliest_start is not None:
+        start = _display_time(context.earliest_start)
+        if "earliest_start" in context.required_preferences:
+            parts.append(
+                f"I can't have classes before {start}."
+            )
+        else:
+            parts.append(
+                "If possible, I'd prefer no classes "
+                f"before {start}."
+            )
+
+    if context.latest_end is not None:
+        end = _display_time(context.latest_end)
+        if "latest_end" in context.required_preferences:
+            parts.append(
+                f"I must be done with classes by {end}."
+            )
+        else:
+            parts.append(
+                "If possible, I'd prefer to finish "
+                f"classes by {end}."
+            )
+
+    rewritten = " ".join(parts)
+    return rewritten if len(rewritten) <= 4000 else None
+
+
+def continuation_cards_safe(
+    *,
+    original_question: str,
+    prior_context: PlanContext | None,
+    resolved_question: str | None,
+    candidate_context: PlanContext | None,
+) -> bool:
+    """Check continuity before cards are shown or saved."""
+
+    # A fresh first-turn plan has no prior context.
+    if prior_context is None:
+        return True
+
+    if (
+        type(candidate_context) is not PlanContext
+        or type(original_question) is not str
+    ):
+        return False
+
+    # Explicit reset is distinct from a follow-up.
+    reset = _NEW_SCHEDULE.fullmatch(original_question)
+    if reset:
+        courses = tuple(
+            re.split(r"\s+and\s+", reset.group("courses").upper(),
+                     flags=re.IGNORECASE)
+        )
+        term = (reset.group("term") or prior_context.term_id).upper()
+        return (
+            candidate_context.course_ids == courses
+            and candidate_context.term_id == term
+            and not candidate_context.avoid_days
+            and candidate_context.earliest_start is None
+            and candidate_context.latest_end is None
+            and not candidate_context.required_preferences
+        )
+
+    if resolved_question is None:
+        return False
+
+    if (
+        candidate_context.term_id != prior_context.term_id
+        or candidate_context.course_ids
+        != prior_context.course_ids
+        or candidate_context.latest_end
+        != prior_context.latest_end
+    ):
+        return False
+
+    old_required = set(
+        prior_context.required_preferences
+    )
+    new_required = set(
+        candidate_context.required_preferences
+    )
+
+    start_request = resolve_start_time_followup(
+        original_question,
+        prior_context,
+        expected_term_id=prior_context.term_id,
+    )
+
+    if (
+        start_request is not None
+        and start_request == resolved_question
+    ):
+        # Start time is the only field this form
+        # of continuation is allowed to change.
+        if (
+            set(candidate_context.avoid_days)
+            != set(prior_context.avoid_days)
+            or new_required != old_required
+            or candidate_context.earliest_start is None
+        ):
+            return False
+
+        match = re.search(
+            r"before (\d{1,2}:\d{2} [AP]M)\.$",
+            start_request,
+        )
+
+        return bool(
+            match
+            and _display_time(
+                candidate_context.earliest_start
+            ) == match.group(1)
+        )
+
+    day_request = resolve_add_day_followup(
+        original_question,
+        prior_context,
+        expected_term_id=prior_context.term_id,
+    )
+
+    if (
+        day_request is None
+        or day_request != resolved_question
+    ):
+        return False
+
+    added = _added_day_code(original_question)
+    if added is None:
+        return False
+
+    expected_days = set(prior_context.avoid_days)
+    expected_days.add(added)
+
+    return (
+        set(candidate_context.avoid_days)
+        == expected_days
+        and new_required
+        == old_required | {"avoid_days"}
+        and candidate_context.earliest_start
+        == prior_context.earliest_start
+    )
