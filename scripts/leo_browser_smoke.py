@@ -75,6 +75,7 @@ async def run():
 
     state = {
         "wrong_student": False,
+        "partial": False,
         "conflict": False,
         "chat_calls": [],
         "logout_calls": 0,
@@ -165,13 +166,20 @@ async def run():
                 else "S10001"
             )
 
+            cards = make_cards(student)
+            if state["partial"]:
+                cards.update(requested_courses=["CIS376", "CIS410"], proposal_completeness="partial",
+                    excluded_courses=[{"course_id": "CIS376", "code": "NO_SECTION_MATCHES_PREFERENCES",
+                        "reason": "No open section satisfies the required day/time restrictions."}])
+                cards["options"][0]["sections"] = cards["options"][0]["sections"][1:]
+                cards["options"][0]["total_credit_hours"] = 3
             return await route.fulfill(
                 status=200,
                 json={
                     "answer":
                         "Synthetic proposal: SEC1001 "
                         "and SEC2002, 6 credit hours.",
-                    "plan_cards": make_cards(student),
+                    "plan_cards": cards,
                 },
             )
 
@@ -292,6 +300,20 @@ async def run():
         await expect(page.locator(".verified-section")).to_have_count(4)
         await expect(page.locator("#message")).to_have_value("")
         print("LEO_CONFLICT_PRESERVES_MESSAGE_AND_RETRY_VERIFIED")
+
+        state["partial"] = True
+        await page.locator("#message").fill("No Wednesdays or Fridays")
+        await page.locator("#send").click()
+        latest = page.locator(".assistant-entry").last
+        await expect(latest.locator(".proposal-notice")).to_contain_text("Partial proposal")
+        await expect(latest.locator(".verified-exclusions")).to_contain_text("Excluded course")
+        await expect(latest.locator(".verified-exclusions")).to_contain_text("CIS376")
+        await expect(latest.locator(".verified-exclusions")).to_contain_text("required day/time restrictions")
+        await expect(latest.locator(".verified-section")).to_have_count(1)
+        assert await latest.evaluate("(el) => [...el.children].indexOf(el.querySelector('.verified-exclusions')) < [...el.children].indexOf(el.querySelector('.message-body'))")
+        await page.screenshot(path=str(EVIDENCE / "partial-proposal.png"), full_page=True)
+        print("DETERMINISTIC_PARTIAL_EXCLUSION_VERIFIED")
+        state["partial"] = False
 
         print("=== VERIFY LOGOUT ===")
 

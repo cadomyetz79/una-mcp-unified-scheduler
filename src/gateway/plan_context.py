@@ -178,6 +178,89 @@ def from_verified_planner_result(
     ):
         return None
 
+    if any(key in cards for key in (
+        "requested_courses", "excluded_courses", "proposal_completeness",
+    )):
+        # The model-visible planner trace intentionally omits student_id
+        # and registered section IDs. Do not reproject it as a full
+        # identity-bearing plan. Identity was checked against the trusted
+        # server session above; compare only the additive metadata here.
+        requested_courses = data.get("requested")
+        raw_excluded = data.get("excluded")
+        if (
+            type(requested_courses) is not list
+            or not requested_courses
+            or any(type(x) is not str for x in requested_courses)
+            or len(set(requested_courses)) != len(requested_courses)
+            or type(raw_excluded) is not list
+            or type(cards.get("requested_courses")) is not list
+            or cards["requested_courses"] != requested_courses
+            or type(cards.get("excluded_courses")) is not list
+        ):
+            return None
+
+        reasons = {
+            "UNKNOWN_COURSE": "Course not found in the catalog snapshot.",
+            "NO_SECTIONS_IN_TERM": "No sections offered in the selected term.",
+            "ALL_SECTIONS_FULL": "All sections are full in the seat snapshot.",
+            "NO_SECTION_MATCHES_PREFERENCES": "No open section satisfies the required day/time restrictions.",
+            "ALREADY_COMPLETED": "Course already completed in the academic snapshot.",
+            "MISSING_PREREQUISITE": "Required prerequisite is missing in the academic snapshot.",
+        }
+
+        expected_exclusions = []
+        seen = set()
+        for item in raw_excluded:
+            if type(item) is not dict:
+                return None
+            cid = item.get("course_id")
+            code = item.get("code")
+            if (
+                type(cid) is not str
+                or cid not in requested_courses
+                or type(code) is not str
+                or code not in reasons
+                or (cid, code) in seen
+            ):
+                return None
+            seen.add((cid, code))
+            expected_exclusions.append({
+                "course_id": cid,
+                "code": code,
+                "reason": reasons[code],
+            })
+
+        if cards["excluded_courses"] != expected_exclusions:
+            return None
+
+        expected_completeness = (
+            "partial" if expected_exclusions else "complete"
+        )
+        if cards.get("proposal_completeness") != expected_completeness:
+            return None
+
+        requested_ids = set(requested_courses)
+        excluded_ids = {x["course_id"] for x in expected_exclusions}
+        for option in cards["options"]:
+            if (
+                type(option) is not dict
+                or type(option.get("sections")) is not list
+            ):
+                return None
+            proposed_ids = set()
+            for section in option["sections"]:
+                if (
+                    type(section) is not dict
+                    or type(section.get("course_id")) is not str
+                ):
+                    return None
+                proposed_ids.add(section["course_id"])
+            if (
+                proposed_ids & excluded_ids
+                or proposed_ids | excluded_ids != requested_ids
+            ):
+                return None
+
     requested = data["requested"]
     supplied = args["course_ids"]
 

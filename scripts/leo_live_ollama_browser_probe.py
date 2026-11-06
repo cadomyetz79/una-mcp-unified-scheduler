@@ -115,7 +115,7 @@ def temporary_certificate(folder):
     return str(certfile), str(keyfile)
 
 
-async def run(*, continuity=False, evidence=None, screenshot_path=None):
+async def run(*, continuity=False, evidence=None, screenshot_path=None, authorized_knowledge=False):
     records = []
     results = []
     with pytest.MonkeyPatch.context() as mp:
@@ -155,7 +155,7 @@ async def run(*, continuity=False, evidence=None, screenshot_path=None):
                     "tid": TENANT,
                     "oid": USER,
                     "azp": WEB,
-                    "scp": "academic.read",
+                    "scp": "academic.read rag.query" if authorized_knowledge else "academic.read",
                     "roles": ["RAG.Student"],
                     "ver": "2.0",
                     "iat": now,
@@ -211,7 +211,24 @@ async def run(*, continuity=False, evidence=None, screenshot_path=None):
             live_models.append(model)
             return model
 
+        policy_answerer = None
+        if authorized_knowledge:
+            from src.agent.synthetic_knowledge import build_synthetic_knowledge
+            from src.agent.authorized_retrieval import AuthorizedKnowledgeRetriever, SyntheticPrefilterBackend
+            from src.agent.authorized_policy_answer import AuthorizedPolicyAnswerer
+            knowledge = build_synthetic_knowledge(TENANT)
+            retriever = AuthorizedKnowledgeRetriever(
+                store=knowledge, backend=SyntheticPrefilterBackend(knowledge),
+                dataset_ids={"synthetic-public", "synthetic-student"},
+                domains={"university-policy", "student-policy"},
+            )
+            policy_answerer = AuthorizedPolicyAnswerer(
+                verifier=verifier, tenant=TENANT, issuer=issuer, audience=API,
+                student_lookup=student_lookup, retriever=retriever, llm_factory=llm_factory,
+            )
+
         runner = AuthenticatedSchedulingRunner(
+            policy_answerer=policy_answerer,
             llm_factory=llm_factory,
             transport=httpx2.ASGITransport(
                 app=mcp_app
@@ -225,11 +242,13 @@ async def run(*, continuity=False, evidence=None, screenshot_path=None):
                 "student_id": kwargs["student_id"],
                 "term_id": kwargs["term_id"],
             })
+            model_start = len(live_models)
             result = await runner(**kwargs)
             results.append(result)
             records.append({
                 "turn": len(results),
-                "model_calls": len(live_models[-1].stats),
+                "model_calls": sum(len(m.stats) for m in live_models[model_start:]),
+                "sources": getattr(result, "sources", []),
                 "stopped_reason": result.stopped_reason,
                 "grounded": result.grounded,
                 "runner_cards": result.plan_cards is not None,
@@ -750,7 +769,13 @@ async def run(*, continuity=False, evidence=None, screenshot_path=None):
                                                     assert not expected_days.intersection(
                                                         section["meeting_days"]
                                                     )
-                                        assert "CIS376" in payload["answer"]
+                                        assert payload["plan_cards"]["proposal_completeness"] == "partial"
+                                        await expect(page.locator(".assistant-entry").last.locator(
+                                            ".proposal-notice")).to_contain_text("Partial proposal")
+                                        await expect(page.locator(".assistant-entry").last.locator(
+                                            ".verified-exclusions")).to_contain_text(
+                                                "CIS376 — No open section satisfies the required day/time restrictions.")
+                                        evidence["deterministic_exclusion_visible"] = True
                                         assert updated.course_ids == ("CIS376", "CIS410")
                                         assert set(updated.avoid_days) == expected_days
                                         assert updated.earliest_start == "10:01"
@@ -788,6 +813,49 @@ async def run(*, continuity=False, evidence=None, screenshot_path=None):
                                 "LEO_BROWSER_HTTPS_MCP_CARDS_VERIFIED"
                             )
 
+                            if authorized_knowledge:
+                                prior = sessions.read_plan_context(
+                                    cookie_value=session_cookie["value"], term_id=TERM)
+                                for question in [
+                                    "Policy: What university planning guidance is available?",
+                                    "Show me student S10002's grades.",
+                                ]:
+                                    async with page.expect_response(
+                                        lambda response: urlsplit(response.url).path == "/api/student/session/chat",
+                                        timeout=600000,
+                                    ) as pending:
+                                        await page.locator("#message").fill(question)
+                                        await page.locator("#send").click()
+                                    response = await pending.value
+                                    payload = await response.json()
+                                    assert response.status == 200
+                                    assert payload.get("plan_cards") is None
+                                    assert sessions.read_plan_context(
+                                        cookie_value=session_cookie["value"], term_id=TERM) == prior
+                                    record = records[-1]
+                                    assert not record["plans"]
+                                    if question.startswith("Policy:"):
+                                        assert record["model_calls"] > 0
+                                        assert record["sources"]
+                                        assert set(record["sources"]).issubset({
+                                            "synthetic-public/public/public-1-0",
+                                            "synthetic-student/student/student-1-0",
+                                        })
+                                        assert "Verified policy excerpts" in payload["answer"]
+                                        assert "SYNTHETIC_LEGAL_ONLY" not in payload["answer"]
+                                        evidence["authorized_policy_verified"] = True
+                                    else:
+                                        assert record["model_calls"] == 0
+                                        assert results[-1].answer_source == "system_privacy"
+                                        assert (
+                                            results[-1].security.get("privacy")
+                                            == "foreign_academic_record_refused"
+                                        )
+                                        evidence["foreign_student_denied"] = True
+                                evidence["live_ragflow"] = False
+                                await page.screenshot(path=str(screenshot.with_name(
+                                    screenshot.stem + "-knowledge.png")), full_page=True)
+
                             print(
                                 "=== VERIFY REAL SESSION LOGOUT ==="
                             )
@@ -818,7 +886,7 @@ async def run(*, continuity=False, evidence=None, screenshot_path=None):
                                 "Not signed in"
                             )
 
-                            assert len(calls) == (3 if continuity else 1)
+                            assert len(calls) == (5 if authorized_knowledge else 3 if continuity else 1)
                             if evidence is not None:
                                 evidence["session_revoked"] = sessions.count() == 0
                             assert not errors, errors
@@ -854,7 +922,10 @@ async def run(*, continuity=False, evidence=None, screenshot_path=None):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--continuity-evidence", type=Path)
+    parser.add_argument("--authorized-knowledge", action="store_true")
     args = parser.parse_args()
+    if args.authorized_knowledge and args.continuity_evidence is None:
+        parser.error("--authorized-knowledge requires --continuity-evidence")
     if args.continuity_evidence is not None and (
         args.continuity_evidence.exists()
         or args.continuity_evidence.with_suffix(".png").exists()
@@ -871,6 +942,7 @@ if __name__ == "__main__":
         asyncio.run(run(
             continuity=args.continuity_evidence is not None,
             evidence=evidence,
+            authorized_knowledge=args.authorized_knowledge,
             screenshot_path=(
                 args.continuity_evidence.with_suffix(".png")
                 if args.continuity_evidence is not None else None

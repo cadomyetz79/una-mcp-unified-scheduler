@@ -155,3 +155,50 @@ def test_other_term_cannot_project_context():
         expected_student_id="S10001",
         expected_term_id="2027FA",
     ) is None
+
+
+def test_redacted_planner_trace_with_complete_metadata_saves_context():
+    result = verified_result()
+    assert "student_id" not in result.trace[0].result
+    result.trace[0].result["excluded"] = []
+    result.plan_cards.update({
+        "requested_courses": ["CIS376", "CIS410"],
+        "excluded_courses": [],
+        "proposal_completeness": "complete",
+    })
+    assert project(result) is not None
+
+
+def test_redacted_partial_proposal_metadata_and_tampering():
+    result = verified_result()
+    sections = [{"course_id": "CIS410", "section_id": "SEC2002"}]
+    result.trace[0].result["options"][0]["sections"] = deepcopy(sections)
+    result.plan_cards["options"][0]["sections"] = deepcopy(sections)
+    result.trace[0].result["excluded"] = [{
+        "course_id": "CIS376",
+        "code": "NO_SECTION_MATCHES_PREFERENCES",
+    }]
+    result.plan_cards.update({
+        "requested_courses": ["CIS376", "CIS410"],
+        "excluded_courses": [{
+            "course_id": "CIS376",
+            "code": "NO_SECTION_MATCHES_PREFERENCES",
+            "reason": "No open section satisfies the required day/time restrictions.",
+        }],
+        "proposal_completeness": "partial",
+    })
+    context = project(result)
+    assert context is not None
+    assert context.course_ids == ("CIS376", "CIS410")
+
+    tampered = deepcopy(result)
+    tampered.plan_cards["excluded_courses"][0]["reason"] = "Approved"
+    assert project(tampered) is None
+
+    tampered = deepcopy(result)
+    tampered.plan_cards["proposal_completeness"] = "complete"
+    assert project(tampered) is None
+
+    tampered = deepcopy(result)
+    tampered.plan_cards["requested_courses"] = ["CIS410"]
+    assert project(tampered) is None

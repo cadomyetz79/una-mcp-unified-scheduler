@@ -319,12 +319,26 @@
     const notice = document.createElement("p");
     notice.className = "proposal-notice";
     notice.textContent =
-      "Proposed schedule — no enrollment performed.";
+      cards.proposal_completeness === "partial"
+        ? "Partial proposal — some requested courses are excluded. No enrollment performed."
+        : cards.proposal_completeness === "no_options"
+        ? "No verified schedule options — no enrollment performed."
+        : "Proposed schedule — no enrollment performed.";
 
     wrapper.insertBefore(
       notice,
       wrapper.querySelector(".message-body")
     );
+
+    if (Array.isArray(cards.requested_courses) && Array.isArray(cards.excluded_courses)) {
+      const summary = document.createElement("div");
+      summary.className = "verified-exclusions";
+      addField(summary, "Requested courses", cards.requested_courses.join(", "));
+      for (const exclusion of cards.excluded_courses) {
+        addField(summary, "Excluded course", exclusion.course_id + " — " + exclusion.reason);
+      }
+      wrapper.insertBefore(summary, wrapper.querySelector(".message-body"));
+    }
 
     const heading = document.createElement("p");
     heading.className = "sources-heading";
@@ -488,7 +502,7 @@
       thinking.remove();
       showResult(payload);
       message.value = "";
-      setFeedback("Verified proposal displayed. Nothing was enrolled.");
+      setFeedback(payload.plan_cards ? "Verified proposal displayed. Nothing was enrolled." : "Response displayed. Nothing was enrolled.");
     } catch {
       appendMessage("assistant", "The request could not be verified. Please try again later.");
       setFeedback("Unable to complete the request.");
