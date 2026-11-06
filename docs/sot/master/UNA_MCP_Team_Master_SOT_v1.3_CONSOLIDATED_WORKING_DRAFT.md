@@ -217,3 +217,23 @@ No reviewer sign-off has been inferred from CI success or prior PR merges.
 **WS1–WS4 original workstream source documents:** see section 3 and the full archived source inventory.
 
 **Next update protocol:** preserve v1.2 and originals unchanged; append dated owner/commit/branch/goal/procedure/result/error/fix/security implication/evidence/classification/next decision. Promote this v1.3 synthesized draft to canonical only after full-source reconciliation, reviewer agreement and explicit version decision. Record any new phase as v1.3.x addendum or the adopted successor; never silently revise a failed historical run.
+
+---
+
+## Addendum — Phase 135A: Professor's Entra/MCP/RAG authorization handout (2026-11-05)
+
+**Document-control notice:** This is an append-only update to the v1.3 **Markdown** working draft. The previously generated Word v1.3 document is a snapshot from before this addendum; it is not silently treated as synchronized. The comprehensive v1.2 full-source archive remains preserved and unaudited for final adoption.
+
+**Original research question unchanged:** “How do we create an MCP server integrated with Entra and an AI agent to help schedule classes for students at UNA?”
+
+**CONFIRMED source requirements:** The professor's new 15-page handout requires trusted `tid`/`oid`/`roles`/`groups`/`scopes` context, MCP RBAC at invocation, ingestion-time document ACLs, authorized vector/SQL candidate filtering, and final chunk/row checks before model access, with revocation and negative tests. PostgreSQL/pgvector is illustrative, not mandatory for a different deployed RAGFlow engine.
+
+**CONFIRMED implementation:** In the current unified feature branch, source `src/mcp_server/entra_rbac_acl.py` and test `tests/test_entra_rbac_acl.py` were committed through `9b40c7d`. The isolated pure policy layer includes default-deny tool rules, correct ANY/ALL role/group semantics, group-overage refusal pending trusted resolution, tenant-scoped document ACLs with canonical hash/version, candidate document prefilter and returned chunk verification. **7/7 GitHub checks passed** on that test commit.
+
+**CONFIRMED boundary:** These are tested **contracts**, not a completed RAGFlow authorization integration. Existing read-only MCP and RAGFlow adapters continue unchanged. No live Entra tenant, approved institutional roles, protected-document ingestion, RAGFlow-specific metadata filter, PostgreSQL/RLS deployment, or live five-user retrieval matrix was verified.
+
+**WORKING ASSUMPTION:** The new policy contracts can be integrated without weakening the existing student-ID/CSRF/MCP/answer-grounding boundaries.
+
+**OPEN QUESTION:** Securely propagate verified roles/groups into MCP and retrieval; identify actual RAGFlow version and vector backend; implement documented ACL and ingestion quarantine; verify pre- and post-filtering on real synthetic retrieval; define group refresh and policy version propagation.
+
+**RECOMMENDATION:** Complete gated phases 135B (MCP RBAC), 135C (synthetic ACL ingestion), 135D (actual RAGFlow filter + chunk verifier), and 135E (five-identity integrated negative/positive tests). Preserve all test denominators and failures. See `docs/research/2026-11-05-entra-rag-authorization-phase135.md` and the append-only decision register for primary implementation provenance.
