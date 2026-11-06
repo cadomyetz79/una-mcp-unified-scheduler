@@ -1,0 +1,118 @@
+{
+  "synthetic_only": true,
+  "live_ragflow": false,
+  "matrix": [
+    {
+      "synthetic_role": "RAG.Student",
+      "signature_verified": true,
+      "allowed_academic_tools": [
+        "get_course",
+        "get_course_history",
+        "get_course_sections",
+        "get_student_enrollments",
+        "get_student_record",
+        "search_courses"
+      ],
+      "denied_academic_tools": [],
+      "candidate_chunk_ids": [
+        "public-1-0",
+        "student-1-0"
+      ],
+      "retrieved_document_ids": [
+        "public",
+        "student"
+      ],
+      "passed": true
+    },
+    {
+      "synthetic_role": "RAG.Faculty",
+      "signature_verified": true,
+      "allowed_academic_tools": [],
+      "denied_academic_tools": [
+        "get_course",
+        "get_course_history",
+        "get_course_sections",
+        "get_student_enrollments",
+        "get_student_record",
+        "search_courses"
+      ],
+      "candidate_chunk_ids": [
+        "faculty-1-0",
+        "public-1-0"
+      ],
+      "retrieved_document_ids": [
+        "faculty",
+        "public"
+      ],
+      "passed": true
+    },
+    {
+      "synthetic_role": "RAG.HR",
+      "signature_verified": true,
+      "allowed_academic_tools": [],
+      "denied_academic_tools": [
+        "get_course",
+        "get_course_history",
+        "get_course_sections",
+        "get_student_enrollments",
+        "get_student_record",
+        "search_courses"
+      ],
+      "candidate_chunk_ids": [
+        "hr-1-0",
+        "public-1-0"
+      ],
+      "retrieved_document_ids": [
+        "hr",
+        "public"
+      ],
+      "passed": true
+    },
+    {
+      "synthetic_role": "RAG.Finance",
+      "signature_verified": true,
+      "allowed_academic_tools": [],
+      "denied_academic_tools": [
+        "get_course",
+        "get_course_history",
+        "get_course_sections",
+        "get_student_enrollments",
+        "get_student_record",
+        "search_courses"
+      ],
+      "candidate_chunk_ids": [
+        "finance-1-0",
+        "public-1-0"
+      ],
+      "retrieved_document_ids": [
+        "finance",
+        "public"
+      ],
+      "passed": true
+    },
+    {
+      "synthetic_role": "RAG.Legal",
+      "signature_verified": true,
+      "allowed_academic_tools": [],
+      "denied_academic_tools": [
+        "get_course",
+        "get_course_history",
+        "get_course_sections",
+        "get_student_enrollments",
+        "get_student_record",
+        "search_courses"
+      ],
+      "candidate_chunk_ids": [
+        "legal-1-0",
+        "public-1-0"
+      ],
+      "retrieved_document_ids": [
+        "legal",
+        "public"
+      ],
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "enrollment_operations": 0
+}
