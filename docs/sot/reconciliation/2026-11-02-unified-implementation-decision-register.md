@@ -1254,3 +1254,25 @@ docs/evidence/2026-11-04-step134-validation-metadata.json
 docs/evidence/2026-11-04-step134-live-continuity-trial1.json
 
 Master SOT v1.2 remains a consolidation draft. PR #3 remains draft.
+
+---
+
+## STEP-135A-PROFESSOR-ENTRA-RAG-AUTHORIZATION-2026-11-05
+
+**Source:** Professor's 15-page *Entra_ID_MCP_RAG_Authorization_Student_Handout.docx* (received 2026-11-05); research analysis in `docs/research/2026-11-05-entra-rag-authorization-phase135.md`.
+
+**CONFIRMED:** The handout specifies role/group authorization for MCP operations, document ACL assignment before chunking, metadata filtering before vector ranking, and post-retrieval verification before LLM context construction. It uses synthetic Entra identities and a backend-independent PostgreSQL/pgvector teaching example.
+
+**CONFIRMED:** Existing protected academic MCP checks bind synthetic student identity and academic.read, but existing RAGFlow public/synthetic adapter does not enforce role/group document ACL or per-chunk post-verification. The sample handout tool policy contains a role/group OR-default logic hazard; do not copy it unchanged.
+
+**CONFIRMED:** Added isolated, pure `src/mcp_server/entra_rbac_acl.py` and `tests/test_entra_rbac_acl.py`, commits `67ee466` and `9b40c7d`. The module models trusted role/group/scope context, server-owned tool policies, document ACL hashes and versions, allowed-document candidate filtering and independent chunk revalidation. The Student/Faculty/HR/Finance/Legal teaching matrix and negative synthetic cases are exercised. Seven GitHub checks completed successfully at the test commit, including four pytest platforms, browser CI and existing integration checks.
+
+**CONFIRMED limitation:** This new contract is **not wired to protected MCP or RAGFlow**. No role-based live tool authorization, actual document ACL ingestion, real vector metadata filtering, PostgreSQL migration, Graph group-overage resolution, audit pipeline or Entra production tenant is claimed.
+
+**WORKING ASSUMPTION:** Reusing one trusted authorization context across MCP and retrieval is appropriate if the server alone controls its creation, authorizer policies, and dataset ACL. RAGFlow filter payloads must be matched against the installed backend/API version.
+
+**OPEN QUESTION:** Current RAGFlow metadata/index backend, authoritative document classification policy, approved Entra role/group IDs, Graph group overage, exact integration contracts, and five-identity end-to-end results.
+
+**RECOMMENDATION:** Follow gates 135B–135E in the dated research note. Keep role/security attributes out of LLM tool arguments; reject all unsupported protected retrieval. No live student/HR/Finance/Legal records and no enrollment writes.
+
+**Master status:** Consolidated Markdown v1.3 receives this supplemental phase; Word v1.3 remains a historical export until a later full-document regeneration and team review.
