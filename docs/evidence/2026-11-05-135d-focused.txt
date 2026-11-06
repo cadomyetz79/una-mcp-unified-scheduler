@@ -1,0 +1,25 @@
+..F...............................                                       [100%]
+=================================== FAILURES ===================================
+_______ test_five_identity_candidate_and_result_matrix[user2-expected2] ________
+
+user = SecurityContext(tenant_id='synthetic-tenant-a', user_oid='hr-oid', roles=frozenset({'RAG.HR'}), groups=frozenset({'hr-confidential'}), scopes=frozenset({'academic.read', 'rag.query'}), groups_complete=True)
+expected = {'hr', 'public'}
+
+    @pytest.mark.parametrize("user,expected", [
+        (STUDENT, {"public", "student"}), (FACULTY, {"public", "faculty"}),
+        (HR, {"public", "hr"}), (FINANCE, {"public", "finance"}), (LEGAL, {"public", "legal"}),
+    ])
+    def test_five_identity_candidate_and_result_matrix(user, expected):
+        store, backend, retriever = setup()
+        hits = asyncio.run(retriever.search_for(user, "policy", limit=5))
+>       assert {h.source_id.split("/")[1] for h in hits} == expected
+E       AssertionError: assert {'public'} == {'hr', 'public'}
+E         
+E         Extra items in the right set:
+E         'hr'
+E         Use -v to get more diff
+
+tests/test_authorized_retrieval.py:35: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_authorized_retrieval.py::test_five_identity_candidate_and_result_matrix[user2-expected2]
+1 failed, 33 passed in 0.73s

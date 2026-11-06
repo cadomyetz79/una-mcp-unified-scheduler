@@ -34,11 +34,13 @@ class AuthenticatedSchedulingRunner:
         *,
         llm_factory: Callable[[], Any],
         transport: Any = None,
+        policy_answerer: Any = None,
     ):
         if not callable(llm_factory):
             raise TypeError("An LLM factory is required.")
 
         self._llm_factory = llm_factory
+        self._policy_answerer = policy_answerer
 
         # Optional ASGI transport is only for isolated integration tests.
         # Normal operation connects to the protected localhost MCP service.
@@ -68,6 +70,14 @@ class AuthenticatedSchedulingRunner:
             or any(c.isspace() for c in bearer_token)
         ):
             raise ValueError("Invalid authentication context.")
+
+        if question.lower().startswith("policy:"):
+            if self._policy_answerer is None:
+                raise PermissionError("Authorized policy retrieval is not configured.")
+            return await self._policy_answerer(
+                question=question.split(":", 1)[1].strip(),
+                student_id=student_id, bearer_token=bearer_token,
+            )
 
         # Canonical URL comes from trusted server configuration,
         # never from a request field or a model-generated tool argument.
