@@ -152,6 +152,8 @@ async def run():
 
         student_lookup = {(TENANT, USER): "S10001"}
         mp.setattr(security, "ISSUER_URL", issuer)
+        mp.setattr(security, "AUTH_TENANT", TENANT)
+        mp.setattr(security, "AUTH_AUDIENCE", API)
         mp.setattr(
             security, "STUDENT_LOOKUP", student_lookup
         )
@@ -166,6 +168,7 @@ async def run():
                     "oid": USER,
                     "azp": WEB,
                     "scp": "academic.read",
+                    "roles": ["RAG.Student"],
                     "ver": "2.0",
                     "iat": now,
                     "nbf": now,

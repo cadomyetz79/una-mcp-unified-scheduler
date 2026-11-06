@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 import hashlib
 import json
 import time
+import math
 from collections.abc import Mapping
 
 from mcp.server.auth.provider import AccessToken
@@ -24,13 +25,15 @@ class AuthorizationDenied(PermissionError):
 def _values(value, label: str) -> frozenset[str]:
     if not isinstance(value, (tuple, list, set, frozenset)):
         raise ValueError(f"Invalid {label}.")
-    if any(type(item) is not str or not item.strip() for item in value):
+    if len(value) > 256 or any(type(item) is not str or not item.strip()
+        or item != item.strip() or len(item) > 256
+        or any(ord(c) < 32 for c in item) for item in value):
         raise ValueError(f"Invalid {label}.")
     return frozenset(value)
 
 
 def _identity(value: str, label: str) -> str:
-    if type(value) is not str or not value.strip() or value != value.strip():
+    if type(value) is not str or not value.strip() or value != value.strip() or len(value) > 256 or any(ord(c) < 32 for c in value):
         raise ValueError(f"Invalid {label}.")
     return value
 
@@ -69,6 +72,8 @@ def from_verified_access_token(
     Group-overage is NOT resolved here: group-gated access fails closed
     until trusted server code resolves current membership via Graph.
     """
+    if not all(type(v) is str and v.strip() for v in (expected_tenant, expected_issuer, expected_audience)):
+        raise AuthorizationDenied("Trusted authority configuration required.")
     if not isinstance(verified_token, AccessToken):
         raise AuthorizationDenied("Verified token required.")
     claims = verified_token.claims
@@ -82,6 +87,7 @@ def from_verified_access_token(
         or not isinstance(claims.get("oid"), str)
         or not claims["oid"].strip()
         or type(verified_token.expires_at) not in (float, int)
+        or not math.isfinite(verified_token.expires_at)
         or verified_token.expires_at <= time.time()
     ):
         raise AuthorizationDenied("Invalid verified identity context.")
@@ -97,6 +103,10 @@ def from_verified_access_token(
     ):
         raise AuthorizationDenied("Invalid authorization claims.")
 
+    if ("hasgroups" in claims and type(claims["hasgroups"]) is not bool) or (
+        "_claim_names" in claims and type(claims["_claim_names"]) is not dict
+    ):
+        raise AuthorizationDenied("Malformed group overage claims.")
     overage = (
         claims.get("hasgroups") is True
         or (
@@ -203,6 +213,10 @@ class DocumentACL:
             if type(value) is not frozenset:
                 raise ValueError("Invalid ACL entries.")
             _values(value, key)
+        if self.visibility in ("public", "authenticated") and (
+            self.allowed_roles or self.allowed_groups or self.allowed_users
+        ):
+            raise ValueError("Contradictory unrestricted ACL.")
         if self.visibility == "restricted" and not (
             self.allowed_roles or self.allowed_groups or self.allowed_users
         ):

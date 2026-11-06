@@ -64,6 +64,8 @@ def test_signed_gateway_to_real_mcp_and_planner(monkeypatch):
     }
 
     monkeypatch.setattr(security, "ISSUER_URL", issuer)
+    monkeypatch.setattr(security, "AUTH_TENANT", TENANT)
+    monkeypatch.setattr(security, "AUTH_AUDIENCE", AUDIENCE)
     monkeypatch.setattr(
         security,
         "STUDENT_LOOKUP",
@@ -80,6 +82,7 @@ def test_signed_gateway_to_real_mcp_and_planner(monkeypatch):
                 "oid": user,
                 "azp": CLIENT_ID,
                 "scp": scope,
+                "roles": ["RAG.Student"],
                 "ver": "2.0",
                 "iat": now,
                 "nbf": now,

@@ -5,12 +5,15 @@ authentication bypass is enabled.
 """
 
 import os
+import logging
+from types import MappingProxyType
 
 from mcp.server.auth.middleware.auth_context import get_access_token
 from mcp.server.auth.provider import AccessToken, TokenVerifier
 
 from src.mcp_server.entra_token_verifier import EntraTokenVerifier
-from src.mcp_server.student_access import require_student_read_access
+from src.mcp_server.student_access import require_student_read_access, resolve_authenticated_student_id
+from src.mcp_server.entra_rbac_acl import from_verified_access_token, authorize_tool, ToolPolicy
 
 
 RESOURCE_URL = "http://127.0.0.1:8002/mcp"
@@ -85,3 +88,39 @@ def authorize_catalog_request() -> None:
         for name in ("tid", "oid")
     ):
         raise PermissionError("Missing verified user identity.")
+
+
+# These are trusted deployment configuration, never token/model-selected.
+AUTH_TENANT = os.getenv("UNA_ENTRA_TENANT_ID")
+AUTH_AUDIENCE = os.getenv("UNA_ENTRA_API_CLIENT_ID")
+ACADEMIC_TOOL_POLICIES = MappingProxyType({
+    name: ToolPolicy(
+        roles=frozenset({"RAG.Student"}), scopes=frozenset({"academic.read"}),
+        mode="all",
+    )
+    for name in (
+        "get_student_record", "get_course_history", "get_course",
+        "search_courses", "get_course_sections", "get_student_enrollments",
+    )
+})
+
+
+def authorize_tool_request(tool_name: str):
+    """MCP middleware has verified the token; enforce policy on every call."""
+    token = get_access_token()
+    try:
+        user = from_verified_access_token(
+            token, expected_tenant=AUTH_TENANT,
+            expected_issuer=ISSUER_URL, expected_audience=AUTH_AUDIENCE,
+        )
+        authorize_tool(tool_name, user, ACADEMIC_TOOL_POLICIES)
+        # All six academic operations are part of the mapped-student service.
+        resolve_authenticated_student_id(
+            access_token=token, student_lookup=STUDENT_LOOKUP,
+            allowed_issuer=ISSUER_URL,
+        )
+    except Exception:
+        logging.getLogger(__name__).info("academic_authorization decision=deny")
+        raise PermissionError("Academic access denied.") from None
+    logging.getLogger(__name__).info("academic_authorization decision=allow")
+    return user

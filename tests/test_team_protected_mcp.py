@@ -36,12 +36,17 @@ def fake_token(
             "iss": security.ISSUER_URL if issuer is None else issuer,
             "tid": "synthetic-tenant",
             "oid": student_object,
+            "aud": "synthetic-test-resource",
+            "scp": " ".join(["academic.read"] if scopes is None else scopes),
+            "roles": ["RAG.Student"],
         },
     )
 
 
 @pytest.fixture
 def sign_in(monkeypatch):
+    monkeypatch.setattr(security, "AUTH_TENANT", "synthetic-tenant")
+    monkeypatch.setattr(security, "AUTH_AUDIENCE", "synthetic-test-resource")
     def select(student="S10001", **token_options):
         object_id = "student-a" if student == "S10001" else "student-b"
         token = fake_token(

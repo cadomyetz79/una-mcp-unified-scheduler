@@ -88,6 +88,8 @@ def test_synthetic_oauth_login_reaches_protected_mcp(monkeypatch):
     monkeypatch.setattr(
         security, "ISSUER_URL", issuer
     )
+    monkeypatch.setattr(security, "AUTH_TENANT", TENANT)
+    monkeypatch.setattr(security, "AUTH_AUDIENCE", API)
     monkeypatch.setattr(
         security, "STUDENT_LOOKUP", mappings
     )
@@ -102,6 +104,7 @@ def test_synthetic_oauth_login_reaches_protected_mcp(monkeypatch):
             "oid": USER,
             "azp": WEB,
             "scp": "academic.read",
+            "roles": ["RAG.Student"],
             "ver": "2.0",
             "iat": now,
             "nbf": now,

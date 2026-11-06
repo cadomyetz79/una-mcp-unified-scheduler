@@ -58,10 +58,12 @@ def tool_error(code: str) -> types.CallToolResult:
 async def guarded(
     operation: Callable[[], Awaitable[Any]],
     *,
+    tool_name: str,
     student_id: str | None = None,
 ):
     # Authorization MUST happen before backend access.
     try:
+        security.authorize_tool_request(tool_name)
         if student_id is None:
             security.authorize_catalog_request()
         else:
@@ -83,6 +85,7 @@ async def get_student_record(student_id: str) -> dict:
     """Read the authenticated student's academic profile."""
     return await guarded(
         lambda: backend.get_student_record(student_id),
+        tool_name="get_student_record",
         student_id=student_id,
     )
 
@@ -92,6 +95,7 @@ async def get_course_history(student_id: str) -> list[dict]:
     """Read the authenticated student's course history."""
     return await guarded(
         lambda: backend.get_course_history(student_id),
+        tool_name="get_course_history",
         student_id=student_id,
     )
 
@@ -101,6 +105,7 @@ async def get_course(course_id: str) -> dict:
     """Retrieve a course from the synthetic catalog."""
     return await guarded(
         lambda: backend.get_course(course_id),
+        tool_name="get_course",
     )
 
 
@@ -112,6 +117,7 @@ async def search_courses(
     """Search synthetic courses by text and subject."""
     return await guarded(
         lambda: backend.search_courses(query, subject),
+        tool_name="search_courses",
     )
 
 
@@ -123,6 +129,7 @@ async def get_course_sections(
     """List synthetic sections offered in a term."""
     return await guarded(
         lambda: backend.get_course_sections(course_id, term_id),
+        tool_name="get_course_sections",
     )
 
 
@@ -136,5 +143,6 @@ async def get_student_enrollments(
         lambda: backend.get_student_enrollments(
             student_id, term_id
         ),
+        tool_name="get_student_enrollments",
         student_id=student_id,
     )

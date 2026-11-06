@@ -75,9 +75,11 @@ async def main():
     )
 
     # Explicit synthetic identity mapping.
+    original_authority = (security.AUTH_TENANT, security.AUTH_AUDIENCE)
     original_issuer = security.ISSUER_URL
     original_lookup = security.STUDENT_LOOKUP
 
+    security.AUTH_TENANT, security.AUTH_AUDIENCE = TENANT, AUDIENCE
     security.ISSUER_URL = issuer
     security.STUDENT_LOOKUP = {
         (TENANT, TEST_USER): "S10001",
@@ -92,6 +94,7 @@ async def main():
             "oid": TEST_USER,
             "azp": CLIENT_ID,
             "scp": "academic.read",
+            "roles": ["RAG.Student"],
             "ver": "2.0",
             "iat": now,
             "nbf": now,
@@ -346,6 +349,7 @@ async def main():
             raise SystemExit(1)
 
     finally:
+        security.AUTH_TENANT, security.AUTH_AUDIENCE = original_authority
         security.ISSUER_URL = original_issuer
         security.STUDENT_LOOKUP = original_lookup
 
