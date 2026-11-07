@@ -344,7 +344,7 @@ def from_verified_planner_result(
 # prevents unrelated instructions from being silently
 # combined with prior academic context.
 _START_FOLLOWUP = re.compile(
-    r"^\s*(?:actually[,\s]+)?"
+    r"^\s*(?:(?:actually|now)[,\s]+)?"
     r"(?:i(?:'d| would)?\s+prefer)\s+"
     r"(?:classes|a\s+schedule)(?:\s+that)?\s+"
     r"(?:start|starts|starting)\s+"
@@ -352,8 +352,8 @@ _START_FOLLOWUP = re.compile(
     r"(?P<hour>0?[1-9]|1[0-2])"
     r"(?::(?P<minute>[0-5]\d))?\s*"
     r"(?P<ampm>a\.?m\.?|p\.?m\.?)"
-    r"(?:[,.]?\s*keep\s+everything\s+else\s+"
-    r"the\s+same)?[.!?]?\s*$",
+    r"(?:[,.]?\s*keep\s+(?:everything\s+else\s+the\s+same"
+    r"|my\s+other\s+requirements))?[.!?]?\s*$",
     re.IGNORECASE,
 )
 
@@ -495,9 +495,9 @@ def resolve_start_time_followup(
 # Narrow continuation: add one mandatory weekday.
 # This does not interpret unrestricted conversation.
 _ADD_DAY_FOLLOWUP = re.compile(
-    r"^\s*(?:actually[,\s]+)?"
-    r"i\s+(?:can't|cannot|can\s+not)\s+"
-    r"have\s+classes\s+on\s+"
+    r"^\s*(?:(?:actually|now)[,\s]+)?"
+    r"i\s+(?:also\s+)?(?:can't|cannot|can\s+not)\s+"
+    r"(?:have|attend)\s+classes\s+on\s+"
     r"(?P<day>mondays?|tuesdays?|wednesdays?|"
     r"thursdays?|fridays?|saturdays?|sundays?)"
     r"(?:\s+either)?"
