@@ -503,3 +503,28 @@ Commit this checkpoint after staged-file review. Keep PR #3 draft.
 Start RAGFlow with synthetic data only, and verify authorization filters
 before enabling protected HTTP retrieval. Record exact CI results
 after the new commit is pushed.
+
+
+## Step 138 A through D — 2026-11-07 — unified security and retrieval
+
+CONFIRMED: Restored the localhost-only RAGFlow v0.27.2 / Elasticsearch lab,
+legitimately provisioned a synthetic account, and indexed two separate six-document
+canary corpora with local nomic-embed-text embeddings. Actual top-1 HTTP tests
+returned the Legal decoy unrestricted, and the lower-ranking authorized document
+when document_ids restricted candidates. Five role matrices and post-retrieval
+metadata/content verification passed. Default protected backend stays disabled;
+the explicit lab factory reruns canaries and limits Leo to public/Student sources.
+Atomic remote-ID binding rejects content/ACL mismatches.
+
+CONFIRMED: root 454 passed; agent 1073 passed, 1 skipped; overlapping security
+selection 112 passed. Initial 5 harness failures and correction are preserved.
+Starting SHA 748df1b7452339d6706a326ada81fc76ce6c2236.
+Details, exact files, commands, provenance, errors and evidence:
+docs/research/2026-11-07-step138-live-ragflow-authorization.md.
+
+WORKING ASSUMPTION: bounded synthetic canaries detect relevant filter regressions.
+OPEN QUESTION: production identity, continuous attestation, larger corpora and
+durable policy synchronization remain unverified.
+RECOMMENDATION: keep institutional activation gated; rerun after deployment changes.
+Historical Phase 135 statements remain dated evidence, superseded only for these
+specific live synthetic findings. Team Haystack code and results stay separate.

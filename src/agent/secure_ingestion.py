@@ -127,6 +127,53 @@ class SyntheticDocumentStore:
         logging.getLogger(__name__).info("ingestion decision=allow")
         return tuple(chunks)
 
+    def bind_remote_chunks(self, document, expected_texts, rows):
+        """Bind remote IDs only after exact local-content and ACL parity checks.
+
+        expected_texts are trusted ingestion output, never retrieval response text.
+        No partial registry mutation occurs when any row fails validation.
+        """
+        self._validate(document)
+        with self._lock:
+            revision = self._revision
+            prior = self._documents.get(document.acl.document_id)
+            if prior is not None and prior != document:
+                raise AuthorizationDenied("Policy update required before remote binding.")
+        if (type(expected_texts) is not list or not 1 <= len(expected_texts) <= 128
+            or any(type(t) is not str or not t.strip() or len(t) > 1200 for t in expected_texts)
+            or type(rows) is not list or len(rows) != len(expected_texts)):
+            raise ValueError("Bounded trusted ingestion output required.")
+        remaining = list(expected_texts)
+        staged = {}
+        for row in rows:
+            if type(row) is not dict:
+                raise AuthorizationDenied("Invalid remote chunk.")
+            cid, text = row.get("id"), row.get("content")
+            if (type(cid) is not str or not _ID.fullmatch(cid) or cid in staged
+                or type(text) is not str or text not in remaining
+                or row.get("document_id") != document.acl.document_id
+                or row.get("dataset_id") != document.dataset_id):
+                raise AuthorizationDenied("Remote chunk provenance mismatch.")
+            chunk = ChunkRecord(cid, document, text, hashlib.sha256(text.encode()).hexdigest())
+            metadata = row.get("document_metadata")
+            if (type(metadata) is not dict or type(metadata.get("policy_version")) is not int
+                or any(metadata.get(k) != v for k, v in chunk.metadata.items() if k != "content_hash")):
+                raise AuthorizationDenied("Remote chunk ACL mismatch.")
+            remaining.remove(text)
+            staged[cid] = chunk
+        with self._lock:
+            if self._revision != revision:
+                raise AuthorizationDenied("Ingestion policy snapshot changed.")
+            other = {k: v for k, v in self._chunks.items()
+                     if v.document.acl.document_id != document.acl.document_id}
+            if set(other).intersection(staged):
+                raise AuthorizationDenied("Remote chunk ID collision.")
+            docs = dict(self._documents)
+            docs[document.acl.document_id] = document
+            self._documents, self._chunks = docs, {**other, **staged}
+            self._revision += 1
+        return tuple(staged.values())
+
     def update_policy(self, acl):
         if type(acl) is not DocumentACL:
             raise ValueError("Validated policy required.")
