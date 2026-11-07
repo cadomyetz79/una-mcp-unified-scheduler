@@ -115,7 +115,7 @@ def temporary_certificate(folder):
     return str(certfile), str(keyfile)
 
 
-async def run(*, continuity=False, evidence=None, screenshot_path=None, authorized_knowledge=False):
+async def run(*, continuity=False, evidence=None, screenshot_path=None, authorized_knowledge=False, ragflow_manifest=None, ragflow_credentials=None):
     records = []
     results = []
     with pytest.MonkeyPatch.context() as mp:
@@ -222,6 +222,18 @@ async def run(*, continuity=False, evidence=None, screenshot_path=None, authoriz
                 dataset_ids={"synthetic-public", "synthetic-student"},
                 domains={"university-policy", "student-policy"},
             )
+            if ragflow_manifest is not None:
+                from src.agent.ragflow_lab import verified_lab_retriever
+                retriever, canary = await verified_lab_retriever(
+                    ragflow_manifest, ragflow_credentials, expected_tenant=TENANT,
+                )
+                evidence["ragflow_canary"] = canary
+            _, documents, chunks = retriever.store.snapshot()
+            allowed_policy_sources = {
+                f"{c.document.dataset_id}/{c.document.acl.document_id}/{c.chunk_id}"
+                for c in chunks.values()
+                if not c.document.acl.allowed_roles or c.document.acl.allowed_roles == frozenset({"RAG.Student"})
+            }
             policy_answerer = AuthorizedPolicyAnswerer(
                 verifier=verifier, tenant=TENANT, issuer=issuer, audience=API,
                 student_lookup=student_lookup, retriever=retriever, llm_factory=llm_factory,
@@ -837,10 +849,7 @@ async def run(*, continuity=False, evidence=None, screenshot_path=None, authoriz
                                     if question.startswith("Policy:"):
                                         assert record["model_calls"] > 0
                                         assert record["sources"]
-                                        assert set(record["sources"]).issubset({
-                                            "synthetic-public/public/public-1-0",
-                                            "synthetic-student/student/student-1-0",
-                                        })
+                                        assert set(record["sources"]).issubset(allowed_policy_sources)
                                         assert "Verified policy excerpts" in payload["answer"]
                                         assert "SYNTHETIC_LEGAL_ONLY" not in payload["answer"]
                                         evidence["authorized_policy_verified"] = True
@@ -852,7 +861,7 @@ async def run(*, continuity=False, evidence=None, screenshot_path=None, authoriz
                                             == "foreign_academic_record_refused"
                                         )
                                         evidence["foreign_student_denied"] = True
-                                evidence["live_ragflow"] = False
+                                evidence["live_ragflow"] = ragflow_manifest is not None
                                 await page.screenshot(path=str(screenshot.with_name(
                                     screenshot.stem + "-knowledge.png")), full_page=True)
 
@@ -923,7 +932,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--continuity-evidence", type=Path)
     parser.add_argument("--authorized-knowledge", action="store_true")
+    parser.add_argument("--ragflow-lab-manifest", type=Path)
+    parser.add_argument("--ragflow-lab-credentials", type=Path)
     args = parser.parse_args()
+    if bool(args.ragflow_lab_manifest) != bool(args.ragflow_lab_credentials):
+        parser.error("Both trusted lab paths are required.")
+    if args.ragflow_lab_manifest and not args.authorized_knowledge:
+        parser.error("Live lab retrieval requires --authorized-knowledge.")
+
     if args.authorized_knowledge and args.continuity_evidence is None:
         parser.error("--authorized-knowledge requires --continuity-evidence")
     if args.continuity_evidence is not None and (
@@ -943,6 +959,8 @@ if __name__ == "__main__":
             continuity=args.continuity_evidence is not None,
             evidence=evidence,
             authorized_knowledge=args.authorized_knowledge,
+            ragflow_manifest=args.ragflow_lab_manifest,
+            ragflow_credentials=args.ragflow_lab_credentials,
             screenshot_path=(
                 args.continuity_evidence.with_suffix(".png")
                 if args.continuity_evidence is not None else None

@@ -528,3 +528,33 @@ durable policy synchronization remain unverified.
 RECOMMENDATION: keep institutional activation gated; rerun after deployment changes.
 Historical Phase 135 statements remain dated evidence, superseded only for these
 specific live synthetic findings. Team Haystack code and results stay separate.
+
+
+## Step 138 E through H — 2026-11-07 — unified integration closeout
+
+CONFIRMED: Two real Chromium/Ollama trials passed with actual RAGFlow HTTP policy
+retrieval. Final model calls by turn were 3, 2, 2, 1, 0. Wednesday plus Friday
+mandatory restrictions and the soft 10:01 preference persisted; CIS376 exclusion
+was deterministic. Foreign-student denial used zero LLM calls; logout revoked
+the session. Explicit lab configuration reruns canaries; production defaults
+remain disabled and Leo can access only public/Student canary documents.
+
+CONFIRMED: Final root 455 passed; agent 1073 passed, 1 skipped; overlapping
+security subset 113 passed; browser smoke passed. A document-contained prompt
+injection regression rejects privileged source/tool selection. Original failed
+runs remain evidence. Library SHA 0c04434906c5118d1168d2743dae4c85daba05b3 has
+4 successful workflows / 7 successful jobs. Final integration SHA and CI are
+verified after commit. PR stays draft; only origin feature branch is authorized.
+
+Full phase matrix, files, measured results, limitations and paper-ready findings:
+docs/research/2026-11-07-step138-leo-closeout.md.
+Exact procedures: docs/research/2026-11-07-step138-runbook.md.
+Evidence prefix: docs/evidence/2026-11-07-138-.
+
+WORKING ASSUMPTION: the bounded canary is a useful regression gate.
+OPEN QUESTION: institutional deployment, durable policy state and continuous
+backend assurance are not established.
+RECOMMENDATION: broaden adversarial evaluation and obtain owner review before
+institutional data or any production activation. Preserve the unchanged original
+research question and separate teammate Haystack, offline, live HTTP and browser
+evidence categories.
