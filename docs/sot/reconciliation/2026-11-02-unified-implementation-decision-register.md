@@ -1622,3 +1622,30 @@ healthy, n8n unchanged. Evidence: docs/evidence/2026-11-07-138-service-final.jso
 WORKING ASSUMPTION: service readiness persists only while this local lab runs.
 OPEN QUESTION: production assurance remains outside these synthetic trials.
 RECOMMENDATION: use the runbook and new evidence names for every repetition.
+
+
+## STEP-142-INTERACTIVE-RAGFLOW-2026-11-07
+
+**CONFIRMED:** Selected a separate opt-in interactive
+Leo + RAGFlow launcher rather than replacing the
+working MCP scheduling launcher.
+
+**RATIONALE:** Preserve the verified scheduling baseline,
+keep authorization enforcement independent of the LLM,
+and demonstrate the modular research architecture.
+
+**CONFIRMED:** Live synthetic authorization checks and
+both regression suites passed. Manual user observations
+confirmed scheduling, policy retrieval, privacy refusal
+and preserved scheduling context.
+
+**OPEN QUESTION:** Actual teammate RAGFlow datasets,
+document permissions, ingestion and contribution
+reconciliation have not been verified.
+
+**RECOMMENDATION:** Keep the integration on the personal
+feature branch pending complete team review. No
+institutional deployment or enrollment is authorized.
+
+Evidence:
+docs/research/2026-11-07-step142-interactive-ragflow.md

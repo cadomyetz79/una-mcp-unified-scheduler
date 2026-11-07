@@ -588,3 +588,38 @@ healthy, n8n unchanged. Evidence: docs/evidence/2026-11-07-138-service-final.jso
 WORKING ASSUMPTION: service readiness persists only while this local lab runs.
 OPEN QUESTION: production assurance remains outside these synthetic trials.
 RECOMMENDATION: use the runbook and new evidence names for every repetition.
+
+
+## Step 142 — 2026-11-07 — interactive Leo and RAGFlow
+
+**CONFIRMED:** A separate localhost-only interactive
+launcher connects Leo, Ollama, protected MCP, synthetic
+Mock Banner and real RAGFlow HTTP retrieval. The
+existing scheduling-only launcher remains unchanged.
+
+**CONFIRMED:** User-observed manual tests demonstrated
+scheduling, retrieval of an authorized synthetic policy
+excerpt, restricted-content non-disclosure, foreign
+student refusal, and scheduling continuity after policy
+questions. These are bounded manual observations.
+
+**CONFIRMED:** The live RAGFlow authorization canary,
+five-role matrix and cross-tenant check passed.
+Regression results: 458 MCP/gateway tests passed;
+1073 AI-agent tests passed and one skipped.
+
+**WORKING ASSUMPTION:** The synthetic demonstration is
+a valid modular architecture proof of concept, not a
+production deployment or general security guarantee.
+
+**OPEN QUESTION:** The RAG teammates' actual knowledge
+base and ingestion work remain to be integrated.
+Institutional Entra, Banner and document authorization
+approvals are also pending.
+
+**RECOMMENDATION:** Preserve the research evidence,
+keep PR #3 draft, and verify the team's RAGFlow
+configuration before replacing the synthetic corpus.
+
+Research record:
+docs/research/2026-11-07-step142-interactive-ragflow.md
