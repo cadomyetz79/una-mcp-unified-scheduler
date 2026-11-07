@@ -139,3 +139,28 @@ gateway stops after each automated trial. A persistent student-facing service
 is not deployed. No user decision is required to rerun the current synthetic lab.
 Real tenant/app role mappings, Graph access, real Banner and institutional
 documents require the user's authorized owners and approvals.
+
+
+## Publication verification and synthetic fallback regression
+
+CONFIRMED on 2026-11-07: integration implementation commit
+f5816fd69dca4cd23c0af88c7467912420facdc7 was pushed only to
+origin/integration/browser-gateway-20261102. All 4 exact-SHA workflows and all
+7 jobs passed, including Ubuntu/Windows Python 3.12/3.13, Chromium and two
+WS1/WS2/WS3 integration runs. Evidence:
+docs/evidence/2026-11-07-138-integration-ci.json.
+The final documentation/evidence-only commit records this observed code checkpoint;
+its own SHA and CI are reported after publication.
+
+CONFIRMED: the original five-turn synthetic-retrieval mode also passed on this
+implementation. It used local Ollama and Chromium, simulated signed Entra/Mock
+Banner and the synthetic lexical backend, NOT RAGFlow. Evidence:
+docs/evidence/2026-11-07-138-synthetic-regression.json and matching screenshots.
+This is separate from the two successful actual RAGFlow browser trials.
+
+CONFIRMED final service check: web HTTP 200; unauthenticated API HTTP 401;
+authenticated API HTTP 200/code 0 with two preserved datasets. Dependencies
+healthy, n8n unchanged. Evidence: docs/evidence/2026-11-07-138-service-final.json.
+WORKING ASSUMPTION: service readiness persists only while this local lab runs.
+OPEN QUESTION: production assurance remains outside these synthetic trials.
+RECOMMENDATION: use the runbook and new evidence names for every repetition.

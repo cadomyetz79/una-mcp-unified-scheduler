@@ -1,7 +1,12 @@
 # UNA MCP AI Scheduling Research Project
 ## Master Source of Truth — v1.3 Consolidated Working Draft
+**Latest dated update (2026-11-07):** Step 138 live synthetic RAGFlow and Leo
+implementation f5816fd69dca4cd23c0af88c7467912420facdc7, exact-SHA CI verified.
+See the appended Step 138 records and research closeout for current findings.
+The original consolidation snapshot below is retained as historical context.
+
 **Consolidation date:** November 4, 2026 (America/Chicago)  
-**Current verified integration checkpoint:** `29e031554a20baf05cbb46fe351713eba5c2a03e` (`integration/browser-gateway-20261102`)  
+**Original November 4 integration checkpoint:** `29e031554a20baf05cbb46fe351713eba5c2a03e` (`integration/browser-gateway-20261102`)
 **Repository:** `cadomyetz79/una-mcp-unified-scheduler`  
 **PR:** [#3, authenticated Leo browser gateway and verified schedule cards](https://github.com/cadomyetz79/una-mcp-unified-scheduler/pull/3) — **OPEN / DRAFT**  
 **Document status:** **WORKING DRAFT; not signed off or formally adopted by all four workstreams.**
@@ -558,3 +563,28 @@ RECOMMENDATION: broaden adversarial evaluation and obtain owner review before
 institutional data or any production activation. Preserve the unchanged original
 research question and separate teammate Haystack, offline, live HTTP and browser
 evidence categories.
+
+
+## Publication verification and synthetic fallback regression
+
+CONFIRMED on 2026-11-07: integration implementation commit
+f5816fd69dca4cd23c0af88c7467912420facdc7 was pushed only to
+origin/integration/browser-gateway-20261102. All 4 exact-SHA workflows and all
+7 jobs passed, including Ubuntu/Windows Python 3.12/3.13, Chromium and two
+WS1/WS2/WS3 integration runs. Evidence:
+docs/evidence/2026-11-07-138-integration-ci.json.
+The final documentation/evidence-only commit records this observed code checkpoint;
+its own SHA and CI are reported after publication.
+
+CONFIRMED: the original five-turn synthetic-retrieval mode also passed on this
+implementation. It used local Ollama and Chromium, simulated signed Entra/Mock
+Banner and the synthetic lexical backend, NOT RAGFlow. Evidence:
+docs/evidence/2026-11-07-138-synthetic-regression.json and matching screenshots.
+This is separate from the two successful actual RAGFlow browser trials.
+
+CONFIRMED final service check: web HTTP 200; unauthenticated API HTTP 401;
+authenticated API HTTP 200/code 0 with two preserved datasets. Dependencies
+healthy, n8n unchanged. Evidence: docs/evidence/2026-11-07-138-service-final.json.
+WORKING ASSUMPTION: service readiness persists only while this local lab runs.
+OPEN QUESTION: production assurance remains outside these synthetic trials.
+RECOMMENDATION: use the runbook and new evidence names for every repetition.
