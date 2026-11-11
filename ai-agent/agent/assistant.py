@@ -98,7 +98,7 @@ from typing import Any, Callable
 
 from scheduling.models import VALID_DAYS, parse_time
 
-from . import constraints, safe_answer
+from . import academic_evidence, constraints, privacy_scope, safe_answer
 from .banner_tools import BackendDataError, BackendError, BackendUnavailable, BannerTools
 from .evidence import (
     affirmed_request_claims,
@@ -503,7 +503,16 @@ class SchedulingAssistant:
         if self.check_constraints:
             # the student's own clear limits win over the model's arguments; an unclear
             # mandatory limit stops planning and becomes a question (constraints.py)
-            res = constraints.resolve(request, earliest_start, latest_end, days, list(required))
+            res = constraints.resolve(
+                request,
+                earliest_start,
+                latest_end,
+                days,
+                list(required),
+                correct_model_soft_flags=(
+                    self.check_preference_language
+                ),
+            )
             if res.clarify:
                 raise constraints.ClarificationNeeded(res.clarify)
             earliest_start, latest_end, days, required = res.earliest_start, res.latest_end, res.avoid_days, \
@@ -614,6 +623,24 @@ class SchedulingAssistant:
                 answer=TOO_LONG_ANSWER, grounded=True, ungrounded_section_ids=[], stopped_reason="input_too_long",
                 model_calls=0, answer_source="system_input_limit",
                 security={"input_limit": {"chars": len(request), "max_chars": MAX_REQUEST_CHARS}})
+        # Block explicit foreign-record requests before
+        # invoking the LLM or contacting protected MCP.
+        # Incidental mentions of classmates do not match.
+        if privacy_scope.other_student_record_request(
+            request, self.student_id
+        ):
+            return AssistantResult(
+                answer=safe_answer.OTHER_STUDENT,
+                grounded=True,
+                ungrounded_section_ids=[],
+                stopped_reason="answered",
+                model_calls=0,
+                answer_source="system_privacy",
+                security={
+                    "privacy": "foreign_academic_record_refused"
+                },
+            )
+
         with BannerTools.run_log() as calls, call_log() as model_calls:
             run = _Run(request=request, mcp_calls=calls, llm_calls=model_calls)
             try:
@@ -713,6 +740,128 @@ class SchedulingAssistant:
                 continue
 
             answer = reply["content"]
+
+            # Handle the two exact academic question patterns
+            # only AFTER model-selected tools have executed.
+            # Final factual answers are constructed from MCP
+            # evidence rather than unverified model prose.
+            academic_request = (
+                academic_evidence.route_question(request)
+                if self.check_security and self.check_evidence
+                else None
+            )
+
+            if academic_request is not None:
+                kind, course_id = academic_request
+
+                # Reuse a successful, authorized model-
+                # selected lookup rather than fetching
+                # the same record twice.
+                record = next(
+                    (
+                        entry.result
+                        for entry in reversed(trace)
+                        if entry.tool == "get_my_record"
+                        and entry.ok
+                        and isinstance(entry.result, dict)
+                        and isinstance(
+                            entry.result.get("completed_courses"),
+                            list,
+                        )
+                    ),
+                    None,
+                )
+
+                if record is None:
+                    ok, record = await self._run_tool(
+                        "get_my_record", {}, run
+                    )
+
+                    trace.append(
+                        TraceEntry(
+                            "get_my_record",
+                            {},
+                            ok,
+                            (
+                                {
+                                    "completed_courses":
+                                        record.get("completed_courses")
+                                }
+                                if ok and isinstance(record, dict)
+                                else {"evidence_available": False}
+                            ),
+                            by="system",
+                        )
+                    )
+
+                    if not ok:
+                        return AssistantResult(
+                            answer=(
+                                "I couldn't verify your academic "
+                                "record, so I cannot answer that "
+                                "question from the available evidence."
+                            ),
+                            grounded=True,
+                            ungrounded_section_ids=[],
+                            stopped_reason="answered",
+                            model_calls=step,
+                            trace=trace,
+                            mcp_calls=self._mcp_calls(run),
+                            answer_source="system_evidence_unavailable",
+                            llm_calls=list(run.llm_calls),
+                        )
+
+                if kind == "completed_courses":
+                    academic_answer = (
+                        academic_evidence.completed_courses_answer(
+                            record
+                        )
+                    )
+
+                else:
+                    # Protected MCP supplies the course requirements.
+                    # The LLM cannot waive prerequisites.
+                    course = await self.tools.course(course_id)
+
+                    if course.course_id != course_id:
+                        raise BackendDataError(
+                            "Requested course mismatch.",
+                            tool="get_course",
+                        )
+
+                    trace.append(
+                        TraceEntry(
+                            "get_course",
+                            {"course_id": course_id},
+                            True,
+                            {
+                                "prerequisites":
+                                    list(course.prerequisites)
+                            },
+                            by="system",
+                        )
+                    )
+
+                    academic_answer = (
+                        academic_evidence.prerequisite_answer(
+                            course_id,
+                            course.prerequisites,
+                            record["completed_courses"],
+                        )
+                    )
+
+                return AssistantResult(
+                    answer=academic_answer,
+                    grounded=True,
+                    ungrounded_section_ids=[],
+                    stopped_reason="answered",
+                    model_calls=step,
+                    trace=trace,
+                    mcp_calls=self._mcp_calls(run),
+                    answer_source="system_evidence",
+                    llm_calls=list(run.llm_calls),
+                )
+
 
             # --- output guard 1: internal instructions or data never reach the student
             if self.check_security:

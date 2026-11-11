@@ -1,0 +1,69 @@
+[
+  {
+    "conclusion": "success",
+    "databaseId": 42392412447,
+    "headSha": "f5816fd69dca4cd23c0af88c7467912420facdc7",
+    "status": "completed",
+    "jobs": [
+      {
+        "name": "WS1 + WS2 + WS3 integration",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ]
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 42392412422,
+    "headSha": "f5816fd69dca4cd23c0af88c7467912420facdc7",
+    "status": "completed",
+    "jobs": [
+      {
+        "name": "Leo Chromium browser validation",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ]
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 42392412518,
+    "headSha": "f5816fd69dca4cd23c0af88c7467912420facdc7",
+    "status": "completed",
+    "jobs": [
+      {
+        "name": "pytest (ubuntu-latest, Python 3.12)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "pytest (ubuntu-latest, Python 3.13)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "pytest (windows-latest, Python 3.12)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "pytest (windows-latest, Python 3.13)",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ]
+  },
+  {
+    "conclusion": "success",
+    "databaseId": 42392406933,
+    "headSha": "f5816fd69dca4cd23c0af88c7467912420facdc7",
+    "status": "completed",
+    "jobs": [
+      {
+        "name": "WS1 + WS2 + WS3 integration",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ]
+  }
+]

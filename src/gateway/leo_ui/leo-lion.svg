@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" role="img" aria-labelledby="title desc">
+  <title id="title">Leo lion illustration</title>
+  <desc id="desc">Original geometric lion head in UNA-inspired purple and gold; not a university logo.</desc>
+  <path fill="#FFB92A" d="M40 4 49 10 59 7 62 19 73 25 68 36 76 45 65 53 66 65 53 65 48 76 40 70 32 76 27 65 14 65 15 53 4 45 12 36 7 25 18 19 21 7 31 10Z"/>
+  <path fill="#592B8A" d="M40 12 49 17 57 15 58 25 66 30 61 38 67 45 57 51 57 60 48 58 44 67 40 63 36 67 32 58 23 60 23 51 13 45 19 38 14 30 22 25 23 15 31 17Z"/>
+  <path fill="#FFDF85" d="M22 32 19 20 32 27ZM58 32 61 20 48 27Z"/>
+  <path fill="#FFF7E8" d="M40 24c-10 0-19 7-19 20 0 8 5 14 13 18l6-5 6 5c8-4 13-10 13-18 0-13-9-20-19-20Z"/>
+  <path fill="#592B8A" d="M25 38c4-4 8-5 12-3l-3 6-8-1Zm30 0c-4-4-8-5-12-3l3 6 8-1ZM40 44c-4 0-7 2-7 5l7 5 7-5c0-3-3-5-7-5Z"/>
+  <path fill="none" stroke="#592B8A" stroke-width="2.3" stroke-linecap="round" d="M40 54v3m0 0c-4 5-8 5-11 2m11-2c4 5 8 5 11 2"/>
+</svg>

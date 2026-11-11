@@ -1,0 +1,28 @@
+{
+  "phase": "135F",
+  "synthetic_only": true,
+  "live_ragflow": false,
+  "model": "qwen3:4b-instruct",
+  "passed": true,
+  "turn_count": 5,
+  "model_calls_by_turn": [
+    3,
+    2,
+    2,
+    1,
+    0
+  ],
+  "partial_proposal_verified": true,
+  "deterministic_exclusion_visible": true,
+  "authorized_policy_verified": true,
+  "foreign_student_denied": true,
+  "session_revoked": true,
+  "selected_policy_sources": [
+    "synthetic-public/public/public-1-0"
+  ],
+  "root_tests_passed": 432,
+  "agent_tests_passed": 1073,
+  "agent_tests_skipped": 1,
+  "focused_security_context_tests_passed": 57,
+  "source_trial_directory": "/home/mcp_admin/leo-research-evaluations/step136k-CXw0fuQr"
+}

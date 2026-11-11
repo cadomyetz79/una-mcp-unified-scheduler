@@ -1,0 +1,497 @@
+{
+  "schema_version": "leo-live-continuity-v1",
+  "model": "qwen3:4b-instruct",
+  "temperature": 0.0,
+  "synthetic_identity_and_banner": true,
+  "passed": true,
+  "ragflow_canary": {
+    "synthetic_only": true,
+    "live_ragflow": true,
+    "passed": true,
+    "dataset_id": "c5ae5fa0dac711f1a4e1d16fcf064309",
+    "canary": [
+      {
+        "case": "unrestricted",
+        "request": {
+          "dataset_ids": [
+            "c5ae5fa0dac711f1a4e1d16fcf064309"
+          ],
+          "question": "Quantum scholarship award eligibility",
+          "page": 1,
+          "page_size": 1,
+          "knn_top_k": 1,
+          "knn_num_candidates": 1,
+          "rerank_candidates_count": 1,
+          "similarity_threshold": 0,
+          "vector_similarity_weight": 1,
+          "use_kg": false,
+          "toc_enhance": false,
+          "include_knowledge_compilation": false,
+          "highlight": false,
+          "reference_metadata": {
+            "include": true
+          }
+        },
+        "returned": [
+          {
+            "content": "\nSYNTHETIC_LEGAL_ONLY. Quantum scholarship award eligibility quantum scholarship award eligibility. Quantum scholarship award eligibility quantum scholarship award eligibility. Quantum scholarship award eligibility quantum scholarship award eligibility. Quantum scholarship award eligibility quantum scholarship award eligibility. Quantum scholarship award eligibility quantum scholarship award eligibility. ",
+            "content_ltks": "synthet _ legal _ onli quantum scholarship award elig quantum scholarship award elig quantum scholarship award elig quantum scholarship award elig quantum scholarship award elig quantum scholarship award elig quantum scholarship award elig quantum scholarship award elig quantum scholarship award elig quantum scholarship award elig",
+            "dataset_id": "c5ae5fa0dac711f1a4e1d16fcf064309",
+            "doc_type_kwd": "",
+            "document_id": "c8e943d8dac711f1a4e1d16fcf064309",
+            "document_keyword": "legal.txt",
+            "document_metadata": {
+              "acl_hash": "de18a74a5574a4a83c6468433f0e0f05eabd6cfb345deaedf703bcbcf62e79e2",
+              "allowed_groups": [
+                "legal-privileged"
+              ],
+              "allowed_roles": [
+                "RAG.Legal"
+              ],
+              "allowed_users": [],
+              "classification": "synthetic-restricted",
+              "data_domain": "university-policy",
+              "dataset_id": "c5ae5fa0dac711f1a4e1d16fcf064309",
+              "document_id": "c8e943d8dac711f1a4e1d16fcf064309",
+              "mode": "all",
+              "policy_version": 2,
+              "source_uri": "synthetic://canary/legal",
+              "tenant_id": "11111111-1111-4111-8111-111111111111",
+              "visibility": "restricted"
+            },
+            "id": "50eaf6afe3876770",
+            "image_id": "",
+            "important_keywords": [],
+            "mom_id": "",
+            "positions": [
+              [
+                1,
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "row_id": null,
+            "similarity": 0.9369636,
+            "tag_kwd": [],
+            "term_similarity": 0.6408638727989403,
+            "vector_similarity": 0.9369636
+          }
+        ]
+      },
+      {
+        "case": "public_only",
+        "request": {
+          "dataset_ids": [
+            "c5ae5fa0dac711f1a4e1d16fcf064309"
+          ],
+          "question": "Quantum scholarship award eligibility",
+          "page": 1,
+          "page_size": 1,
+          "knn_top_k": 1,
+          "knn_num_candidates": 1,
+          "rerank_candidates_count": 1,
+          "similarity_threshold": 0,
+          "vector_similarity_weight": 1,
+          "use_kg": false,
+          "toc_enhance": false,
+          "include_knowledge_compilation": false,
+          "highlight": false,
+          "reference_metadata": {
+            "include": true
+          },
+          "document_ids": [
+            "c5b51e94dac711f1a4e1d16fcf064309"
+          ]
+        },
+        "returned": [
+          {
+            "content": "\nSynthetic university guidance: consult your adviser before choosing classes.",
+            "content_ltks": "synthet univers guidanc consult your advis befor choos class",
+            "dataset_id": "c5ae5fa0dac711f1a4e1d16fcf064309",
+            "doc_type_kwd": "",
+            "document_id": "c5b51e94dac711f1a4e1d16fcf064309",
+            "document_keyword": "public.txt",
+            "document_metadata": {
+              "acl_hash": "8c041058a3729d7a916b1b1d3c3c8785ce2e3c06a9a1e534c19daf6f0596cd80",
+              "allowed_groups": [],
+              "allowed_roles": [],
+              "allowed_users": [],
+              "classification": "synthetic-public",
+              "data_domain": "university-policy",
+              "dataset_id": "c5ae5fa0dac711f1a4e1d16fcf064309",
+              "document_id": "c5b51e94dac711f1a4e1d16fcf064309",
+              "mode": "all",
+              "policy_version": 2,
+              "source_uri": "synthetic://canary/public",
+              "tenant_id": "11111111-1111-4111-8111-111111111111",
+              "visibility": "public"
+            },
+            "id": "eb6e68432d71dc8a",
+            "image_id": "",
+            "important_keywords": [],
+            "mom_id": "",
+            "positions": [
+              [
+                1,
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "row_id": null,
+            "similarity": 0.73430467,
+            "tag_kwd": [],
+            "term_similarity": 1.090617350685055e-09,
+            "vector_similarity": 0.73430467
+          }
+        ]
+      },
+      {
+        "case": "student_only",
+        "request": {
+          "dataset_ids": [
+            "c5ae5fa0dac711f1a4e1d16fcf064309"
+          ],
+          "question": "Quantum scholarship award eligibility",
+          "page": 1,
+          "page_size": 1,
+          "knn_top_k": 1,
+          "knn_num_candidates": 1,
+          "rerank_candidates_count": 1,
+          "similarity_threshold": 0,
+          "vector_similarity_weight": 1,
+          "use_kg": false,
+          "toc_enhance": false,
+          "include_knowledge_compilation": false,
+          "highlight": false,
+          "reference_metadata": {
+            "include": true
+          },
+          "document_ids": [
+            "c67d439cdac711f1a4e1d16fcf064309"
+          ]
+        },
+        "returned": [
+          {
+            "content": "\nSYNTHETIC_STUDENT_ONLY. Synthetic student policy guidance for planning.",
+            "content_ltks": "synthet _ student _ onli synthet student polici guidanc for plan",
+            "dataset_id": "c5ae5fa0dac711f1a4e1d16fcf064309",
+            "doc_type_kwd": "",
+            "document_id": "c67d439cdac711f1a4e1d16fcf064309",
+            "document_keyword": "student.txt",
+            "document_metadata": {
+              "acl_hash": "b280a8864c6d2a6d626bcba21b6b8f766eded6ba82f4f6d4b8f7605e2479caab",
+              "allowed_groups": [],
+              "allowed_roles": [
+                "RAG.Student"
+              ],
+              "allowed_users": [],
+              "classification": "synthetic-restricted",
+              "data_domain": "university-policy",
+              "dataset_id": "c5ae5fa0dac711f1a4e1d16fcf064309",
+              "document_id": "c67d439cdac711f1a4e1d16fcf064309",
+              "mode": "all",
+              "policy_version": 2,
+              "source_uri": "synthetic://canary/student",
+              "tenant_id": "11111111-1111-4111-8111-111111111111",
+              "visibility": "restricted"
+            },
+            "id": "95b88778910a834e",
+            "image_id": "",
+            "important_keywords": [],
+            "mom_id": "",
+            "positions": [
+              [
+                1,
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "row_id": null,
+            "similarity": 0.7314204,
+            "tag_kwd": [],
+            "term_similarity": 1.090617350685055e-09,
+            "vector_similarity": 0.7314204
+          }
+        ]
+      }
+    ],
+    "matrix": [
+      {
+        "role": "RAG.Faculty",
+        "authorized_documents": [
+          "c5b51e94dac711f1a4e1d16fcf064309",
+          "c7173af6dac711f1a4e1d16fcf064309"
+        ],
+        "verified_sources": [
+          "c5ae5fa0dac711f1a4e1d16fcf064309/c7173af6dac711f1a4e1d16fcf064309/e9610c2b15fc4a49",
+          "c5ae5fa0dac711f1a4e1d16fcf064309/c5b51e94dac711f1a4e1d16fcf064309/eb6e68432d71dc8a"
+        ]
+      },
+      {
+        "role": "RAG.Finance",
+        "authorized_documents": [
+          "c5b51e94dac711f1a4e1d16fcf064309",
+          "c84ddfa6dac711f1a4e1d16fcf064309"
+        ],
+        "verified_sources": [
+          "c5ae5fa0dac711f1a4e1d16fcf064309/c84ddfa6dac711f1a4e1d16fcf064309/27825244140b5dfe",
+          "c5ae5fa0dac711f1a4e1d16fcf064309/c5b51e94dac711f1a4e1d16fcf064309/eb6e68432d71dc8a"
+        ]
+      },
+      {
+        "role": "RAG.HR",
+        "authorized_documents": [
+          "c5b51e94dac711f1a4e1d16fcf064309",
+          "c7b2f2fcdac711f1a4e1d16fcf064309"
+        ],
+        "verified_sources": [
+          "c5ae5fa0dac711f1a4e1d16fcf064309/c7b2f2fcdac711f1a4e1d16fcf064309/e32236d6f68a84d4",
+          "c5ae5fa0dac711f1a4e1d16fcf064309/c5b51e94dac711f1a4e1d16fcf064309/eb6e68432d71dc8a"
+        ]
+      },
+      {
+        "role": "RAG.Legal",
+        "authorized_documents": [
+          "c5b51e94dac711f1a4e1d16fcf064309",
+          "c8e943d8dac711f1a4e1d16fcf064309"
+        ],
+        "verified_sources": [
+          "c5ae5fa0dac711f1a4e1d16fcf064309/c5b51e94dac711f1a4e1d16fcf064309/eb6e68432d71dc8a",
+          "c5ae5fa0dac711f1a4e1d16fcf064309/c8e943d8dac711f1a4e1d16fcf064309/50eaf6afe3876770"
+        ]
+      },
+      {
+        "role": "RAG.Student",
+        "authorized_documents": [
+          "c5b51e94dac711f1a4e1d16fcf064309",
+          "c67d439cdac711f1a4e1d16fcf064309"
+        ],
+        "verified_sources": [
+          "c5ae5fa0dac711f1a4e1d16fcf064309/c67d439cdac711f1a4e1d16fcf064309/95b88778910a834e",
+          "c5ae5fa0dac711f1a4e1d16fcf064309/c5b51e94dac711f1a4e1d16fcf064309/eb6e68432d71dc8a"
+        ]
+      }
+    ],
+    "cross_tenant_empty": true
+  },
+  "turns": [
+    {
+      "turn": 1,
+      "model_calls": 3,
+      "sources": [],
+      "stopped_reason": "answered",
+      "grounded": true,
+      "runner_cards": true,
+      "plans": [
+        {
+          "ok": true,
+          "requested": [
+            "CIS376",
+            "CIS410"
+          ],
+          "preferences_applied": {
+            "earliest_start": null,
+            "latest_end": null,
+            "avoid_days": [
+              "FRI"
+            ],
+            "required": [
+              "avoid_days"
+            ]
+          },
+          "option_count": 1,
+          "options": [
+            [
+              {
+                "course_id": "CIS376",
+                "section_id": "SEC1001",
+                "meeting_days": [
+                  "MON",
+                  "WED"
+                ]
+              },
+              {
+                "course_id": "CIS410",
+                "section_id": "SEC2002",
+                "meeting_days": []
+              }
+            ]
+          ],
+          "exclusions": []
+        }
+      ]
+    },
+    {
+      "turn": 2,
+      "model_calls": 2,
+      "sources": [],
+      "stopped_reason": "answered",
+      "grounded": true,
+      "runner_cards": true,
+      "plans": [
+        {
+          "ok": true,
+          "requested": [
+            "CIS376",
+            "CIS410"
+          ],
+          "preferences_applied": {
+            "earliest_start": "10:01",
+            "latest_end": null,
+            "avoid_days": [
+              "FRI"
+            ],
+            "required": [
+              "avoid_days"
+            ]
+          },
+          "option_count": 1,
+          "options": [
+            [
+              {
+                "course_id": "CIS376",
+                "section_id": "SEC1001",
+                "meeting_days": [
+                  "MON",
+                  "WED"
+                ]
+              },
+              {
+                "course_id": "CIS410",
+                "section_id": "SEC2002",
+                "meeting_days": []
+              }
+            ]
+          ],
+          "exclusions": []
+        }
+      ],
+      "http_status": 200,
+      "browser_cards": true,
+      "saved_context": {
+        "term_id": "2027SP",
+        "course_ids": [
+          "CIS376",
+          "CIS410"
+        ],
+        "avoid_days": [
+          "FRI"
+        ],
+        "earliest_start": "10:01",
+        "latest_end": null,
+        "required_preferences": [
+          "avoid_days"
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "model_calls": 2,
+      "sources": [],
+      "stopped_reason": "answered",
+      "grounded": true,
+      "runner_cards": true,
+      "plans": [
+        {
+          "ok": true,
+          "requested": [
+            "CIS376",
+            "CIS410"
+          ],
+          "preferences_applied": {
+            "earliest_start": "10:01",
+            "latest_end": null,
+            "avoid_days": [
+              "WED",
+              "FRI"
+            ],
+            "required": [
+              "avoid_days"
+            ]
+          },
+          "option_count": 1,
+          "options": [
+            [
+              {
+                "course_id": "CIS410",
+                "section_id": "SEC2002",
+                "meeting_days": []
+              }
+            ]
+          ],
+          "exclusions": [
+            {
+              "course_id": "CIS376",
+              "code": "NO_SECTION_MATCHES_PREFERENCES"
+            }
+          ]
+        }
+      ],
+      "http_status": 200,
+      "browser_cards": true,
+      "saved_context": {
+        "term_id": "2027SP",
+        "course_ids": [
+          "CIS376",
+          "CIS410"
+        ],
+        "avoid_days": [
+          "WED",
+          "FRI"
+        ],
+        "earliest_start": "10:01",
+        "latest_end": null,
+        "required_preferences": [
+          "avoid_days"
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "model_calls": 1,
+      "sources": [
+        "c5ae5fa0dac711f1a4e1d16fcf064309/c5b51e94dac711f1a4e1d16fcf064309/eb6e68432d71dc8a"
+      ],
+      "stopped_reason": "answered",
+      "grounded": true,
+      "runner_cards": false,
+      "plans": []
+    },
+    {
+      "turn": 5,
+      "model_calls": 0,
+      "sources": [],
+      "stopped_reason": "answered",
+      "grounded": true,
+      "runner_cards": false,
+      "plans": []
+    }
+  ],
+  "initial_context": {
+    "term_id": "2027SP",
+    "course_ids": [
+      "CIS376",
+      "CIS410"
+    ],
+    "avoid_days": [
+      "FRI"
+    ],
+    "earliest_start": null,
+    "latest_end": null,
+    "required_preferences": [
+      "avoid_days"
+    ]
+  },
+  "deterministic_exclusion_visible": true,
+  "partial_proposal_verified": true,
+  "authorized_policy_verified": true,
+  "foreign_student_denied": true,
+  "live_ragflow": true,
+  "session_revoked": true
+}

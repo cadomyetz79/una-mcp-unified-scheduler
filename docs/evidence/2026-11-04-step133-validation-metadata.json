@@ -1,0 +1,37 @@
+{
+  "evaluation_date_local": "2026-11-04",
+  "timezone": "America/Los_Angeles",
+  "starting_commit": "1406ee801096c230b82d086f0a1e66f7b3f9e284",
+  "source_state": "Step 133B uncommitted changes and continuity review corrections",
+  "python": "3.12.3",
+  "ollama_version": "0.40.1",
+  "model": "qwen3:4b-instruct",
+  "model_digest": "0edcdef34593eac1aa2be9c7d06c432dcf81945adca5eca2f27662c18f168ba0",
+  "temperature": 0.0,
+  "think": false,
+  "num_ctx": 8192,
+  "num_predict": 512,
+  "fixture_sha256": "82756dac6cfc54255b680e007deefefc620ec32073a37a8b118d8e8c22dc5318",
+  "trial1": {
+    "exit_code": 1,
+    "failure": "Probe incorrectly expected zero options instead of the supported partial CIS410 proposal.",
+    "original_evidence_retained": true,
+    "logout_not_reached": true
+  },
+  "trial2": {
+    "exit_code": 0,
+    "corrected_probe_passed": true
+  },
+  "limitations": [
+    "Synthetic OAuth identity and Mock Banner only",
+    "Browser uses loopback HTTPS; protected MCP uses in-process ASGI transport",
+    "No enrollment operations; existing registrations are unchanged",
+    "Two live executions; the first probe failed, so this is not two passing trials"
+  ],
+  "validated_source_sha256": {
+    "src/gateway/plan_context.py": "65661150b987809d63575cca9827d6ca8d109dfa7e18942fd0bb498dad03b25f",
+    "src/gateway/session_routes.py": "76114099edd4c2231ded5ce462b48153a5d28d55aa7c1d14089b55f79a081114",
+    "scripts/leo_live_ollama_browser_probe.py": "aab18f5f4d35750cbf80d85e7e000372eeaf727b53aa83e7cc235eef2eea197a",
+    "tests/test_gateway_day_continuity.py": "604a6ec97e5990470a05cfdeebd517137b9d5c8e1d09a13d1d58a0f0f64802be"
+  }
+}

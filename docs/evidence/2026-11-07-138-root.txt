@@ -1,0 +1,61 @@
+........................................................................ [ 15%]
+........................................................................ [ 31%]
+........................................................................ [ 47%]
+........................................................................ [ 63%]
+........................................................................ [ 79%]
+.....FFFFF.............................................................. [ 95%]
+.....................                                                    [100%]
+=================================== FAILURES ===================================
+__________ test_live_factory_cannot_enable_after_failed_canary[empty] __________
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+________ test_live_factory_cannot_enable_after_failed_canary[forbidden] ________
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+_________ test_live_factory_cannot_enable_after_failed_canary[outage] __________
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+________ test_live_factory_cannot_enable_after_failed_canary[malformed] ________
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+_______ test_live_factory_cannot_enable_after_failed_canary[forged_text] _______
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+=============================== warnings summary ===============================
+tests/test_ragflow_lab.py:46
+  /home/mcp_admin/una-mcp-unified-scheduler/tests/test_ragflow_lab.py:46: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.asyncio
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_ragflow_lab.py::test_live_factory_cannot_enable_after_failed_canary[empty]
+FAILED tests/test_ragflow_lab.py::test_live_factory_cannot_enable_after_failed_canary[forbidden]
+FAILED tests/test_ragflow_lab.py::test_live_factory_cannot_enable_after_failed_canary[outage]
+FAILED tests/test_ragflow_lab.py::test_live_factory_cannot_enable_after_failed_canary[malformed]
+FAILED tests/test_ragflow_lab.py::test_live_factory_cannot_enable_after_failed_canary[forged_text]
+5 failed, 448 passed, 1 warning in 6.26s

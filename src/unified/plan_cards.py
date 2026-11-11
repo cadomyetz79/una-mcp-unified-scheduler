@@ -133,6 +133,43 @@ def project_verified_plan_cards(plan: dict, *, expected_student_id: str, expecte
             raise ValueError("Unverified option ranking.")
         cards.append({"rank": rank, "total_credit_hours": credits,
                       "registration_fit": fit, "sections": sections})
-    return {"schema_version": "leo-team-plan-v1", "status": "proposed_only",
+    result = {"schema_version": "leo-team-plan-v1", "status": "proposed_only",
             "student_id": expected_student_id, "term_id": expected_term_id,
             "current_registrations_checked": checked is True, "options": cards}
+
+    # Additive metadata: legacy fixtures without these fields remain unspecified.
+    if "requested" in plan or "excluded" in plan:
+        requested = plan.get("requested")
+        excluded = plan.get("excluded")
+        if type(requested) is not list or not 1 <= len(requested) <= 12:
+            raise ValueError("Invalid requested courses.")
+        requested = [_text(c, _COURSE, "requested course") for c in requested]
+        if len(set(requested)) != len(requested) or type(excluded) is not list or len(excluded) > 24:
+            raise ValueError("Invalid exclusions.")
+        reasons = {
+            "UNKNOWN_COURSE": "Course not found in the catalog snapshot.",
+            "NO_SECTIONS_IN_TERM": "No sections offered in the selected term.",
+            "ALL_SECTIONS_FULL": "All sections are full in the seat snapshot.",
+            "NO_SECTION_MATCHES_PREFERENCES": "No open section satisfies the required day/time restrictions.",
+            "ALREADY_COMPLETED": "Course already completed in the academic snapshot.",
+            "MISSING_PREREQUISITE": "Required prerequisite is missing in the academic snapshot.",
+        }
+        clean = []
+        seen = set()
+        for item in excluded:
+            if type(item) is not dict:
+                raise ValueError("Invalid exclusion.")
+            cid = _text(item.get("course_id"), _COURSE, "excluded course")
+            code = item.get("code")
+            if type(code) is not str or code not in reasons or cid not in requested or (cid, code) in seen:
+                raise ValueError("Unverified exclusion reason.")
+            seen.add((cid, code))
+            clean.append({"course_id": cid, "code": code, "reason": reasons[code]})
+        excluded_ids = {e["course_id"] for e in clean}
+        for card in cards:
+            proposed = {s["course_id"] for s in card["sections"]}
+            if proposed & excluded_ids or proposed | excluded_ids != set(requested):
+                raise ValueError("Requested, proposed and excluded courses disagree.")
+        result.update(requested_courses=requested, excluded_courses=clean,
+                      proposal_completeness=("no_options" if not cards else "partial" if clean else "complete"))
+    return result
