@@ -1,5 +1,8 @@
 # UNA MCP AI Scheduling Research Project
 ## Master Source of Truth — v1.3 Consolidated Working Draft
+
+**Current scope notice (2026-11-11):** The team selected **Haystack** as the RAG workstream for the research-paper scope; real UNA Banner and Entra access will not be used. The verified integrated Leo browser checkpoint (fb15003) still uses **RAGFlow**, not Haystack. The last inspected separate Haystack snapshot is archival evidence (7ef1b01); the linked team's GitHub repository is currently inaccessible to the connected account (404). The Haystack-to-Leo integration and latest team tests remain **UNVERIFIED**. Read the new Step 145 phase addendum before interpreting historical “current” statements. All earlier work is preserved as dated historical evidence.
+
 **Latest dated update (2026-11-07):** Step 138 live synthetic RAGFlow and Leo
 implementation f5816fd69dca4cd23c0af88c7467912420facdc7, exact-SHA CI verified.
 See the appended Step 138 records and research closeout for current findings.
@@ -623,3 +626,32 @@ configuration before replacing the synthetic corpus.
 
 Research record:
 docs/research/2026-11-07-step142-interactive-ragflow.md
+
+
+## Step 145 — 2026-11-11 — final research scope and Haystack reconciliation (pending team verification)
+
+**Original research question preserved verbatim:** “How do we create an MCP server integrated with Entra and an AI agent to help schedule classes for students at UNA?” The absence of live Entra/Banner access is a research limitation, not a reason to rewrite the historical question without instructor approval.
+
+### CONFIRMED — user-reported final scope
+- The team selected **Haystack**, rather than RAGFlow, as its intended RAG workstream for the final manuscript. This is a scope decision reported by the project integrator on 2026-11-11; the change is not evidence that Haystack has been incorporated into Leo.
+- No approved real University of North Alabama Banner data or Microsoft Entra tenant sign-in will be obtained for this research phase. Synthetic Mock Banner and Entra-oriented synthetic signed JWT/role/group authorization remain the demonstrated development basis.
+- The professor-provided *Entra_ID_MCP_RAG_Authorization_Student_Handout.docx* provides a synthetic authorization model (claims → trusted security context; MCP tool policy; document ACLs; prefilter; post-retrieval verification). It is not proof of working production SSO.
+
+### CONFIRMED — GitHub evidence at inspection
+- Unified feature branch `integration/browser-gateway-20261102` was inspected at `fb1500357c2b3d3de37f1ae46097a2aeb7950dc0`. The draft PR #3 remained open; the separate live five-question Leo+RAGFlow demo and synthetic authorized retrieval were recorded as passed. Its 458 root tests and 1,073 agent tests/1 skip were previously observed. The seven corresponding GitHub CI checks passed. **These results do not verify Haystack integration.**
+- At the 2026-11-11 check, the connected GitHub account received HTTP 404 for `devink727/ite499-shared` (repository metadata, contents, commit list, and repository URL). A new full-source audit of that repo is **NOT POSSIBLE** with current access.
+- An earlier, locally inspected copy of that RAG repository, recorded in the project history at SHA `7ef1b01`, contained `README.md`, `main.py`, `pipeline.py`, `security_policy.py`, `test_harness.py`, `requirements.txt`, `.env.example`, and `.gitignore`. The archived source-review transcript (2026-11-06 04:29:44) records `haystack-ai==3.2.0`, FastAPI `POST /query`, `InMemoryDocumentStore`, `InMemoryBM25Retriever` with tenant/ACL metadata filters, `ChatPromptBuilder`, and `OpenAIChatGenerator(model='gpt-4o-mini')`. Its demo authentication used two fixed mock tokens, **not Microsoft-issued Entra tokens**. Eleven named `unittest` methods in `test_harness.py` covered roles, groups, users, malformed claims, and cross-tenant isolation; inspection identified the tests, but no fresh execution/score is established by this review. This is a **separate Haystack workstream**, not evidence of a successful unified Haystack+Leo conversation.
+- The integrated `fb15003` Leo application used the existing RAGFlow-backed `Policy:` branch. Consequently the recorded five-turn live RAGFlow browser trial, startup authorization canary and screenshot are **RAGFlow evidence only**. Do not rename or pool these as Haystack observations.
+
+### OPEN QUESTIONS / manuscript acceptance gates
+1. Obtain an accessible final Haystack repository snapshot/ZIP and immutable SHA from the RAG workstream; reconcile any changes since the inspected `7ef1b01` snapshot.
+2. Establish whether Haystack has actually been called by Leo or through a unified MCP-adjacent route. If not, describe component-level Haystack proof of concept and unified scheduling proof of concept separately, not as one tested RAG architecture.
+3. Execute and preserve the Haystack test suite results (names, denominator, environment, date, exact SHA); distinguish offline ACL unit tests from retrieval-quality and generated-answer evaluation. If a paid OpenAI API is required but unavailable, report untested generation without fabricating it.
+4. Confirm manuscript authorship, final instructor length/template/deadline and approved references before claiming a final submission-ready IEEE conference paper.
+5. Obtain consent/approval before handling institutional records or deploying. No state-changing registration writes were implemented.
+
+### WORKING ASSUMPTION / RECOMMENDATION
+- **Working assumption:** The earlier Haystack snapshot still represents the team's current RAG design until newer accessible code says otherwise.
+- **Recommendation:** Base the paper on two evidence-separated prototypes: (i) verified protected MCP, Mock Banner, Leo and deterministic schedule results; (ii) inspected Haystack metadata-filter retrieval security proof of concept. Retain the earlier live RAGFlow trials as labeled historical integration experiments, but do not present them as Haystack tests or as the final selected RAG implementation. Do not rewrite archival SOT records. Preserve PR #3 as draft, avoid team-upstream writes, and close these evidence gaps before final paper submission.
+
+Reconciliation note: `docs/research/2026-11-11-final-scope-haystack-reconciliation.md`.

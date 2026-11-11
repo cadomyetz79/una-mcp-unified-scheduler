@@ -1649,3 +1649,14 @@ institutional deployment or enrollment is authorized.
 
 Evidence:
 docs/research/2026-11-07-step142-interactive-ragflow.md
+
+
+## STEP-145-RESEARCH-SCOPE-HAYSTACK-2026-11-11
+
+**CONFIRMED (user-reported):** Haystack is the final selected RAG framework; real UNA Banner and Entra access will not be provided during the study. This supersedes the *future platform selection* in prior RAGFlow planning, but not the dated record that the RAGFlow experiments really ran.
+
+**CONFIRMED (verified evidence):** Unified `fb15003` remains a RAGFlow-based browser integration with passing CI and synthetic security tests, not a tested Haystack integration. Earlier archival review of team RAG SHA `7ef1b01` showed FastAPI / Haystack 3.2.0 / in-memory BM25 / mock-token metadata filtering and 11 named security tests; actual run results were not independently confirmed here. On 2026-11-11 the teammate repository GitHub link returned 404 through the connected account. No new source was available to confirm a newer SHA or integration.
+
+**OPEN QUESTION:** Obtain RAG owner deliverables, final SHA, runtime evaluation and explicit answer whether Haystack was integrated into Leo. Do not falsely attribute the RAGFlow browser recording to Haystack.
+
+**RECOMMENDATION:** Document the distinct evidence groups and update paper claims conservatively. Keep original research question and original dated SOT intact. See `docs/research/2026-11-11-final-scope-haystack-reconciliation.md`.
