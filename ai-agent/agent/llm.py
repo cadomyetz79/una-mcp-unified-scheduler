@@ -37,6 +37,8 @@ from urllib.parse import urlsplit
 
 _THINK = re.compile(r"<think>.*?</think>", re.DOTALL)
 
+MAX_OLLAMA_RESPONSE_BYTES = 4 * 1024 * 1024
+
 
 class LLMError(RuntimeError):
     pass
@@ -72,6 +74,12 @@ def _normalize_tool_calls(raw: list[dict] | None) -> list[dict]:
                 args = {"__unparseable__": args}
         calls.append({"name": fn.get("name", ""), "arguments": args})
     return calls
+
+
+
+class _RejectRedirects(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        raise LLMError("Ollama endpoint redirects are not permitted.")
 
 
 class OllamaLLM:
@@ -144,19 +152,49 @@ class OllamaLLM:
         self.stats: list[dict] = []
         self.max_stats = max_stats
 
+    
     def _post(self, payload: dict) -> dict:
         req = urllib.request.Request(
             f"{self.host}/api/chat",
             data=json.dumps(payload).encode(),
             headers={"Content-Type": "application/json"},
         )
+
+        opener = urllib.request.build_opener(_RejectRedirects())
+
         try:
-            with urllib.request.urlopen(req, timeout=self.timeout) as resp:
-                return json.loads(resp.read())
+            with opener.open(req, timeout=self.timeout) as resp:
+                raw = resp.read(MAX_OLLAMA_RESPONSE_BYTES + 1)
+
+                if len(raw) > MAX_OLLAMA_RESPONSE_BYTES:
+                    raise LLMError(
+                        "Ollama response exceeds maximum allowed size."
+                    )
+
+                try:
+                    data = json.loads(raw)
+                except (UnicodeDecodeError, json.JSONDecodeError) as e:
+                    raise LLMError(
+                        "Ollama returned invalid JSON."
+                    ) from e
+
+                if not isinstance(data, dict):
+                    raise LLMError(
+                        "Ollama returned an unexpected JSON structure."
+                    )
+
+                return data
+
         except urllib.error.HTTPError as e:
-            raise LLMError(f"Ollama returned {e.code}: {e.read().decode(errors='replace')}") from e
+            raise LLMError(
+                f"Ollama returned HTTP {e.code}."
+            ) from e
+
         except urllib.error.URLError as e:
-            raise LLMError(f"Cannot reach Ollama at {self.host} ({e.reason}). Is it running?") from e
+            raise LLMError(
+                "Cannot reach the configured Ollama server."
+            ) from e
+
 
     async def chat(self, messages: list[dict], tools: list[dict]) -> dict:
         options: dict[str, Any] = {"temperature": self.temperature}
