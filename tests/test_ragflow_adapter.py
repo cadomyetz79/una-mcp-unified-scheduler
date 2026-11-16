@@ -126,6 +126,33 @@ def test_invalid_responses_rejected(response):
     asyncio.run(check())
 
 
+def test_oversized_stream_is_stopped_before_fully_read():
+    # A very large or never-ending server response must be interrupted
+    # before it can be buffered completely.
+    class OversizedStream(httpx2.AsyncByteStream):
+        async def __aiter__(self):
+            for _ in range(20):
+                yield b"x" * 65536
+            raise AssertionError("The oversized response was read in full.")
+
+        async def aclose(self):
+            pass
+
+    def handler(request):
+        return httpx2.Response(
+            200,
+            stream=OversizedStream(),
+        )
+
+    async def check():
+        retriever, client = make_retriever(handler)
+        async with client:
+            with pytest.raises(ValueError, match="exceeds size limit"):
+                await retriever.search("registration", 3)
+
+    asyncio.run(check())
+
+
 def test_http_auth_failure_does_not_leak_key():
     def handler(request):
         return httpx2.Response(
