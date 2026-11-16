@@ -33,6 +33,7 @@ from contextvars import ContextVar
 from typing import Iterator
 import urllib.request
 from typing import Any, Protocol
+from urllib.parse import urlsplit
 
 _THINK = re.compile(r"<think>.*?</think>", re.DOTALL)
 
@@ -94,10 +95,47 @@ class OllamaLLM:
         Every call's token counts and timings are kept in self.stats (the last
         max_stats calls of this object, all requests) and in the call_log() of
         the request in progress."""
+        
         self.model = model
-        self.host = (host or os.environ.get("OLLAMA_HOST") or "http://localhost:11434").rstrip("/")
-        if not self.host.startswith("http"):
-            self.host = "http://" + self.host
+
+        configured_host = (
+            host
+            or os.environ.get("OLLAMA_HOST")
+            or "http://localhost:11434"
+        ).rstrip("/")
+
+        if "://" not in configured_host:
+            configured_host = "http://" + configured_host
+
+        parsed = urlsplit(configured_host)
+
+        if (
+            parsed.scheme not in {"http", "https"}
+            or not parsed.hostname
+            or parsed.username is not None
+            or parsed.password is not None
+            or parsed.path
+            or parsed.query
+            or parsed.fragment
+        ):
+            raise ValueError("Invalid Ollama server URL.")
+
+        try:
+            port = parsed.port
+        except ValueError as exc:
+            raise ValueError("Invalid Ollama server port.") from exc
+
+        if parsed.scheme == "http" and parsed.hostname not in {
+            "localhost",
+            "127.0.0.1",
+            "::1",
+        }:
+            raise ValueError(
+                "Remote Ollama connections must use HTTPS."
+            )
+
+        self.host = configured_host
+
         self.timeout = timeout
         self.temperature = temperature
         self.think = think
