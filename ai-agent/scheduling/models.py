@@ -179,15 +179,15 @@ class Student:
         )
 
     @property
-def completed_courses(self) -> set[str]:
-    # Prototype policy: only completed courses with
-    # grades A, B, or C satisfy prerequisites.
-    passing_grades = {"A", "B", "C"}
+    def completed_courses(self) -> set[str]:
+        # Prototype policy: only completed courses with
+        # grades A, B, or C satisfy prerequisites.
+        passing_grades = {"A", "B", "C"}
 
-    return {
-        r.course_id
-        for r in self.history
-        if r.status == "completed"
-        and isinstance(r.grade, str)
-        and r.grade.strip().upper() in passing_grades
-    }
+        return {
+            r.course_id
+            for r in self.history
+            if r.status == "completed"
+            and isinstance(r.grade, str)
+            and r.grade.strip().upper() in passing_grades
+        }
