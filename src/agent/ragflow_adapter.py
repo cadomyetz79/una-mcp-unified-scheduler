@@ -4,12 +4,16 @@ Only approved public/synthetic datasets should be configured.
 No real UNA student data belongs in this retrieval path.
 """
 
+import json
 import re
 from urllib.parse import urlsplit
 
 import httpx2
 
 from src.agent.knowledge_retrieval import KnowledgeHit
+
+
+MAX_RAGFLOW_RESPONSE_BYTES = 1_000_000
 
 
 class RAGFlowRetriever:
@@ -100,7 +104,9 @@ class RAGFlowRetriever:
 
     async def _retrieve(self, client, query, limit):
         try:
-            response = await client.post(
+            # Stream the response so the byte limit applies before buffering.
+            async with client.stream(
+                "POST",
                 self.endpoint,
                 headers={
                     "Authorization": f"Bearer {self.api_key}",
@@ -112,23 +118,27 @@ class RAGFlowRetriever:
                     "page": 1,
                     "page_size": limit,
                 },
-            )
+            ) as response:
+                if response.status_code != 200:
+                    raise RuntimeError(
+                        "RAGFlow retrieval HTTP request failed."
+                    )
+
+                body = bytearray()
+                async for chunk in response.aiter_bytes(chunk_size=65536):
+                    if len(chunk) > MAX_RAGFLOW_RESPONSE_BYTES - len(body):
+                        raise ValueError(
+                            "RAGFlow response exceeds size limit."
+                        )
+                    body.extend(chunk)
         except httpx2.HTTPError:
             raise RuntimeError(
                 "RAGFlow retrieval transport failed."
             ) from None
 
-        if response.status_code != 200:
-            raise RuntimeError(
-                "RAGFlow retrieval HTTP request failed."
-            )
-
-        if len(response.content) > 1_000_000:
-            raise ValueError("RAGFlow response exceeds size limit.")
-
         try:
-            payload = response.json()
-        except ValueError:
+            payload = json.loads(body)
+        except (ValueError, UnicodeDecodeError):
             raise ValueError(
                 "RAGFlow returned invalid JSON."
             ) from None

@@ -180,6 +180,14 @@ class Student:
 
     @property
     def completed_courses(self) -> set[str]:
-        # WORKING ASSUMPTION: only status "completed" satisfies a prerequisite.
-        # Minimum grades are not enforced yet (see docs/mock-data-model.md).
-        return {r.course_id for r in self.history if r.status == "completed"}
+        # Prototype policy: only completed courses with
+        # grades A, B, or C satisfy prerequisites.
+        passing_grades = {"A", "B", "C"}
+
+        return {
+            r.course_id
+            for r in self.history
+            if r.status == "completed"
+            and isinstance(r.grade, str)
+            and r.grade.strip().upper() in passing_grades
+        }

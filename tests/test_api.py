@@ -6,9 +6,14 @@ from fastapi.testclient import TestClient
 from app.main import app
 
 
-@pytest.fixture(scope="module")
-def client():
-    return TestClient(app)
+@pytest.fixture
+def client(mock_banner_service_token):
+    return TestClient(
+        app,
+        headers={
+            "Authorization": f"Bearer {mock_banner_service_token}"
+        },
+    )
 
 
 def get_records(client, endpoint):
@@ -314,3 +319,28 @@ def test_unknown_student_enrollments_returns_404(
     assert response.json() == {
         "detail": "Student not found"
     }
+
+
+def test_anonymous_student_access_rejected():
+    anonymous = TestClient(app)
+
+    response = anonymous.get("/students")
+
+    assert response.status_code == 401
+
+
+def test_invalid_service_token_rejected(client):
+    response = client.get(
+        "/students",
+        headers={"Authorization": "Bearer invalid-token"},
+    )
+
+    assert response.status_code == 401
+
+
+def test_missing_service_token_configuration(monkeypatch):
+    monkeypatch.delenv("MOCK_BANNER_SERVICE_TOKEN", raising=False)
+
+    response = TestClient(app).get("/students")
+
+    assert response.status_code == 503

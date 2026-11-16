@@ -1,4 +1,12 @@
 import json
+import os
+from pathlib import Path
+from secrets import compare_digest
+
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
+
+import json
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
@@ -9,6 +17,39 @@ app = FastAPI(
     description="Synthetic academic data API for the UNA MCP Scheduling Research Project",
     version="0.1.0"
 )
+
+
+@app.middleware("http")
+async def require_service_auth(request: Request, call_next):
+    # Allow basic health monitoring.
+    if request.url.path == "/health":
+        return await call_next(request)
+
+    expected_token = os.getenv("MOCK_BANNER_SERVICE_TOKEN", "")
+
+    # Fail closed if no strong service token is configured.
+    if len(expected_token) < 32:
+        return JSONResponse(
+            status_code=503,
+            content={"detail": "Service unavailable."},
+        )
+
+    authorization = request.headers.get("authorization", "")
+    scheme, separator, supplied_token = authorization.partition(" ")
+
+    if (
+        scheme.lower() != "bearer"
+        or not separator
+        or not compare_digest(supplied_token, expected_token)
+    ):
+        return JSONResponse(
+            status_code=401,
+            content={"detail": "Service authentication required."},
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    return await call_next(request)
+
 
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"

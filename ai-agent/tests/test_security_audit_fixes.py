@@ -205,11 +205,15 @@ async def test_another_students_record_is_rejected(tool, change):
     assert str(e.value) == BackendDataError.public_message and "S20002" not in json.dumps(e.value.log_record())
 
 
-async def test_history_rows_without_a_student_id_are_still_accepted():
+async def test_history_rows_without_a_student_id_are_rejected():
     async with Client(server) as client:
-        plain = await BannerTools(client).student("S10001")
-        stripped = await (await tools_for(client, "get_course_history", history_without_owner)).student("S10001")
-    assert stripped.completed_courses == plain.completed_courses == {"CIS225", "CIS236", "CIS330"}
+        tools = await tools_for(
+            client,
+            "get_course_history",
+            history_without_owner,
+        )
+        with pytest.raises(BackendDataError):
+            await tools.student("S10001")
 
 
 async def test_another_students_history_cannot_satisfy_a_prerequisite():
