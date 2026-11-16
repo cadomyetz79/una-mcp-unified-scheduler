@@ -199,7 +199,7 @@ class BannerTools:
         record = await self._call("student", student_id=student_id)
         self._owned(TOOL_NAMES["student"], student_id, [record], required=True)
         history = self._rows(TOOL_NAMES["history"], await self._call("history", student_id=student_id))
-        self._owned(TOOL_NAMES["history"], student_id, history)
+        self._owned(TOOL_NAMES["history"], student_id, history, required=True)
         return self._parse(TOOL_NAMES["student"], lambda r: Student.from_dict(r, history), record)
 
     async def course(self, course_id: str) -> Course:
