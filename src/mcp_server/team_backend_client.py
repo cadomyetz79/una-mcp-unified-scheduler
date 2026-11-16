@@ -5,6 +5,8 @@ The protected MCP server must authorize each student request
 before calling these functions.
 """
 
+import os
+
 import re
 
 import httpx
@@ -26,21 +28,33 @@ def check_id(value, pattern):
     return value
 
 
+
 async def get_json(path, params=None):
+    token = os.getenv("MOCK_BANNER_SERVICE_TOKEN", "")
+
+    if len(token) < 32:
+        raise TeamBackendError("UNAVAILABLE")
+
     transport = httpx.ASGITransport(
         app=app, raise_app_exceptions=False
     )
+
     try:
         async with httpx.AsyncClient(
             transport=transport,
             base_url="http://mock-banner.invalid",
+            headers={
+                "Authorization": f"Bearer {token}"
+            },
         ) as client:
             response = await client.get(path, params=params)
+
     except httpx.HTTPError:
         raise TeamBackendError("UNAVAILABLE") from None
 
     if response.status_code == 404:
         raise TeamBackendError("NOT_FOUND")
+
     if response.status_code != 200:
         raise TeamBackendError("UNAVAILABLE")
 
@@ -48,6 +62,7 @@ async def get_json(path, params=None):
         return response.json()
     except ValueError:
         raise TeamBackendError("BACKEND_DATA") from None
+
 
 
 def require_rows(value):
