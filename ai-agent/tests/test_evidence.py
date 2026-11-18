@@ -175,7 +175,6 @@ async def test_rejecting_a_section_the_student_never_named_is_ungrounded():
 # ------------------------------------------------------------ no unnecessary or fabricated calls
 
 @pytest.mark.parametrize("case_id, responses", [
-    ("E15", [{"content": "I can't access other students' information."}]),
     ("E17", [{"tool_calls": [call("get_my_record")]}, {"content": "You have completed CIS225, CIS236 and CIS330."}]),
     ("E01", [{"tool_calls": [call("plan_schedule", course_ids=["CIS376", "CIS410"])]},
              {"content": "SEC1001 (CIS376) and SEC2002 (CIS410) work together."}]),
@@ -183,6 +182,20 @@ async def test_rejecting_a_section_the_student_never_named_is_ungrounded():
 async def test_no_recovery_when_not_needed(case_id, responses):
     result, score, _ = await run_case_id(case_id, responses)
     assert result.recoveries == [] and result.model_calls == len(responses)
+    assert score["pass"], score["checks"]
+
+
+async def test_e15_is_refused_without_any_model_call():
+    result, score, llm = await run_case_id(
+        "E15",
+        [{"content": "The student completed CIS330."}],
+    )
+
+    assert result.answer_source == "system_privacy"
+    assert result.model_calls == 0
+    assert result.mcp_calls == []
+    assert result.trace == []
+    assert llm.received == []
     assert score["pass"], score["checks"]
 
 

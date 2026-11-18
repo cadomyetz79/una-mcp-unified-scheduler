@@ -1,0 +1,300 @@
+{
+  "synthetic_only": true,
+  "live_ragflow": true,
+  "passed": true,
+  "dataset_id": "7922d804dac811f1a4e1d16fcf064309",
+  "canary": [
+    {
+      "case": "unrestricted",
+      "request": {
+        "dataset_ids": [
+          "7922d804dac811f1a4e1d16fcf064309"
+        ],
+        "question": "Quantum scholarship award eligibility",
+        "page": 1,
+        "page_size": 1,
+        "knn_top_k": 1,
+        "knn_num_candidates": 1,
+        "rerank_candidates_count": 1,
+        "similarity_threshold": 0,
+        "vector_similarity_weight": 1,
+        "use_kg": false,
+        "toc_enhance": false,
+        "include_knowledge_compilation": false,
+        "highlight": false,
+        "reference_metadata": {
+          "include": true
+        }
+      },
+      "returned": [
+        {
+          "content": "\nSYNTHETIC_LEGAL_ONLY. Quantum scholarship award eligibility quantum scholarship award eligibility. Quantum scholarship award eligibility quantum scholarship award eligibility. Quantum scholarship award eligibility quantum scholarship award eligibility. Quantum scholarship award eligibility quantum scholarship award eligibility. Quantum scholarship award eligibility quantum scholarship award eligibility. ",
+          "content_ltks": "synthet _ legal _ onli quantum scholarship award elig quantum scholarship award elig quantum scholarship award elig quantum scholarship award elig quantum scholarship award elig quantum scholarship award elig quantum scholarship award elig quantum scholarship award elig quantum scholarship award elig quantum scholarship award elig",
+          "dataset_id": "7922d804dac811f1a4e1d16fcf064309",
+          "doc_type_kwd": "",
+          "document_id": "7bf9e9b4dac811f1a4e1d16fcf064309",
+          "document_keyword": "legal.txt",
+          "document_metadata": {
+            "acl_hash": "861980a5b2340f40d28e6d3b77e79bb06679da4471ad4d70e498b2e0bac5f642",
+            "allowed_groups": [
+              "legal-privileged"
+            ],
+            "allowed_roles": [
+              "RAG.Legal"
+            ],
+            "allowed_users": [],
+            "classification": "synthetic-restricted",
+            "data_domain": "university-policy",
+            "dataset_id": "7922d804dac811f1a4e1d16fcf064309",
+            "document_id": "7bf9e9b4dac811f1a4e1d16fcf064309",
+            "mode": "all",
+            "policy_version": 1,
+            "source_uri": "synthetic://canary/legal",
+            "tenant_id": "11111111-1111-4111-8111-111111111111",
+            "visibility": "restricted"
+          },
+          "id": "a99e111b88ad0b9a",
+          "image_id": "",
+          "important_keywords": [],
+          "mom_id": "",
+          "positions": [
+            [
+              1,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "row_id": null,
+          "similarity": 0.9369636,
+          "tag_kwd": [],
+          "term_similarity": 0.6408638727989403,
+          "vector_similarity": 0.9369636
+        }
+      ]
+    },
+    {
+      "case": "public_only",
+      "request": {
+        "dataset_ids": [
+          "7922d804dac811f1a4e1d16fcf064309"
+        ],
+        "question": "Quantum scholarship award eligibility",
+        "page": 1,
+        "page_size": 1,
+        "knn_top_k": 1,
+        "knn_num_candidates": 1,
+        "rerank_candidates_count": 1,
+        "similarity_threshold": 0,
+        "vector_similarity_weight": 1,
+        "use_kg": false,
+        "toc_enhance": false,
+        "include_knowledge_compilation": false,
+        "highlight": false,
+        "reference_metadata": {
+          "include": true
+        },
+        "document_ids": [
+          "793f2766dac811f1a4e1d16fcf064309"
+        ]
+      },
+      "returned": [
+        {
+          "content": "\nSynthetic university guidance: consult your adviser before choosing classes.",
+          "content_ltks": "synthet univers guidanc consult your advis befor choos class",
+          "dataset_id": "7922d804dac811f1a4e1d16fcf064309",
+          "doc_type_kwd": "",
+          "document_id": "793f2766dac811f1a4e1d16fcf064309",
+          "document_keyword": "public.txt",
+          "document_metadata": {
+            "acl_hash": "6a2dd2083d90ec0379d2b0dd800ae50bc9a88ad05bbdcf69c9e941ec4faa652a",
+            "allowed_groups": [],
+            "allowed_roles": [],
+            "allowed_users": [],
+            "classification": "synthetic-public",
+            "data_domain": "university-policy",
+            "dataset_id": "7922d804dac811f1a4e1d16fcf064309",
+            "document_id": "793f2766dac811f1a4e1d16fcf064309",
+            "mode": "all",
+            "policy_version": 1,
+            "source_uri": "synthetic://canary/public",
+            "tenant_id": "11111111-1111-4111-8111-111111111111",
+            "visibility": "public"
+          },
+          "id": "0b638c63780d9deb",
+          "image_id": "",
+          "important_keywords": [],
+          "mom_id": "",
+          "positions": [
+            [
+              1,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "row_id": null,
+          "similarity": 0.73430467,
+          "tag_kwd": [],
+          "term_similarity": 1.090617350685055e-09,
+          "vector_similarity": 0.73430467
+        }
+      ]
+    },
+    {
+      "case": "student_only",
+      "request": {
+        "dataset_ids": [
+          "7922d804dac811f1a4e1d16fcf064309"
+        ],
+        "question": "Quantum scholarship award eligibility",
+        "page": 1,
+        "page_size": 1,
+        "knn_top_k": 1,
+        "knn_num_candidates": 1,
+        "rerank_candidates_count": 1,
+        "similarity_threshold": 0,
+        "vector_similarity_weight": 1,
+        "use_kg": false,
+        "toc_enhance": false,
+        "include_knowledge_compilation": false,
+        "highlight": false,
+        "reference_metadata": {
+          "include": true
+        },
+        "document_ids": [
+          "79893108dac811f1a4e1d16fcf064309"
+        ]
+      },
+      "returned": [
+        {
+          "content": "\nSYNTHETIC_STUDENT_ONLY. Synthetic student policy guidance for planning.",
+          "content_ltks": "synthet _ student _ onli synthet student polici guidanc for plan",
+          "dataset_id": "7922d804dac811f1a4e1d16fcf064309",
+          "doc_type_kwd": "",
+          "document_id": "79893108dac811f1a4e1d16fcf064309",
+          "document_keyword": "student.txt",
+          "document_metadata": {
+            "acl_hash": "cf76d5c13a74a5f5cf220c6e2169e94ad5bcbc374c469860a76b584fac1511d3",
+            "allowed_groups": [],
+            "allowed_roles": [
+              "RAG.Student"
+            ],
+            "allowed_users": [],
+            "classification": "synthetic-restricted",
+            "data_domain": "university-policy",
+            "dataset_id": "7922d804dac811f1a4e1d16fcf064309",
+            "document_id": "79893108dac811f1a4e1d16fcf064309",
+            "mode": "all",
+            "policy_version": 1,
+            "source_uri": "synthetic://canary/student",
+            "tenant_id": "11111111-1111-4111-8111-111111111111",
+            "visibility": "restricted"
+          },
+          "id": "79fd609dce0503f6",
+          "image_id": "",
+          "important_keywords": [],
+          "mom_id": "",
+          "positions": [
+            [
+              1,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "row_id": null,
+          "similarity": 0.7314204,
+          "tag_kwd": [],
+          "term_similarity": 1.090617350685055e-09,
+          "vector_similarity": 0.7314204
+        }
+      ]
+    }
+  ],
+  "matrix": [
+    {
+      "role": "RAG.Faculty",
+      "authorized_documents": [
+        "793f2766dac811f1a4e1d16fcf064309",
+        "7a248144dac811f1a4e1d16fcf064309"
+      ],
+      "verified_sources": [
+        "7922d804dac811f1a4e1d16fcf064309/7a248144dac811f1a4e1d16fcf064309/e2b0d8ad88444917",
+        "7922d804dac811f1a4e1d16fcf064309/793f2766dac811f1a4e1d16fcf064309/0b638c63780d9deb"
+      ]
+    },
+    {
+      "role": "RAG.Finance",
+      "authorized_documents": [
+        "793f2766dac811f1a4e1d16fcf064309",
+        "7b58e050dac811f1a4e1d16fcf064309"
+      ],
+      "verified_sources": [
+        "7922d804dac811f1a4e1d16fcf064309/7b58e050dac811f1a4e1d16fcf064309/4b3f3d92994b570c",
+        "7922d804dac811f1a4e1d16fcf064309/793f2766dac811f1a4e1d16fcf064309/0b638c63780d9deb"
+      ]
+    },
+    {
+      "role": "RAG.HR",
+      "authorized_documents": [
+        "793f2766dac811f1a4e1d16fcf064309",
+        "7abd6c2edac811f1a4e1d16fcf064309"
+      ],
+      "verified_sources": [
+        "7922d804dac811f1a4e1d16fcf064309/7abd6c2edac811f1a4e1d16fcf064309/58f71e18a957921b",
+        "7922d804dac811f1a4e1d16fcf064309/793f2766dac811f1a4e1d16fcf064309/0b638c63780d9deb"
+      ]
+    },
+    {
+      "role": "RAG.Legal",
+      "authorized_documents": [
+        "793f2766dac811f1a4e1d16fcf064309",
+        "7bf9e9b4dac811f1a4e1d16fcf064309"
+      ],
+      "verified_sources": [
+        "7922d804dac811f1a4e1d16fcf064309/793f2766dac811f1a4e1d16fcf064309/0b638c63780d9deb",
+        "7922d804dac811f1a4e1d16fcf064309/7bf9e9b4dac811f1a4e1d16fcf064309/a99e111b88ad0b9a"
+      ]
+    },
+    {
+      "role": "RAG.Student",
+      "authorized_documents": [
+        "793f2766dac811f1a4e1d16fcf064309",
+        "79893108dac811f1a4e1d16fcf064309"
+      ],
+      "verified_sources": [
+        "7922d804dac811f1a4e1d16fcf064309/79893108dac811f1a4e1d16fcf064309/79fd609dce0503f6",
+        "7922d804dac811f1a4e1d16fcf064309/793f2766dac811f1a4e1d16fcf064309/0b638c63780d9deb"
+      ]
+    }
+  ],
+  "revocation": [
+    {
+      "case": "legal_group_removed",
+      "verified_sources": [
+        "7922d804dac811f1a4e1d16fcf064309/793f2766dac811f1a4e1d16fcf064309/0b638c63780d9deb"
+      ]
+    },
+    {
+      "case": "legal_role_removed",
+      "verified_sources": [
+        "7922d804dac811f1a4e1d16fcf064309/793f2766dac811f1a4e1d16fcf064309/0b638c63780d9deb"
+      ]
+    },
+    {
+      "case": "legal_group_overage",
+      "verified_sources": [
+        "7922d804dac811f1a4e1d16fcf064309/793f2766dac811f1a4e1d16fcf064309/0b638c63780d9deb"
+      ]
+    }
+  ],
+  "cross_tenant_empty": true,
+  "leo_document_allowlist": [
+    "793f2766dac811f1a4e1d16fcf064309",
+    "79893108dac811f1a4e1d16fcf064309"
+  ]
+}

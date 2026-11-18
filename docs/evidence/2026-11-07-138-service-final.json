@@ -1,0 +1,17 @@
+{
+  "web": 200,
+  "unauthenticated_api": 401,
+  "authenticated_api": {
+    "http": 200,
+    "code": 0,
+    "dataset_count": 2
+  },
+  "containers": [
+    "una-ragflow-lab-ragflow-cpu-1 Up 18 minutes 127.0.0.1:18080->80/tcp, 127.0.0.1:19380->9380/tcp",
+    "una-ragflow-lab-mysql-1 Up 19 minutes (healthy) 3306/tcp, 33060/tcp",
+    "una-ragflow-lab-es01-1 Up 19 minutes (healthy) 9200/tcp, 9300/tcp",
+    "una-ragflow-lab-minio-1 Up 19 minutes (healthy) 9000/tcp",
+    "una-ragflow-lab-redis-1 Up 19 minutes (healthy) 6379/tcp",
+    "una-n8n Up 25 minutes 127.0.0.1:5678->5678/tcp"
+  ]
+}

@@ -1,0 +1,151 @@
+/* Leo — UNA-inspired RESEARCH theme.
+   Colors reference UNA's published primary palette, but the custom lion
+   illustration is NOT an official university logo or brand approval.
+   Loaded after the existing component styles so API/UI behavior is unchanged. */
+:root{
+  --leo-purple:#592b8a;
+  --leo-purple-dark:#31124e;
+  --leo-purple-deep:#210d39;
+  --leo-gold:#ffb92a;
+  --leo-gold-soft:#fff5db;
+  --leo-ink:#28163e;
+  --leo-light:#f7f4fb;
+  --leo-border:#e8dff0;
+  color:var(--leo-ink);
+  background:var(--leo-light)
+}
+body{background:var(--leo-light)}
+button:focus-visible,a:focus-visible,textarea:focus-visible{
+  outline:3px solid var(--leo-gold);
+  outline-offset:3px
+}
+.sidebar{
+  background:linear-gradient(170deg,var(--leo-purple-dark) 0%,var(--leo-purple-deep) 100%);
+  color:#fff
+}
+.brand{gap:13px;margin-left:4px;margin-bottom:51px}
+.brand-mark{
+  display:grid;place-items:center;
+  width:58px;height:58px;flex:0 0 58px;
+  border-radius:16px;
+  background:linear-gradient(145deg,#ffe8a3,var(--leo-gold));
+  border:1px solid #ffdf84;
+  box-shadow:0 6px 21px rgba(0,0,0,.14);
+  padding:5px;letter-spacing:normal
+}
+.brand-mark img{display:block;width:100%;height:100%;object-fit:contain}
+.brand strong{color:#fff;font-size:21px;line-height:1.12;letter-spacing:-.45px}
+.brand div span{margin-top:5px;color:#e0caed;font-size:11px;line-height:1.4}
+.sidebar-section-title{color:#ddc5eb}
+.sidebar .nav{color:#f4eefa}
+.sidebar .nav.active{
+  background:rgba(255,255,255,.12);
+  color:#fff;
+  box-shadow:inset 3px 0 0 var(--leo-gold)
+}
+.sidebar .nav.muted{color:#dfcbe9}
+.status-point,.mini-dot{background:var(--leo-gold)}
+.sidebar-bottom{border-top-color:rgba(255,255,255,.2)}
+.sidebar-bottom .mini-status{color:#ffdc89}
+.sidebar-bottom small{color:#e1cfea}
+.topbar{border-bottom-color:var(--leo-border)}
+.crumb{color:var(--leo-purple);font-weight:700}
+.small-mobile-brand{color:var(--leo-purple);font-weight:800}
+.top-pill{
+  background:var(--leo-gold-soft);
+  color:#624004;
+  border-color:#f2d18a
+}
+.alert{
+  background:#fffbf3;
+  border-color:#ebd79f;
+  border-left:4px solid var(--leo-gold)
+}
+.alert-icon{color:#9b6305}
+.alert strong{color:#663e00}
+.alert p{color:#675735}
+.eyebrow{color:#79499e}
+.welcome h1,.chat-heading h1{color:var(--leo-ink)}
+.welcome h1 span{color:var(--leo-purple)}
+.brand-leo{color:var(--leo-purple)}
+.welcome p{color:#594c68}
+.research-tag{
+  color:var(--leo-purple);
+  background:#efe5f7;
+  border-color:#dfcceb
+}
+.identity-bar,.transcript,.suggestion,.sample,.composer-wrapper form{
+  border-color:var(--leo-border)
+}
+.identity-bar{border-top:3px solid var(--leo-gold)}
+.identity-bar #session-status{color:var(--leo-purple-dark)}
+.suggestion-icon{
+  background:#f2e9fa;
+  color:var(--leo-purple)
+}
+.suggestion strong{color:var(--leo-purple-dark)}
+.suggestion:hover{background:#fcf9ff;border-color:#b897d2}
+.suggestion:focus-visible{border-color:var(--leo-purple)}
+.text-button{
+  background:#f1e7f8;
+  color:var(--leo-purple)
+}
+.text-button:hover{background:#e8d8f3}
+.interactive-page #send:enabled{
+  background:var(--leo-purple);
+  color:#fff
+}
+.interactive-page #send:enabled:hover{background:#461b74}
+.login-link{background:var(--leo-purple);color:#fff}
+.login-link:hover{background:var(--leo-purple-dark)}
+.chat-entry.mine{
+  background:#f4ecf9;
+  border-color:#ddc8ec
+}
+.chat-entry.assistant-entry{
+  border-color:#f1dfb3;
+  border-left:3px solid var(--leo-gold);
+  background:#fffcf5
+}
+.message-label,.sources-heading{color:var(--leo-purple);font-weight:800}
+.message-body{color:var(--leo-ink)}
+.result-row strong{color:var(--leo-purple-dark)}
+.result-row span{color:#655870}
+.source-result{border-color:#eadbc0}
+.source-result strong{color:var(--leo-purple-dark)}
+.course-line strong,.stat strong{color:var(--leo-purple)}
+.composer-wrapper>label{color:var(--leo-purple-dark)}
+.composer-wrapper textarea{color:var(--leo-ink)}
+.interactive-page .composer-wrapper form:focus-within{
+  border-color:#ad88ce;
+  box-shadow:0 0 0 2px #592b8a13
+}
+.disclaimer{color:#6b6274}
+@media(max-width:790px){
+  .brand-mark{width:48px;height:48px}
+  .small-mobile-brand{color:var(--leo-purple)}
+  .chat-heading h1{font-size:25px}
+}
+
+/* Real request state: transient assistant bubble, not model chain-of-thought. */
+.thinking-entry{max-width:fit-content;min-width:0}
+.thinking-content{display:flex;align-items:center;justify-content:center;padding:6px 10px;font-size:13px;color:var(--leo-purple-dark);font-weight:620;line-height:1.5}
+.thinking-dots{display:inline-flex;align-items:center;gap:4px;height:15px}
+.thinking-dot{display:block;width:6px;height:6px;border-radius:50%;background:var(--leo-purple);animation:leo-typing 1.15s infinite ease-in-out}
+.thinking-dot:nth-child(2){animation-delay:.17s}
+.thinking-dot:nth-child(3){animation-delay:.34s}
+@keyframes leo-typing{0%,65%,100%{opacity:.35;transform:translateY(0)}32%{opacity:1;transform:translateY(-4px)}}
+@media(prefers-reduced-motion:reduce){.thinking-dot{animation:none;opacity:.8}}
+
+/* The official light-background athletics mark is displayed intact on
+   a clean white canvas, never recolored or redrawn. */
+.brand-mark.official-mark{
+  background:#fff;
+  border:0;
+  padding:5px;
+  box-shadow:none;
+  width:66px;
+  height:58px;
+  flex-basis:66px
+}
+.brand-mark.official-mark img{width:100%;height:100%;object-fit:contain}

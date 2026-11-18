@@ -1,0 +1,101 @@
+{
+  "schema_version": "leo-live-comparison-v1",
+  "evaluation_date": "2026-11-04",
+  "model": "qwen3:4b-instruct",
+  "before_commit": "6c1e198",
+  "after_commit": "bbeeda3",
+  "before": {
+    "model_calls_second_turn": 4,
+    "planning_calls_second_turn": 2,
+    "requested_courses_per_plan": [
+      [
+        "CIS376",
+        "CIS410"
+      ],
+      [
+        "CIS376"
+      ]
+    ],
+    "applied_preferences_per_plan": [
+      {
+        "avoid_days": [
+          "FRI"
+        ],
+        "earliest_start": "10:01",
+        "latest_end": null,
+        "required": [
+          "avoid_days",
+          "earliest_start"
+        ]
+      },
+      {
+        "avoid_days": [
+          "FRI"
+        ],
+        "earliest_start": "10:01",
+        "latest_end": null,
+        "required": [
+          "avoid_days",
+          "earliest_start"
+        ]
+      }
+    ],
+    "verified_cards": false
+  },
+  "after": {
+    "model_calls_first_turn": 5,
+    "model_calls_second_turn": 2,
+    "planning_calls_second_turn": 1,
+    "model_arguments": {
+      "avoid_days": [
+        "FRI"
+      ],
+      "course_ids": [
+        "CIS376",
+        "CIS410"
+      ],
+      "earliest_start": null,
+      "latest_end": null,
+      "required_preferences": [
+        "earliest_start"
+      ]
+    },
+    "requested_courses": [
+      "CIS376",
+      "CIS410"
+    ],
+    "applied_preferences": {
+      "avoid_days": [
+        "FRI"
+      ],
+      "earliest_start": "10:01",
+      "latest_end": null,
+      "required": [
+        "avoid_days"
+      ]
+    },
+    "proposed_section_ids": [
+      [
+        "SEC1001",
+        "SEC2002"
+      ]
+    ],
+    "verified_cards": true,
+    "grounded": true,
+    "followup_reconstructed": true,
+    "session_context_updated": true,
+    "second_chat_http_status": 200
+  },
+  "restrictions_unchanged": {
+    "multiple_plan_card_guard": true,
+    "session_context_plan_guard": true,
+    "no_enrollment": true
+  },
+  "limitations": [
+    "Single before/after live-model trial per checkpoint",
+    "Model output may vary between executions",
+    "Reduced planning calls do not independently establish causality",
+    "Synthetic Banner data and simulated identity only",
+    "No production Entra, Banner or enrollment test"
+  ]
+}

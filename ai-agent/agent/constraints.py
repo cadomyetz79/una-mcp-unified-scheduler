@@ -651,7 +651,8 @@ def _clarify_item(r: Reading) -> dict:
 
 
 def resolve(request: str, earliest_start: str | None, latest_end: str | None, avoid_days: list[str] | None,
-            required: list[str]) -> Resolution:
+            required: list[str], *,
+            correct_model_soft_flags: bool = True) -> Resolution:
     """Apply the student's own clearly stated constraints over the model's arguments.
 
     Called after unmentioned()/reconcile(), so `required` is the reconciled list."""
@@ -687,7 +688,31 @@ def resolve(request: str, earliest_start: str | None, latest_end: str | None, av
                             "reason": ("the model left out a constraint the student stated" if not model[pref]
                                        else "the model's value differs from the student's words")})
             applied[pref] = r.value
-        if r.verdict == "required" and pref not in req:
+        # A model can mark a preference mandatory while
+        # omitting its value entirely. reconcile() only
+        # checks preferences the model actually supplied,
+        # so its required flag can survive incorrectly.
+        #
+        # The value-aware deterministic reading is the
+        # final authority when the student's wording is
+        # clearly optional and the value is reliable.
+        if (
+            correct_model_soft_flags
+            and r.verdict == "soft"
+            and pref in req
+        ):
+            req.discard(pref)
+            changes.append({
+                "preference": pref,
+                "model_value": "required",
+                "applied": "soft",
+                "reason": (
+                    "the student's explicitly optional "
+                    "wording overrides the model's "
+                    "unsupported mandatory flag"
+                ),
+            })
+        elif r.verdict == "required" and pref not in req:
             req.add(pref)
             changes.append({"preference": pref, "model_value": "soft", "applied": "required",
                             "reason": "the student's words make it mandatory"})

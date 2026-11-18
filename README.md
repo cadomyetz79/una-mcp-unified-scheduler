@@ -47,3 +47,15 @@ una-mcp-scheduler/
 ├── requirements.txt
 ├── requirements-dev.txt
 └── README.md
+## Verified local Leo and RAGFlow research demonstration
+
+The November 7 synthetic integration includes local RAGFlow document-level
+authorization canaries and an opt-in Leo browser demonstration. Production
+protected retrieval remains disabled by default.
+
+- [Safe local demonstration runbook](docs/research/2026-11-07-step138-runbook.md)
+- [Measured results and limitations](docs/research/2026-11-07-step138-leo-closeout.md)
+- [Live authorization evidence](docs/research/2026-11-07-step138-live-ragflow-authorization.md)
+
+These trials use synthetic identities and academic records, not institutional
+Entra/Banner deployment. No enrollment operations are provided.

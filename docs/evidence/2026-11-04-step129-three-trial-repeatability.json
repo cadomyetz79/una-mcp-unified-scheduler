@@ -1,0 +1,114 @@
+{
+  "schema_version": "leo-research-repeatability-v1",
+  "evaluation_date": "2026-11-04",
+  "git_checkpoint": "2016002",
+  "model": "qwen3:4b-instruct",
+  "temperature": 0.0,
+  "scenario": "Two-turn synthetic scheduling: CIS376 and CIS410, mandatory Friday avoidance, then optional start after 10 AM.",
+  "total_trials": 3,
+  "successful_trials": 3,
+  "observed_success_rate": 1.0,
+  "trials": [
+    {
+      "trial": 1,
+      "passed": true,
+      "first_turn_model_calls": 5,
+      "second_turn_model_calls": 2,
+      "second_turn_planning_calls": 1,
+      "browser_chat_statuses": [
+        "200",
+        "200"
+      ],
+      "requested_courses": [
+        "CIS376",
+        "CIS410"
+      ],
+      "friday_avoidance": "required",
+      "earliest_start": "10:01",
+      "earliest_start_strength": "soft",
+      "verified_cards": true,
+      "updated_context": true,
+      "logout_revocation": true,
+      "checks": {
+        "trial_completed": true,
+        "two_browser_chat_responses": true,
+        "first_turn_valid": true,
+        "second_turn_valid": true,
+        "original_context_valid": true,
+        "updated_context_valid": true,
+        "session_revoked": true,
+        "screenshot_saved": true
+      }
+    },
+    {
+      "trial": 2,
+      "passed": true,
+      "first_turn_model_calls": 3,
+      "second_turn_model_calls": 2,
+      "second_turn_planning_calls": 1,
+      "browser_chat_statuses": [
+        "200",
+        "200"
+      ],
+      "requested_courses": [
+        "CIS376",
+        "CIS410"
+      ],
+      "friday_avoidance": "required",
+      "earliest_start": "10:01",
+      "earliest_start_strength": "soft",
+      "verified_cards": true,
+      "updated_context": true,
+      "logout_revocation": true,
+      "checks": {
+        "trial_completed": true,
+        "two_browser_chat_responses": true,
+        "first_turn_valid": true,
+        "second_turn_valid": true,
+        "original_context_valid": true,
+        "updated_context_valid": true,
+        "session_revoked": true,
+        "screenshot_saved": true
+      }
+    },
+    {
+      "trial": 3,
+      "passed": true,
+      "first_turn_model_calls": 3,
+      "second_turn_model_calls": 2,
+      "second_turn_planning_calls": 1,
+      "browser_chat_statuses": [
+        "200",
+        "200"
+      ],
+      "requested_courses": [
+        "CIS376",
+        "CIS410"
+      ],
+      "friday_avoidance": "required",
+      "earliest_start": "10:01",
+      "earliest_start_strength": "soft",
+      "verified_cards": true,
+      "updated_context": true,
+      "logout_revocation": true,
+      "checks": {
+        "trial_completed": true,
+        "two_browser_chat_responses": true,
+        "first_turn_valid": true,
+        "second_turn_valid": true,
+        "original_context_valid": true,
+        "updated_context_valid": true,
+        "session_revoked": true,
+        "screenshot_saved": true
+      }
+    }
+  ],
+  "limitations": [
+    "Three repetitions of one scenario only",
+    "Not a production reliability estimate",
+    "Temperature zero does not guarantee identical model behavior",
+    "Only synthetic student and course data",
+    "Simulated Entra identity approval",
+    "No real Banner or enrollment actions"
+  ]
+}

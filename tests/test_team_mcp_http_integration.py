@@ -87,6 +87,8 @@ def test_signed_identity_over_actual_mcp_http(monkeypatch):
     )
 
     monkeypatch.setattr(security, "ISSUER_URL", issuer)
+    monkeypatch.setattr(security, "AUTH_TENANT", TENANT)
+    monkeypatch.setattr(security, "AUTH_AUDIENCE", AUDIENCE)
     monkeypatch.setattr(
         security,
         "STUDENT_LOOKUP",
@@ -96,7 +98,7 @@ def test_signed_identity_over_actual_mcp_http(monkeypatch):
         },
     )
 
-    def sign_token(object_id):
+    def sign_token(object_id, roles=None):
         now = int(time.time())
         return jwt.encode(
             {
@@ -106,6 +108,7 @@ def test_signed_identity_over_actual_mcp_http(monkeypatch):
                 "oid": object_id,
                 "azp": CLIENT_ID,
                 "scp": "academic.read",
+                "roles": ["RAG.Student"] if roles is None else roles,
                 "ver": "2.0",
                 "iat": now,
                 "nbf": now,
@@ -179,6 +182,21 @@ def test_signed_identity_over_actual_mcp_http(monkeypatch):
                 )
                 assert reply.status_code == 401
                 assert backend_calls == []
+
+            # Tool advertisement does not confer execution permission.
+            for roles in ([], ["RAG.Faculty"], ["RAG.HR"], ["RAG.Finance"], ["RAG.Legal"]):
+                async with httpx2.AsyncClient(
+                    transport=transport, base_url=base_url,
+                    headers={"Authorization": f"Bearer {sign_token(USER_A, roles)}"},
+                ) as denied_http:
+                    async with Client(streamable_http_client(
+                        security.RESOURCE_URL, http_client=denied_http,
+                    )) as denied_client:
+                        denied = await denied_client.call_tool(
+                            "get_student_record", {"student_id": "S10001"},
+                        )
+                        assert denied.is_error
+                        assert backend_calls == []
 
             for object_id, own_id, other_id in (
                 (USER_A, "S10001", "S10002"),

@@ -1,0 +1,10 @@
+=========================== short test summary info ============================
+FAILED tests/test_gateway_context_concurrency.py::test_snapshot_revision_detects_clear_and_restore
+FAILED tests/test_gateway_context_concurrency.py::test_revision_is_session_scoped_and_survives_csrf_rotation
+FAILED tests/test_gateway_context_concurrency.py::test_inflight_result_cannot_outlive_its_context[True-update]
+FAILED tests/test_gateway_context_concurrency.py::test_inflight_result_cannot_outlive_its_context[True-clear]
+FAILED tests/test_gateway_context_concurrency.py::test_inflight_result_cannot_outlive_its_context[False-update]
+FAILED tests/test_gateway_context_concurrency.py::test_inflight_result_cannot_outlive_its_context[False-logout]
+FAILED tests/test_gateway_context_concurrency.py::test_inflight_result_cannot_outlive_its_context[False-clear]
+FAILED tests/test_gateway_context_concurrency.py::test_inflight_result_cannot_outlive_its_context[False-expire]
+8 failed, 2 passed in 1.06s

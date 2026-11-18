@@ -1,0 +1,221 @@
+{
+  "schema_version": "leo-live-continuity-v1",
+  "model": "qwen3:4b-instruct",
+  "temperature": 0.0,
+  "synthetic_identity_and_banner": true,
+  "passed": true,
+  "turns": [
+    {
+      "turn": 1,
+      "model_calls": 3,
+      "sources": [],
+      "stopped_reason": "answered",
+      "grounded": true,
+      "runner_cards": true,
+      "plans": [
+        {
+          "ok": true,
+          "requested": [
+            "CIS376",
+            "CIS410"
+          ],
+          "preferences_applied": {
+            "earliest_start": null,
+            "latest_end": null,
+            "avoid_days": [
+              "FRI"
+            ],
+            "required": [
+              "avoid_days"
+            ]
+          },
+          "option_count": 1,
+          "options": [
+            [
+              {
+                "course_id": "CIS376",
+                "section_id": "SEC1001",
+                "meeting_days": [
+                  "MON",
+                  "WED"
+                ]
+              },
+              {
+                "course_id": "CIS410",
+                "section_id": "SEC2002",
+                "meeting_days": []
+              }
+            ]
+          ],
+          "exclusions": []
+        }
+      ]
+    },
+    {
+      "turn": 2,
+      "model_calls": 2,
+      "sources": [],
+      "stopped_reason": "answered",
+      "grounded": true,
+      "runner_cards": true,
+      "plans": [
+        {
+          "ok": true,
+          "requested": [
+            "CIS376",
+            "CIS410"
+          ],
+          "preferences_applied": {
+            "earliest_start": "10:01",
+            "latest_end": null,
+            "avoid_days": [
+              "FRI"
+            ],
+            "required": [
+              "avoid_days"
+            ]
+          },
+          "option_count": 1,
+          "options": [
+            [
+              {
+                "course_id": "CIS376",
+                "section_id": "SEC1001",
+                "meeting_days": [
+                  "MON",
+                  "WED"
+                ]
+              },
+              {
+                "course_id": "CIS410",
+                "section_id": "SEC2002",
+                "meeting_days": []
+              }
+            ]
+          ],
+          "exclusions": []
+        }
+      ],
+      "http_status": 200,
+      "browser_cards": true,
+      "saved_context": {
+        "term_id": "2027SP",
+        "course_ids": [
+          "CIS376",
+          "CIS410"
+        ],
+        "avoid_days": [
+          "FRI"
+        ],
+        "earliest_start": "10:01",
+        "latest_end": null,
+        "required_preferences": [
+          "avoid_days"
+        ]
+      }
+    },
+    {
+      "turn": 3,
+      "model_calls": 2,
+      "sources": [],
+      "stopped_reason": "answered",
+      "grounded": true,
+      "runner_cards": true,
+      "plans": [
+        {
+          "ok": true,
+          "requested": [
+            "CIS376",
+            "CIS410"
+          ],
+          "preferences_applied": {
+            "earliest_start": "10:01",
+            "latest_end": null,
+            "avoid_days": [
+              "WED",
+              "FRI"
+            ],
+            "required": [
+              "avoid_days"
+            ]
+          },
+          "option_count": 1,
+          "options": [
+            [
+              {
+                "course_id": "CIS410",
+                "section_id": "SEC2002",
+                "meeting_days": []
+              }
+            ]
+          ],
+          "exclusions": [
+            {
+              "course_id": "CIS376",
+              "code": "NO_SECTION_MATCHES_PREFERENCES"
+            }
+          ]
+        }
+      ],
+      "http_status": 200,
+      "browser_cards": true,
+      "saved_context": {
+        "term_id": "2027SP",
+        "course_ids": [
+          "CIS376",
+          "CIS410"
+        ],
+        "avoid_days": [
+          "WED",
+          "FRI"
+        ],
+        "earliest_start": "10:01",
+        "latest_end": null,
+        "required_preferences": [
+          "avoid_days"
+        ]
+      }
+    },
+    {
+      "turn": 4,
+      "model_calls": 1,
+      "sources": [
+        "synthetic-public/public/public-1-0"
+      ],
+      "stopped_reason": "answered",
+      "grounded": true,
+      "runner_cards": false,
+      "plans": []
+    },
+    {
+      "turn": 5,
+      "model_calls": 0,
+      "sources": [],
+      "stopped_reason": "answered",
+      "grounded": true,
+      "runner_cards": false,
+      "plans": []
+    }
+  ],
+  "initial_context": {
+    "term_id": "2027SP",
+    "course_ids": [
+      "CIS376",
+      "CIS410"
+    ],
+    "avoid_days": [
+      "FRI"
+    ],
+    "earliest_start": null,
+    "latest_end": null,
+    "required_preferences": [
+      "avoid_days"
+    ]
+  },
+  "deterministic_exclusion_visible": true,
+  "partial_proposal_verified": true,
+  "authorized_policy_verified": true,
+  "foreign_student_denied": true,
+  "live_ragflow": false,
+  "session_revoked": true
+}

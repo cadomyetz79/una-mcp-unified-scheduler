@@ -95,3 +95,51 @@ def test_does_not_modify_original_planner_response():
     copy = deepcopy(p)
     project(p)
     assert p == copy
+
+
+def partial_plan():
+    p = plan()
+    p["requested"] = ["CIS376", "CIS410"]
+    p["excluded"] = [{"course_id": "CIS376", "code": "NO_SECTION_MATCHES_PREFERENCES",
+                      "reason": "<script>untrusted model prose</script>"}]
+    p["options"][0]["sections"] = p["options"][0]["sections"][1:]
+    p["options"][0]["section_ids"] = ["SEC2002"]
+    p["options"][0]["total_credit_hours"] = 3
+    return p
+
+
+def test_partial_exclusion_uses_deterministic_reason():
+    result = project(partial_plan())
+    assert result["proposal_completeness"] == "partial"
+    assert result["requested_courses"] == ["CIS376", "CIS410"]
+    assert result["excluded_courses"] == [{
+        "course_id": "CIS376", "code": "NO_SECTION_MATCHES_PREFERENCES",
+        "reason": "No open section satisfies the required day/time restrictions.",
+    }]
+    assert "script" not in str(result)
+
+
+@pytest.mark.parametrize("mutate", [
+    lambda p: p.update(requested=["CIS410"]),
+    lambda p: p.update(excluded=[]),
+    lambda p: p["excluded"][0].update(course_id="CIS410"),
+    lambda p: p["excluded"][0].update(code="MODEL_SAYS_ENROLLED"),
+    lambda p: p["excluded"].append(p["excluded"][0].copy()),
+    lambda p: p.update(requested=["CIS376", "CIS376"]),
+    lambda p: p.pop("requested"),
+    lambda p: p.update(excluded=None),
+])
+def test_partial_projection_rejects_contradictions(mutate):
+    p = partial_plan()
+    mutate(p)
+    with pytest.raises(ValueError):
+        project(p)
+
+
+def test_complete_and_no_options_are_distinct():
+    p = plan()
+    p.update(requested=["CIS376", "CIS410"], excluded=[])
+    assert project(p)["proposal_completeness"] == "complete"
+    p["options"] = []
+    assert project(p)["proposal_completeness"] == "no_options"
+    assert "proposal_completeness" not in project(plan())

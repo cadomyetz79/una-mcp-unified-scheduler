@@ -1,0 +1,187 @@
+{
+  "date": "2026-11-07",
+  "containers": [
+    {
+      "name": "una-ragflow-lab-ragflow-cpu-1",
+      "image": "infiniflow/ragflow:v0.27.2",
+      "image_id": "sha256:e6b3f1a185c0a70abb3a72e1092415df8c5c6a4fae0089545554f2936c4b27ab",
+      "status": "running",
+      "health": null,
+      "oom_killed": false,
+      "restart_count": 0,
+      "published_ports": {
+        "80/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "18080"
+          }
+        ],
+        "9380/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "19380"
+          }
+        ]
+      },
+      "volumes": []
+    },
+    {
+      "name": "una-ragflow-lab-mysql-1",
+      "image": "mysql:8.0.40",
+      "image_id": "sha256:d58ac93387f644e4e040c636b8f50494e78e5afc27ca0a87348b2f577da2b7ff",
+      "status": "running",
+      "health": "healthy",
+      "oom_killed": false,
+      "restart_count": 0,
+      "published_ports": {
+        "3306/tcp": null,
+        "33060/tcp": null
+      },
+      "volumes": [
+        "una-ragflow-lab_mysql_data"
+      ]
+    },
+    {
+      "name": "una-ragflow-lab-es01-1",
+      "image": "elasticsearch:8.11.3",
+      "image_id": "sha256:58a3a280935d830215802322e9a0373faaacdfd646477aa7e718939c2f29292a",
+      "status": "running",
+      "health": "healthy",
+      "oom_killed": false,
+      "restart_count": 0,
+      "published_ports": {
+        "9200/tcp": null,
+        "9300/tcp": null
+      },
+      "volumes": [
+        "una-ragflow-lab_esdata01"
+      ]
+    },
+    {
+      "name": "una-ragflow-lab-minio-1",
+      "image": "pgsty/silo:RELEASE.2026-08-06T00-00-00Z",
+      "image_id": "sha256:29a498b24669cae1fed11c1a2fb2b3d73c68829a0a9c0b14e71b386671d38fac",
+      "status": "running",
+      "health": "healthy",
+      "oom_killed": false,
+      "restart_count": 0,
+      "published_ports": {
+        "9000/tcp": null
+      },
+      "volumes": [
+        "una-ragflow-lab_minio_data"
+      ]
+    },
+    {
+      "name": "una-ragflow-lab-redis-1",
+      "image": "valkey/valkey:8",
+      "image_id": "sha256:8f836008e0986c36adf50da714c7060cf689dbb335f61fe077939d90fa650809",
+      "status": "running",
+      "health": "healthy",
+      "oom_killed": false,
+      "restart_count": 0,
+      "published_ports": {
+        "6379/tcp": null
+      },
+      "volumes": [
+        "una-ragflow-lab_redis_data"
+      ]
+    },
+    {
+      "name": "una-n8n",
+      "image": "docker.n8n.io/n8nio/n8n",
+      "image_id": "sha256:bcb4e4917141f4a5249c8eadf2776d347f4c2ede75adfbbc82064826af9a8ead",
+      "status": "running",
+      "health": null,
+      "oom_killed": false,
+      "restart_count": 0,
+      "published_ports": {
+        "5678/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "5678"
+          }
+        ]
+      },
+      "volumes": [
+        "una_n8n_data"
+      ]
+    }
+  ],
+  "models": [
+    {
+      "name": "nomic-embed-text:latest",
+      "model": "nomic-embed-text:latest",
+      "modified_at": "2026-11-07T08:23:40.828506267-08:00",
+      "size": 274302450,
+      "digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "nomic-bert",
+        "families": [
+          "nomic-bert"
+        ],
+        "parameter_size": "137M",
+        "quantization_level": "F16",
+        "context_length": 2048,
+        "embedding_length": 768,
+        "runner": "ggml"
+      },
+      "capabilities": [
+        "embedding"
+      ]
+    },
+    {
+      "name": "una-scheduler:latest",
+      "model": "una-scheduler:latest",
+      "modified_at": "2026-10-08T20:16:58.526829701-07:00",
+      "size": 2497293461,
+      "digest": "bb417673241429d9cc95e799508427f49dba89df6ac2dc3856863a875be96794",
+      "details": {
+        "parent_model": "qwen3:4b-instruct",
+        "format": "gguf",
+        "family": "qwen3",
+        "families": [
+          "qwen3"
+        ],
+        "parameter_size": "4.0B",
+        "quantization_level": "Q4_K_M",
+        "context_length": 262144,
+        "embedding_length": 2560,
+        "runner": "llamacpp"
+      },
+      "capabilities": [
+        "tools",
+        "thinking",
+        "completion"
+      ]
+    },
+    {
+      "name": "qwen3:4b-instruct",
+      "model": "qwen3:4b-instruct",
+      "modified_at": "2026-10-08T18:06:20.343690784-07:00",
+      "size": 2497293803,
+      "digest": "0edcdef34593eac1aa2be9c7d06c432dcf81945adca5eca2f27662c18f168ba0",
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "qwen3",
+        "families": [
+          "qwen3"
+        ],
+        "parameter_size": "4.0B",
+        "quantization_level": "Q4_K_M",
+        "context_length": 262144,
+        "embedding_length": 2560,
+        "runner": "ggml"
+      },
+      "capabilities": [
+        "tools",
+        "thinking",
+        "completion"
+      ]
+    }
+  ],
+  "memory": "una-ragflow-lab-ragflow-cpu-1 3.152GiB / 14.53GiB\nuna-ragflow-lab-mysql-1 363.6MiB / 14.53GiB\nuna-ragflow-lab-es01-1 3.239GiB / 7.519GiB\nuna-ragflow-lab-minio-1 145.7MiB / 14.53GiB\nuna-ragflow-lab-redis-1 26.05MiB / 14.53GiB\nuna-n8n 361.3MiB / 14.53GiB\n"
+}
